@@ -1,5 +1,6 @@
 package vn.edu.uit.cntt.lt.e33.ie303.hms.ui.presenter;
 
+import vn.edu.uit.cntt.lt.e33.ie303.hms.bootstrap.DIContainer;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.User;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.service.IUserService;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.ui.view.UserView;
@@ -11,14 +12,18 @@ import java.util.List;
 
 public class UserPresenter {
     private final UserView view;
+    private final CreateOrEditUserModal modal;
     private final IUserService service;
 
-    public UserPresenter(UserView view, IUserService service) {
-        this.view = view;
-        this.service = service;
+    public UserPresenter() {
+        this.view = new UserView();
+        this.modal = new CreateOrEditUserModal();
+        this.service = DIContainer.getInstance().getUserService();
         this.view.onRefresh(_ -> load());
         this.view.setTableModel(new UserTableModel(new ArrayList<>()));
     }
+
+    public UserView getView() { return view; }
 
     public void load() {
         new SwingWorker<List<User>, Void>() {

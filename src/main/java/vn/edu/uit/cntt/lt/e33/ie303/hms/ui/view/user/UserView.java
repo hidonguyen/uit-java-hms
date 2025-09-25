@@ -5,20 +5,16 @@ import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
-public class UserView extends JFrame {
-    private final JTable table = new JTable();
+public class UserView extends JPanel {
+    private final JButton addBtn = new JButton("Add User");
     private final JButton refreshBtn = new JButton("Refresh");
 
     public UserView() {
-        super("Swing App – Users");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BorderLayout());
+        super(new BorderLayout());
+        add(new JScrollPane(table), BorderLayout.CENTER);
         JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT));
         top.add(refreshBtn);
         add(top, BorderLayout.NORTH);
-        add(new JScrollPane(table), BorderLayout.CENTER);
-        setSize(800, 500);
-        setLocationRelativeTo(null);
     }
 
     public void setTableModel(TableModel model) { table.setModel(model); }
