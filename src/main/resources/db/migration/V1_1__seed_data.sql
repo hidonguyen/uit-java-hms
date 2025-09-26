@@ -1,8 +1,8 @@
 -- Users
 INSERT INTO users (username, role, password_hash, status, created_by, updated_by)
 VALUES
-  ('manager',      'Manager',      'hash-demo', 'Active', NULL, NULL),
-  ('receptionist',  'Receptionist', 'hash-demo', 'Active', 1,    1)
+  ('manager',      'Manager',      'i708tyacVZRf5wD8Y5dcxg==', 'Active', NULL, NULL),
+  ('receptionist',  'Receptionist', 'sQGf4FLQC11L5l4QSFunKw==', 'Active', 1,    1)
 ON CONFLICT (username) DO NOTHING;
 
 -- Room Types

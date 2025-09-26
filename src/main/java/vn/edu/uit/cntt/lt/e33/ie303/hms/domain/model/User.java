@@ -143,7 +143,7 @@ public class User {
     }
 
     public static String findAllQuery() {
-        return "SELECT id, username, role, password_hash, status, last_login_at, created_at, created_by, updated_at, updated_by FROM users";
+        return "SELECT id, username, role, password_hash, status, last_login_at, created_at, created_by, updated_at, updated_by FROM users ORDER BY id ASC";
     }
 
     public static String findByIdQuery() {
@@ -179,28 +179,27 @@ public class User {
     }
 
     public static String updateQuery() {
-        return "UPDATE users SET username = ?, role = ?, password_hash = ?, status = ?, last_login_at = ?, created_at = ?, created_by = ?, updated_at = ?, updated_by = ? WHERE id = ?";
+        return "UPDATE users SET username = ?, role = ?, status = ?, last_login_at = ?, created_at = ?, created_by = ?, updated_at = ?, updated_by = ? WHERE id = ?";
     }
 
     public void setUpdateParameters(PreparedStatement ps) throws SQLException {
         ps.setString(1, this.username);
         ps.setString(2, this.role.name());
-        ps.setString(3, this.passwordHash);
-        ps.setString(4, this.status.name());
-        ps.setObject(5, this.lastLoginAt);
-        ps.setObject(6, this.createdAt);
+        ps.setString(3, this.status.name());
+        ps.setObject(4, this.lastLoginAt);
+        ps.setObject(5, this.createdAt);
         if (this.createdBy != null) {
-            ps.setLong(7, this.createdBy);
+            ps.setLong(6, this.createdBy);
         } else {
-            ps.setNull(7, java.sql.Types.BIGINT);
+            ps.setNull(6, java.sql.Types.BIGINT);
         }
-        ps.setObject(8, this.updatedAt);
+        ps.setObject(7, this.updatedAt);
         if (this.updatedBy != null) {
-            ps.setLong(9, this.updatedBy);
+            ps.setLong(8, this.updatedBy);
         } else {
-            ps.setNull(9, java.sql.Types.BIGINT);
+            ps.setNull(8, java.sql.Types.BIGINT);
         }
-        ps.setLong(10, this.id);
+        ps.setLong(9, this.id);
     }
 
     public static String deleteQuery() {

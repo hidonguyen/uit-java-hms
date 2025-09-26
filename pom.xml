@@ -8,8 +8,8 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>hms</name>
-    <description>Java HMS Project</description>
+    <name>UIT Hotel Management Pro</name>
+    <description>UIT Hotel Management Pro - Java Application</description>
 
     <properties>
         <maven.compiler.source>25</maven.compiler.source>
