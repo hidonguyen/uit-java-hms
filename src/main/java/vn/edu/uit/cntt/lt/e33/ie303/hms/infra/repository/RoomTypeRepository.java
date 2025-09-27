@@ -72,6 +72,23 @@ public class RoomTypeRepository implements IRoomTypeRepository {
     }
 
     @Override
+    public int countByRoomTypeId(Long roomTypeId) {
+        try (Connection connection = ds.getConnection();
+                PreparedStatement ps = connection.prepareStatement(
+                        "SELECT COUNT(*) FROM rooms WHERE room_type_id = ?")) {
+            ps.setLong(1, roomTypeId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+                return 0;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public int delete(Long id) {
         try (Connection connection = ds.getConnection();
                 PreparedStatement ps = connection.prepareStatement(RoomType.deleteQuery())) {

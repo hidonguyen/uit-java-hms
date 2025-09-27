@@ -3,6 +3,7 @@ package vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.GuestGender;
@@ -10,21 +11,26 @@ import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.GuestGender;
 public class Guest {
     private Long id;
     private String name;
-    private GuestGender gender;
-    private OffsetDateTime dateOfBirth;
+    private GuestGender gender; // map <-> VARCHAR
+    private LocalDate dateOfBirth; // map <-> DATE
     private String nationality;
     private String phone;
     private String email;
     private String address;
     private String description;
-    private OffsetDateTime createdAt;
+    private OffsetDateTime createdAt; // DB default NOW()
     private Long createdBy;
-    private OffsetDateTime updatedAt;
+    private OffsetDateTime updatedAt; // DB default NOW() / update NOW()
     private Long updatedBy;
 
-    public Guest() {}
+    public Guest() {
+    }
 
-    public Guest(Long id, String name, GuestGender gender, OffsetDateTime dateOfBirth, String nationality, String phone, String email, String address, String description, OffsetDateTime createdAt, Long createdBy, OffsetDateTime updatedAt, Long updatedBy) {
+    public Guest(
+            Long id, String name, GuestGender gender, LocalDate dateOfBirth,
+            String nationality, String phone, String email, String address, String description,
+            OffsetDateTime createdAt, Long createdBy, OffsetDateTime updatedAt, Long updatedBy) {
+
         this.id = id;
         this.name = name;
         this.gender = gender;
@@ -43,19 +49,24 @@ public class Guest {
     public Guest(ResultSet rs) throws SQLException {
         this.id = rs.getLong("id");
         this.name = rs.getString("name");
-        this.gender = GuestGender.valueOf(rs.getString("gender"));
-        this.dateOfBirth = rs.getObject("date_of_birth", OffsetDateTime.class);
+
+        String g = rs.getString("gender");
+        this.gender = (g == null) ? null : GuestGender.valueOf(g);
+
+        this.dateOfBirth = rs.getObject("date_of_birth", LocalDate.class);
         this.nationality = rs.getString("nationality");
         this.phone = rs.getString("phone");
         this.email = rs.getString("email");
         this.address = rs.getString("address");
         this.description = rs.getString("description");
+
         this.createdAt = rs.getObject("created_at", OffsetDateTime.class);
-        this.createdBy = rs.getLong("created_by");
+        this.createdBy = rs.getObject("created_by", Long.class); // giữ được null
         this.updatedAt = rs.getObject("updated_at", OffsetDateTime.class);
-        this.updatedBy = rs.getLong("updated_by");
+        this.updatedBy = rs.getObject("updated_by", Long.class);
     }
 
+    // ===== getters / setters =====
     public Long getId() {
         return id;
     }
@@ -83,11 +94,11 @@ public class Guest {
         return this;
     }
 
-    public OffsetDateTime getDateOfBirth() {
+    public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public Guest setDateOfBirth(OffsetDateTime dateOfBirth) {
+    public Guest setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
         return this;
     }
@@ -173,67 +184,107 @@ public class Guest {
         return this;
     }
 
+    // ===== SQL builders =====
+
     public static String findAllQuery() {
-        return "SELECT id, name, gender, date_of_birth, nationality, phone, email, address, description, created_at, created_by, updated_at, updated_by FROM guests";
+        return """
+                SELECT id, name, gender, date_of_birth, nationality, phone, email, address, description,
+                       created_at, created_by, updated_at, updated_by
+                FROM guests
+                """;
     }
 
     public static String findByIdQuery() {
-        return "SELECT id, name, gender, date_of_birth, nationality, phone, email, address, description, created_at, created_by, updated_at, updated_by FROM guests WHERE id = ?";
+        return """
+                SELECT id, name, gender, date_of_birth, nationality, phone, email, address, description,
+                       created_at, created_by, updated_at, updated_by
+                FROM guests
+                WHERE id = ?
+                """;
     }
 
+    // ✅ KHÔNG chèn created_at / updated_at để DB tự NOW()
     public static String insertQuery() {
-        return "INSERT INTO guests (name, gender, date_of_birth, nationality, phone, email, address, description, created_at, created_by, updated_at, updated_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        return """
+                INSERT INTO guests
+                  (name, gender, date_of_birth, nationality, phone, email, address, description, created_by, updated_by)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """;
     }
 
     public void setInsertParameters(PreparedStatement ps) throws SQLException {
         ps.setString(1, this.name);
-        ps.setString(2, this.gender.name());
-        ps.setObject(3, this.dateOfBirth);
+
+        if (this.gender != null)
+            ps.setString(2, this.gender.name());
+        else
+            ps.setNull(2, java.sql.Types.VARCHAR);
+
+        if (this.dateOfBirth != null)
+            ps.setObject(3, this.dateOfBirth);
+        else
+            ps.setNull(3, java.sql.Types.DATE);
+
         ps.setString(4, this.nationality);
         ps.setString(5, this.phone);
         ps.setString(6, this.email);
         ps.setString(7, this.address);
         ps.setString(8, this.description);
-        ps.setObject(9, this.createdAt);
-        if (this.createdBy != null) {
-            ps.setLong(10, this.createdBy);
-        } else {
+
+        if (this.createdBy != null)
+            ps.setLong(9, this.createdBy);
+        else
+            ps.setNull(9, java.sql.Types.BIGINT);
+
+        if (this.updatedBy != null)
+            ps.setLong(10, this.updatedBy);
+        else
             ps.setNull(10, java.sql.Types.BIGINT);
-        }
-        ps.setObject(11, this.updatedAt);
-        if (this.updatedBy != null) {
-            ps.setLong(12, this.updatedBy);
-        } else {
-            ps.setNull(12, java.sql.Types.BIGINT);
-        }
     }
 
+    // ✅ Không đụng created_at/created_by; updated_at set NOW() trong SQL
     public static String updateQuery() {
-        return "UPDATE guests SET name = ?, gender = ?, date_of_birth = ?, nationality = ?, phone = ?, email = ?, address = ?, description = ?, created_at = ?, created_by = ?, updated_at = ?, updated_by = ? WHERE id = ?";
+        return """
+                UPDATE guests
+                   SET name = ?,
+                       gender = ?,
+                       date_of_birth = ?,
+                       nationality = ?,
+                       phone = ?,
+                       email = ?,
+                       address = ?,
+                       description = ?,
+                       updated_at = NOW(),
+                       updated_by = ?
+                 WHERE id = ?
+                """;
     }
 
     public void setUpdateParameters(PreparedStatement ps) throws SQLException {
         ps.setString(1, this.name);
-        ps.setString(2, this.gender.name());
-        ps.setObject(3, this.dateOfBirth);
+
+        if (this.gender != null)
+            ps.setString(2, this.gender.name());
+        else
+            ps.setNull(2, java.sql.Types.VARCHAR);
+
+        if (this.dateOfBirth != null)
+            ps.setObject(3, this.dateOfBirth);
+        else
+            ps.setNull(3, java.sql.Types.DATE);
+
         ps.setString(4, this.nationality);
         ps.setString(5, this.phone);
         ps.setString(6, this.email);
         ps.setString(7, this.address);
         ps.setString(8, this.description);
-        ps.setObject(9, this.createdAt);
-        if (this.createdBy != null) {
-            ps.setLong(10, this.createdBy);
-        } else {
-            ps.setNull(10, java.sql.Types.BIGINT);
-        }
-        ps.setObject(11, this.updatedAt);
-        if (this.updatedBy != null) {
-            ps.setLong(12, this.updatedBy);
-        } else {
-            ps.setNull(12, java.sql.Types.BIGINT);
-        }
-        ps.setLong(13, this.id);
+
+        if (this.updatedBy != null)
+            ps.setLong(9, this.updatedBy);
+        else
+            ps.setNull(9, java.sql.Types.BIGINT);
+
+        ps.setLong(10, this.id);
     }
 
     public static String deleteQuery() {

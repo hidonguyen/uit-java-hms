@@ -1,13 +1,30 @@
 package vn.edu.uit.cntt.lt.e33.ie303.hms.ui.view;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import javax.swing.*;
+
+import javax.swing.BorderFactory;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.User;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.ui.presenter.BookingPresenter;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.ui.presenter.GuestPresenter;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.ui.presenter.RoomPresenter;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.ui.presenter.RoomTypePresenter;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.ui.presenter.ServicePresenter;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.ui.presenter.UserPresenter;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.util.Constants;
 
@@ -22,7 +39,6 @@ public class MainView extends JFrame {
     private final JLabel appVersionLabel = new JLabel();
     private final JLabel dateTimeLabel = new JLabel();
 
-
     // Timer for updating date/time
     private Timer dateTimeTimer;
 
@@ -33,19 +49,27 @@ public class MainView extends JFrame {
 
     private final BookingPresenter bookingPresenter;
     private final UserPresenter userPresenter;
+    private final ServicePresenter servicePresenter;
+    private final RoomPresenter roomPresenter;
+    private final RoomTypePresenter roomTypePresenter;
+    private final GuestPresenter guestPresenter;
 
     public MainView() {
         super("UIT Hotel Management Pro");
 
-        JFrame parentFrame = (JFrame)SwingUtilities.getWindowAncestor(this);
+        JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
 
         bookingPresenter = new BookingPresenter(parentFrame);
         userPresenter = new UserPresenter(parentFrame);
+        servicePresenter = new ServicePresenter(parentFrame);
+        roomPresenter = new RoomPresenter(parentFrame);
+        roomTypePresenter = new RoomTypePresenter(parentFrame);
+        guestPresenter = new GuestPresenter(parentFrame);
 
         // Configure tabbed pane
         tabbedPane.setTabPlacement(JTabbedPane.TOP);
         tabbedPane.setBorder(BorderFactory.createEmptyBorder());
-        
+
         setLayout(new BorderLayout());
 
         setupMainPanel();
@@ -71,6 +95,11 @@ public class MainView extends JFrame {
     private void setupMainPanel() {
         tabbedPane.addTab("Today Bookings", bookingPresenter.getTodayBookingView());
         tabbedPane.addTab("Users", userPresenter.getView());
+
+        tabbedPane.addTab("Services", servicePresenter.getView());
+        tabbedPane.addTab("Rooms", roomPresenter.getView());
+        tabbedPane.addTab("Room Type", roomTypePresenter.getView());
+        tabbedPane.addTab("Guests", guestPresenter.getView());
 
         mainPanel.add(tabbedPane, BorderLayout.CENTER);
         add(mainPanel, BorderLayout.CENTER);
@@ -124,16 +153,16 @@ public class MainView extends JFrame {
 
     private void showAboutDialog() {
         String message = """
-            UIT Hotel Management Pro
-            Version %s
+                UIT Hotel Management Pro
+                Version %s
 
-            A comprehensive hotel management system developed for
-            University of Information Technology (UIT)
-            
-            Course: IE303.E33.LT.CNTT - Công nghệ Java
-            
-            © 2025 UIT. All rights reserved.
-            """.formatted(appVersion);
+                A comprehensive hotel management system developed for
+                University of Information Technology (UIT)
+
+                Course: IE303.E33.LT.CNTT - Công nghệ Java
+
+                © 2025 UIT. All rights reserved.
+                """.formatted(appVersion);
 
         JOptionPane.showMessageDialog(this, message, "About", JOptionPane.INFORMATION_MESSAGE);
     }
@@ -147,6 +176,11 @@ public class MainView extends JFrame {
         }
     }
 
-    public JTabbedPane getTabbedPane() { return tabbedPane; }
-    public User getCurrentUser() { return currentUser; }
+    public JTabbedPane getTabbedPane() {
+        return tabbedPane;
+    }
+
+    public User getCurrentUser() {
+        return currentUser;
+    }
 }

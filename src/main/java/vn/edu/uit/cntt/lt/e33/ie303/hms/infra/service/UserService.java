@@ -14,6 +14,7 @@ import vn.edu.uit.cntt.lt.e33.ie303.hms.util.LoggedInUser;
 
 public class UserService implements IUserService {
     private final IUserRepository repo;
+
     public UserService(IUserRepository repo) {
         this.repo = repo;
     }
@@ -23,16 +24,19 @@ public class UserService implements IUserService {
         User user = repo.findByUsername(username);
 
         if (user == null) {
-            throw new ApiException(Constants.ErrorTitle.LOGIN, Constants.ErrorCode.USER_NOT_FOUND, Constants.ErrorMessage.USER_NOT_FOUND);
+            throw new ApiException(Constants.ErrorTitle.LOGIN, Constants.ErrorCode.USER_NOT_FOUND,
+                    Constants.ErrorMessage.USER_NOT_FOUND);
         }
 
         if (user.getStatus() == UserStatus.Locked) {
-            throw new ApiException(Constants.ErrorTitle.LOGIN, Constants.ErrorCode.USER_ACCOUNT_HAS_BEEN_LOCKED, Constants.ErrorMessage.USER_ACCOUNT_HAS_BEEN_LOCKED);
+            throw new ApiException(Constants.ErrorTitle.LOGIN, Constants.ErrorCode.USER_ACCOUNT_HAS_BEEN_LOCKED,
+                    Constants.ErrorMessage.USER_ACCOUNT_HAS_BEEN_LOCKED);
         }
 
         var passwordHash = CryptoHelper.encrypt(password);
         if (!user.getPasswordHash().equals(passwordHash)) {
-            throw new ApiException(Constants.ErrorTitle.LOGIN, Constants.ErrorCode.USER_PASSWORD_IS_INCORRECT, Constants.ErrorMessage.USER_PASSWORD_IS_INCORRECT);
+            throw new ApiException(Constants.ErrorTitle.LOGIN, Constants.ErrorCode.USER_PASSWORD_IS_INCORRECT,
+                    Constants.ErrorMessage.USER_PASSWORD_IS_INCORRECT);
         }
 
         user.setLastLoginAt(OffsetDateTime.now());
