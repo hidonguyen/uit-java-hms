@@ -151,6 +151,7 @@ public class Room {
     }
 
     public void setInsertParameters(PreparedStatement ps) throws SQLException {
+        System.out.println(this.housekeepingStatus);
         ps.setString(1, this.name);
         ps.setLong(2, this.roomTypeId);
         ps.setString(3, this.description);
