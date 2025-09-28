@@ -93,7 +93,7 @@ public class MainView extends JFrame {
     }
 
     private void setupMainPanel() {
-        tabbedPane.addTab("Today Bookings", bookingPresenter.getTodayBookingView());
+        tabbedPane.addTab("Today Bookings", bookingPresenter.loadTodayBookingView());
         tabbedPane.addTab("Users", userPresenter.getView());
 
         tabbedPane.addTab("Services", servicePresenter.getView());

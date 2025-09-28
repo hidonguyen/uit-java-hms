@@ -24,6 +24,7 @@ public final class DIContainer {
     private final IRoomService roomService;
     private final IRoomTypeService roomTypeService;
     private final IGuestService guestService;
+    private final IBookingService bookingService;
 
     private DIContainer() {
         AppConfig config = AppConfig.load();
@@ -43,6 +44,7 @@ public final class DIContainer {
         this.roomService = new RoomService(roomRepository);
         this.roomTypeService = new RoomTypeService(roomTypeRepository);
         this.guestService = new GuestService(guestRepository);
+        this.bookingService = new BookingService(bookingRepository, bookingDetailRepository);
     }
 
     public static DIContainer getInstance() {
@@ -102,5 +104,9 @@ public final class DIContainer {
 
     public IGuestService getGuestService() {
         return guestService;
+    }
+
+    public IBookingService getBookingService() {
+        return bookingService;
     }
 }

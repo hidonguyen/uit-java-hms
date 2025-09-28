@@ -4,13 +4,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.BookingChargeType;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.BookingStatus;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.PaymentStatus;
 
 public class Booking {
-    private Long id;
+private Long id;
     private String bookingNo;
     private BookingChargeType chargeType;
     private OffsetDateTime checkin;
@@ -27,6 +28,8 @@ public class Booking {
     private Long createdBy;
     private OffsetDateTime updatedAt;
     private Long updatedBy;
+
+    private ArrayList<BookingDetail> bookingDetails;
 
     public Booking() {}
 
@@ -48,6 +51,8 @@ public class Booking {
         this.createdBy = createdBy;
         this.updatedAt = updatedAt;
         this.updatedBy = updatedBy;
+
+        this.bookingDetails = new ArrayList<>();
     }
 
     public Booking(ResultSet rs) throws SQLException {
@@ -68,6 +73,8 @@ public class Booking {
         this.createdBy = rs.getObject("created_by") != null ? rs.getLong("created_by") : null;
         this.updatedAt = rs.getObject("updated_at", OffsetDateTime.class);
         this.updatedBy = rs.getObject("updated_by") != null ? rs.getLong("updated_by") : null;
+
+        this.bookingDetails = new ArrayList<>();
     }
 
     public Long getId() {
@@ -223,8 +230,45 @@ public class Booking {
         return this;
     }
 
+    public ArrayList<BookingDetail> getBookingDetails() {
+        return bookingDetails;
+    }
+
+    public Booking setBookingDetails(ResultSet rs) {
+        this.bookingDetails = new ArrayList<>();
+        try {
+            while (rs.next()) {
+                this.bookingDetails.add(new BookingDetail(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return this;
+    }
+
     public static String findAllQuery() {
         return "SELECT id, booking_no, charge_type, checkin, checkout, room_id, room_type_id, primary_guest_id, num_adults, num_children, status, payment_status, notes, created_at, created_by, updated_at, updated_by FROM bookings";
+    }
+
+    public static String findTodayBookingsIncludeDetailsQuery() {
+        return """
+            SELECT
+                b.id, b.booking_no, b.charge_type, b.checkin, b.checkout,
+                b.room_id, r.name AS room_name, b.room_type_id, rt.name AS room_type_name,
+                b.primary_guest_id, g.name AS primary_guest_name, g.phone AS primary_guest_phone,
+                b.num_adults, b.num_children,
+                b.status, b.payment_status,
+                b.notes,
+                b.created_at, b.created_by, b.updated_at, b.updated_by,
+                bd.*
+            FROM bookings b
+                JOIN booking_details bd ON b.id = bd.booking_id
+                JOIN guests g ON b.primary_guest_id = g.id
+                JOIN rooms r ON b.room_id = r.id
+                JOIN room_types rt ON b.room_type_id = rt.id
+            WHERE DATE(b.checkin) <= CURRENT_DATE AND (b.checkout IS NULL OR DATE(b.checkout) >= CURRENT_DATE)
+            ORDER BY b.checkin ASC
+        """;
     }
 
     public static String findByIdQuery() {
