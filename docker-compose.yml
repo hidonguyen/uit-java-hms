@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:17.6
+    container_name: hms_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: hms
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d hms"]
+      interval: 5s
+      timeout: 3s
+      retries: 10

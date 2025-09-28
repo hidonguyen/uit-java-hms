@@ -21,9 +21,14 @@ public class RoomType {
     private OffsetDateTime updatedAt;
     private Long updatedBy;
 
-    public RoomType() {}
+    public RoomType() {
+    }
 
-    public RoomType(Long id, String code, String name, int baseOccupancy, int maxOccupancy, double baseRate, double hourRate, double extraAdultFee, double extraChildFee, String description, OffsetDateTime createdAt, Long createdBy, OffsetDateTime updatedAt, Long updatedBy) {
+    public RoomType(
+            Long id, String code, String name, int baseOccupancy, int maxOccupancy,
+            double baseRate, double hourRate, double extraAdultFee, double extraChildFee,
+            String description, OffsetDateTime createdAt, Long createdBy,
+            OffsetDateTime updatedAt, Long updatedBy) {
         this.id = id;
         this.code = code;
         this.name = name;
@@ -52,9 +57,9 @@ public class RoomType {
         this.extraChildFee = rs.getDouble("extra_child_fee");
         this.description = rs.getString("description");
         this.createdAt = rs.getObject("created_at", OffsetDateTime.class);
-        this.createdBy = rs.getLong("created_by");
+        this.createdBy = rs.getObject("created_by", Long.class);
         this.updatedAt = rs.getObject("updated_at", OffsetDateTime.class);
-        this.updatedBy = rs.getLong("updated_by");
+        this.updatedBy = rs.getObject("updated_by", Long.class);
     }
 
     public Long getId() {
@@ -183,16 +188,35 @@ public class RoomType {
         return this;
     }
 
+    // ===== SQL builders =====
+
     public static String findAllQuery() {
-        return "SELECT id, code, name, base_occupancy, max_occupancy, base_rate, hour_rate, extra_adult_fee, extra_child_fee, description, created_at, created_by, updated_at, updated_by FROM room_types";
+        return """
+                SELECT id, code, name, base_occupancy, max_occupancy,
+                       base_rate, hour_rate, extra_adult_fee, extra_child_fee,
+                       description, created_at, created_by, updated_at, updated_by
+                FROM room_types
+                """;
     }
 
     public static String findByIdQuery() {
-        return "SELECT id, code, name, base_occupancy, max_occupancy, base_rate, hour_rate, extra_adult_fee, extra_child_fee, description, created_at, created_by, updated_at, updated_by FROM room_types WHERE id = ?";
+        return """
+                SELECT id, code, name, base_occupancy, max_occupancy,
+                       base_rate, hour_rate, extra_adult_fee, extra_child_fee,
+                       description, created_at, created_by, updated_at, updated_by
+                FROM room_types
+                WHERE id = ?
+                """;
     }
 
+    // ✅ KHÔNG include created_at/updated_at để DB tự NOW()
     public static String insertQuery() {
-        return "INSERT INTO room_types (code, name, base_occupancy, max_occupancy, base_rate, hour_rate, extra_adult_fee, extra_child_fee, description, created_at, created_by, updated_at, updated_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        return """
+                INSERT INTO room_types
+                  (code, name, base_occupancy, max_occupancy, base_rate, hour_rate,
+                   extra_adult_fee, extra_child_fee, description, created_by, updated_by)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """;
     }
 
     public void setInsertParameters(PreparedStatement ps) throws SQLException {
@@ -205,22 +229,35 @@ public class RoomType {
         ps.setDouble(7, this.extraAdultFee);
         ps.setDouble(8, this.extraChildFee);
         ps.setString(9, this.description);
-        ps.setObject(10, this.createdAt);
-        if (this.createdBy != null) {
-            ps.setLong(11, this.createdBy);
-        } else {
+
+        if (this.createdBy != null)
+            ps.setLong(10, this.createdBy);
+        else
+            ps.setNull(10, java.sql.Types.BIGINT);
+
+        if (this.updatedBy != null)
+            ps.setLong(11, this.updatedBy);
+        else
             ps.setNull(11, java.sql.Types.BIGINT);
-        }
-        ps.setObject(12, this.updatedAt);
-        if (this.updatedBy != null) {
-            ps.setLong(13, this.updatedBy);
-        } else {
-            ps.setNull(13, java.sql.Types.BIGINT);
-        }
     }
 
+    // ✅ UPDATE: set updated_at = NOW(), không đụng created_*
     public static String updateQuery() {
-        return "UPDATE room_types SET code = ?, name = ?, base_occupancy = ?, max_occupancy = ?, base_rate = ?, hour_rate = ?, extra_adult_fee = ?, extra_child_fee = ?, description = ?, created_at = ?, created_by = ?, updated_at = ?, updated_by = ? WHERE id = ?";
+        return """
+                UPDATE room_types
+                   SET code = ?,
+                       name = ?,
+                       base_occupancy = ?,
+                       max_occupancy = ?,
+                       base_rate = ?,
+                       hour_rate = ?,
+                       extra_adult_fee = ?,
+                       extra_child_fee = ?,
+                       description = ?,
+                       updated_at = NOW(),
+                       updated_by = ?
+                 WHERE id = ?
+                """;
     }
 
     public void setUpdateParameters(PreparedStatement ps) throws SQLException {
@@ -233,19 +270,13 @@ public class RoomType {
         ps.setDouble(7, this.extraAdultFee);
         ps.setDouble(8, this.extraChildFee);
         ps.setString(9, this.description);
-        ps.setObject(10, this.createdAt);
-        if (this.createdBy != null) {
-            ps.setLong(11, this.createdBy);
-        } else {
-            ps.setNull(11, java.sql.Types.BIGINT);
-        }
-        ps.setObject(12, this.updatedAt);
-        if (this.updatedBy != null) {
-            ps.setLong(13, this.updatedBy);
-        } else {
-            ps.setNull(13, java.sql.Types.BIGINT);
-        }
-        ps.setLong(14, this.id);
+
+        if (this.updatedBy != null)
+            ps.setLong(10, this.updatedBy);
+        else
+            ps.setNull(10, java.sql.Types.BIGINT);
+
+        ps.setLong(11, this.id);
     }
 
     public static String deleteQuery() {
