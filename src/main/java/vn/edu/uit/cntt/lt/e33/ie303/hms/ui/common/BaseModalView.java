@@ -207,7 +207,7 @@ public abstract class BaseModalView extends JDialog {
         }
     }
 
-    protected void showStyledError(String message, String title) {
+    public void showStyledError(String message, String title) {
         JDialog errorDialog = new JDialog(this, title, true);
         errorDialog.setLayout(new BorderLayout());
         errorDialog.getContentPane().setBackground(Color.WHITE);
