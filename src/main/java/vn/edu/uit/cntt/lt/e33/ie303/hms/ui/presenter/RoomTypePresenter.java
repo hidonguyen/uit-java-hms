@@ -24,13 +24,11 @@ public class RoomTypePresenter {
         this.modal = new CreateOrEditRoomTypeModal(parentFrame);
         this.service = DIContainer.getInstance().getRoomTypeService();
 
-        // Add
         this.view.onAdd(_ -> {
             modal.setModel(null);
             modal.setVisible(true);
         });
 
-        // Edit
         this.view.onEdit(_ -> {
             int selectedRow = view.getSelectedRow();
             if (selectedRow >= 0 && selectedRow < roomTypes.size()) {
@@ -40,7 +38,6 @@ public class RoomTypePresenter {
             }
         });
 
-        // Delete
         this.view.onDelete(_ -> {
             int selectedRow = view.getSelectedRow();
             if (selectedRow >= 0 && selectedRow < roomTypes.size()) {
@@ -73,7 +70,6 @@ public class RoomTypePresenter {
             }
         });
 
-        // Search
         this.view.onSearch(_ -> {
             String q = view.getSearchQuery();
             if (q == null || q.isEmpty()) {
@@ -88,7 +84,6 @@ public class RoomTypePresenter {
             }
         });
 
-        // Modal save
         this.modal.onSave(_ -> {
             if (!modal.isValidInput())
                 return;

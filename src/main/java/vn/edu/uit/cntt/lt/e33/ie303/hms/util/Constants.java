@@ -84,6 +84,7 @@ public class Constants {
         // Guest
         public static final String GUEST_NAME_CANNOT_BE_EMPTY = "Guest name cannot be empty";
         public static final String GUEST_PHONE_INVALID = "Guest phone number is invalid";
+        public static final String GUEST_EMAIL_INVALID = "Guest email is invalid";
     }
 
     // ===================== SUCCESS MESSAGE =====================

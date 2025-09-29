@@ -46,7 +46,6 @@ public class ServiceService implements IServiceService {
 
     @Override
     public Integer delete(Long id) {
-        // TODO: Check foreign key constraints before delete nếu cần
         return repo.delete(id);
     }
 }

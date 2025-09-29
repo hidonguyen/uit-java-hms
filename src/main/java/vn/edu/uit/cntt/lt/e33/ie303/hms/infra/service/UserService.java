@@ -39,8 +39,8 @@ public class UserService implements IUserService {
                     Constants.ErrorMessage.USER_PASSWORD_IS_INCORRECT);
         }
 
-        user.setLastLoginAt(OffsetDateTime.now());
-        repo.update(user);
+        // user.setLastLoginAt(OffsetDateTime.now());
+        // repo.update(user);
         
         return user;
     }
@@ -74,7 +74,6 @@ public class UserService implements IUserService {
 
     @Override
     public Integer delete(Long id) {
-        // TODO: Check foreign key constraints
         return repo.delete(id);
     }
 }

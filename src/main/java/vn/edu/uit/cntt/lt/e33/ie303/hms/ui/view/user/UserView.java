@@ -1,105 +1,62 @@
 package vn.edu.uit.cntt.lt.e33.ie303.hms.ui.view.user;
 
-import java.awt.*;
-import java.awt.event.ActionListener;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.table.TableModel;
+import java.awt.Color;
+import java.awt.Component;
 
+import javax.swing.JButton;
+import javax.swing.JPanel;
+
+import vn.edu.uit.cntt.lt.e33.ie303.hms.ui.common.BaseTableView;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.util.Constants;
 
-public class UserView extends JPanel {
-    private final JTable table = new JTable();
+public class UserView extends BaseTableView {
 
-    private final JButton addBtn = new JButton("Add");
-    private final JButton editBtn = new JButton("Edit");
-    private final JButton deleteBtn = new JButton("Delete");
-    private final JButton resetPasswordBtn = new JButton("Reset Password");
+    private JButton resetPasswordBtn;
 
-    private final JTextField searchField = new JTextField(20);
-    private final JButton searchBtn = new JButton("Search");
-
-    private int selectedRow = -1;
-
-    public UserView() {
-        super(new BorderLayout());
-
-        JPanel top = new JPanel(new GridLayout(1, 2));
-        JPanel topLeft = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        topLeft.add(addBtn);
-        topLeft.add(editBtn);
-        topLeft.add(deleteBtn);
-        topLeft.add(resetPasswordBtn);
-        top.add(topLeft);
-
-        JPanel topRight = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        topRight.add(searchField);
-        topRight.add(searchBtn);
-        top.add(topRight);
-        add(top, BorderLayout.NORTH);
-
-        table.setShowGrid(true);
-        table.setAutoCreateRowSorter(true);
-        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting()) {
-                    selectedRow = table.getSelectedRow();
-                    boolean rowSelected = selectedRow >= 0;
-                    editBtn.setEnabled(rowSelected);
-                    deleteBtn.setEnabled(rowSelected);
-                    resetPasswordBtn.setEnabled(rowSelected);
-                }
-            }
-        });
-
-        add(new JScrollPane(table), BorderLayout.CENTER);
+    @Override
+    protected String getModuleName() {
+        return "User";
     }
 
-    public void setTableModel(TableModel model) {
-        table.setModel(model);
-        table.clearSelection();
-        selectedRow = -1;
-        editBtn.setEnabled(false);
-        deleteBtn.setEnabled(false);
+    @Override
+    protected String getAddButtonText() {
+        return "+ Add User";
+    }
+
+    @Override
+    protected String getSearchPlaceholder() {
+        return "Search users...";
+    }
+
+    @Override
+    protected String getErrorTitle() {
+        return Constants.ErrorTitle.USER;
+    }
+
+    @Override
+    protected void onInitExtraActions(JPanel actionPanel) {
+        resetPasswordBtn = createModernButton("Reset Password", new Color(234, 179, 8), Color.WHITE);
         resetPasswordBtn.setEnabled(false);
+        actionPanel.add(createSpacer(10));
+        actionPanel.add(resetPasswordBtn);
     }
 
-    public void onAdd(ActionListener l) {
-        addBtn.addActionListener(l);
+    @Override
+    protected void onRowSelectionChanged(boolean rowSelected) {
+        if (resetPasswordBtn != null) {
+            resetPasswordBtn.setEnabled(rowSelected);
+            resetPasswordBtn.setOpaque(rowSelected);
+            resetPasswordBtn.repaint();
+        }
     }
 
-    public void onEdit(ActionListener l) {
-        editBtn.addActionListener(l);
+    private Component createSpacer(int width) {
+        return javax.swing.Box.createHorizontalStrut(width);
     }
 
-    public void onDelete(ActionListener l) {
-        deleteBtn.addActionListener(l);
-    }
-
-    public void onResetPassword(ActionListener l) {
-        resetPasswordBtn.addActionListener(l);
-    }
-
-    public void onSearch(ActionListener l) {
-        searchBtn.addActionListener(l);
-    }
-
-    public String getSearchQuery() {
-        return searchField.getText().trim();
-    }
-
-    public int getSelectedRow() {
-        return selectedRow;
-    }
-
-    public void showErrorMessage(String message) {
-        JOptionPane.showMessageDialog(this, message, "Error - " + Constants.ErrorTitle.USER, JOptionPane.ERROR_MESSAGE);
-    }
-
-    public void showSuccessMessage(String message) {
-        JOptionPane.showMessageDialog(this, message, "Success - " + Constants.ErrorTitle.USER,
-                JOptionPane.INFORMATION_MESSAGE);
+    public void onResetPassword(java.awt.event.ActionListener l) {
+        if (resetPasswordBtn != null) {
+            resetPasswordBtn.addActionListener(l);
+        }
     }
 }

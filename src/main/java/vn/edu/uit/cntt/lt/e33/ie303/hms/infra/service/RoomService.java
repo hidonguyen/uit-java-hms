@@ -46,7 +46,6 @@ public class RoomService implements IRoomService {
 
     @Override
     public Integer delete(Long id) {
-        // TODO: check ràng buộc FK nếu cần (room đã có booking thì không cho xóa)
         return repo.delete(id);
     }
 }
