@@ -257,12 +257,14 @@ private Long id;
                 b.room_id, r.name AS room_name, b.room_type_id, rt.name AS room_type_name,
                 b.primary_guest_id, g.name AS primary_guest_name, g.phone AS primary_guest_phone,
                 b.num_adults, b.num_children,
+                rbd.total_amount AS total_room_charges,
+				sbd.total_amount AS total_service_charges,
                 b.status, b.payment_status,
                 b.notes,
-                b.created_at, b.created_by, b.updated_at, b.updated_by,
-                bd.*
+                b.created_at, b.created_by, b.updated_at, b.updated_by
             FROM bookings b
-                JOIN booking_details bd ON b.id = bd.booking_id
+				JOIN (SELECT booking_id, SUM(amount) AS total_amount FROM booking_details rbd WHERE rbd.Type = 'Room' GROUP BY booking_id) rbd ON b.id = rbd.booking_id
+				JOIN (SELECT booking_id, SUM(amount) AS total_amount FROM booking_details sbd WHERE sbd.Type != 'Room' GROUP BY booking_id) sbd ON b.id = sbd.booking_id
                 JOIN guests g ON b.primary_guest_id = g.id
                 JOIN rooms r ON b.room_id = r.id
                 JOIN room_types rt ON b.room_type_id = rt.id

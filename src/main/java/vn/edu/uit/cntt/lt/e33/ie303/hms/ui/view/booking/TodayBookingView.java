@@ -3,24 +3,31 @@ package vn.edu.uit.cntt.lt.e33.ie303.hms.ui.view.booking;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+
 import javax.swing.*;
 
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.dto.TodayBooking;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.util.Constants;
 
 public class TodayBookingView extends JPanel {
+
+    private JScrollPane roomCardsScrollPane;
+    private JPanel cardsPanel;
+
+    private ArrayList<TodayBooking> bookings;
     
     public TodayBookingView() {
         super(new BorderLayout());
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
+        createRoomCardsScrollPane();
         // Header
         JPanel headerPanel = createHeaderPanel();
-        
-        // Main content with scrollable room cards
-        JScrollPane scrollPane = createRoomCardsScrollPane();
 
         add(headerPanel, BorderLayout.NORTH);
-        add(scrollPane, BorderLayout.CENTER);
+        add(roomCardsScrollPane, BorderLayout.CENTER);
     }
 
     private JPanel createHeaderPanel() {
@@ -44,38 +51,19 @@ public class TodayBookingView extends JPanel {
     }
 
     private JScrollPane createRoomCardsScrollPane() {
-        JPanel cardsPanel = new JPanel();
+        cardsPanel = new JPanel();
         cardsPanel.setLayout(new GridLayout(0, 3, 15, 15)); // 3 columns, dynamic rows
         cardsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
-        // Sample data - replace with actual data from your booking service
-        addSampleBookings(cardsPanel);
+        roomCardsScrollPane = new JScrollPane(cardsPanel);
+        roomCardsScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        roomCardsScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        roomCardsScrollPane.getVerticalScrollBar().setUnitIncrement(16);
         
-        JScrollPane scrollPane = new JScrollPane(cardsPanel);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-        
-        return scrollPane;
+        return roomCardsScrollPane;
     }
 
-    private void addSampleBookings(JPanel cardsPanel) {
-        // Sample bookings - replace with actual data
-        BookingInfo[] sampleBookings = {
-            new BookingInfo("101", "John Smith", "Premium Suite", "10:30 AM", "$450.00"),
-            new BookingInfo("205", "Maria Garcia", "Deluxe Room", "2:15 PM", "$280.00"),
-            new BookingInfo("312", "David Johnson", "Standard Room", "11:45 AM", "$180.00"),
-            new BookingInfo("208", "Sarah Wilson", "Executive Suite", "9:20 AM", "$520.00"),
-            new BookingInfo("156", "Michael Brown", "Deluxe Room", "1:10 PM", "$280.00"),
-            new BookingInfo("304", "Emma Davis", "Standard Room", "3:30 PM", "$180.00")
-        };
-        
-        for (BookingInfo booking : sampleBookings) {
-            cardsPanel.add(createRoomCard(booking));
-        }
-    }
-
-    private JPanel createRoomCard(BookingInfo booking) {
+    private JPanel createRoomCard(TodayBooking booking) {
         JPanel card = new JPanel();
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setBorder(BorderFactory.createCompoundBorder(
@@ -84,37 +72,39 @@ public class TodayBookingView extends JPanel {
         ));
         card.setBackground(Color.WHITE);
         card.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
         
         // Room number (header)
-        JLabel roomLabel = new JLabel("Room " + booking.roomNumber);
-        roomLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 18));
+        JLabel roomLabel = new JLabel("Room " + booking.getRoomName());
         roomLabel.setForeground(new Color(0, 123, 255));
         roomLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         
         // Guest name
-        JLabel guestLabel = new JLabel(booking.guestName);
-        guestLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+        JLabel guestLabel = new JLabel(booking.getPrimaryGuestName());
         guestLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         guestLabel.setBorder(BorderFactory.createEmptyBorder(8, 0, 0, 0));
         
         // Room type
-        JLabel roomTypeLabel = new JLabel(booking.roomType);
-        roomTypeLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
+        JLabel roomTypeLabel = new JLabel(booking.getRoomTypeName());
         roomTypeLabel.setForeground(Color.GRAY);
         roomTypeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         
         // Check-in time
-        JPanel timePanel = createInfoRow("Check-in:", booking.checkInTime);
-        
-        // Estimated charges
-        JPanel chargePanel = createInfoRow("Charges:", booking.estimatedCharges);
-        JLabel chargeValue = (JLabel) chargePanel.getComponent(1);
-        chargeValue.setForeground(new Color(0, 150, 0));
-        chargeValue.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
+        JPanel checkInTimePanel = createInfoRow("Check-in:", booking.getCheckin().format(DateTimeFormatter.ofPattern(Constants.DateTimeFormat.ddMMyyyyHHmm)));
+        JPanel checkOutTimePanel = createInfoRow("Check-out:", booking.getCheckout() == null ? "" : booking.getCheckout().format(DateTimeFormatter.ofPattern(Constants.DateTimeFormat.ddMMyyyyHHmm)));
+
+        // Room charges
+        JPanel roomChargePanel = createInfoRow("Room Charges:", booking.getTotalRoomCharges().toString());
+        JLabel roomChargeValue = (JLabel) roomChargePanel.getComponent(1);
+        roomChargeValue.setForeground(new Color(0, 150, 0));
+
+        // Service charges
+        JPanel serviceChargePanel = createInfoRow("Service Charges:", booking.getTotalServiceCharges().toString());
+        JLabel serviceChargeValue = (JLabel) serviceChargePanel.getComponent(1);
+        serviceChargeValue.setForeground(new Color(0, 150, 0));
         
         // Status indicator
         JLabel statusLabel = new JLabel("● Occupied");
-        statusLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
         statusLabel.setForeground(new Color(255, 140, 0));
         statusLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         
@@ -122,8 +112,10 @@ public class TodayBookingView extends JPanel {
         card.add(guestLabel);
         card.add(roomTypeLabel);
         card.add(Box.createVerticalStrut(10));
-        card.add(timePanel);
-        card.add(chargePanel);
+        card.add(checkInTimePanel);
+        card.add(checkOutTimePanel);
+        card.add(roomChargePanel);
+        card.add(serviceChargePanel);
         card.add(Box.createVerticalStrut(8));
         card.add(statusLabel);
         
@@ -131,7 +123,7 @@ public class TodayBookingView extends JPanel {
         card.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                showBookingDetailDialog(booking);
+                // showBookingDetailDialog(booking);
             }
             
             @Override
@@ -161,11 +153,9 @@ public class TodayBookingView extends JPanel {
         panel.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 0));
         
         JLabel labelComp = new JLabel(label);
-        labelComp.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
         labelComp.setForeground(Color.GRAY);
         
         JLabel valueComp = new JLabel(value);
-        valueComp.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
         
         panel.add(labelComp, BorderLayout.WEST);
         panel.add(valueComp, BorderLayout.EAST);
@@ -184,7 +174,6 @@ public class TodayBookingView extends JPanel {
         
         // Header
         JLabel headerLabel = new JLabel(booking == null ? "Create New Booking" : "Booking Details - Room " + booking.roomNumber);
-        headerLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 18));
         headerLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
         
         // Main content panel
@@ -252,8 +241,7 @@ public class TodayBookingView extends JPanel {
         panel.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createTitledBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)), 
                                            "General Information", 
-                                           0, 0, 
-                                           new Font(Font.SANS_SERIF, Font.BOLD, 14)),
+                                           0, 0, null),
             BorderFactory.createEmptyBorder(10, 15, 15, 15)
         ));
         
@@ -298,8 +286,7 @@ public class TodayBookingView extends JPanel {
         panel.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createTitledBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)), 
                                            "Services & Add-ons", 
-                                           0, 0, 
-                                           new Font(Font.SANS_SERIF, Font.BOLD, 14)),
+                                           0, 0, null),
             BorderFactory.createEmptyBorder(10, 15, 15, 15)
         ));
         
@@ -338,8 +325,6 @@ public class TodayBookingView extends JPanel {
         };
         
         servicesTable.setRowHeight(30);
-        servicesTable.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
-        servicesTable.getTableHeader().setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
         servicesTable.getTableHeader().setBackground(new Color(248, 249, 250));
         servicesTable.setSelectionBackground(new Color(230, 240, 255));
         
@@ -394,12 +379,10 @@ public class TodayBookingView extends JPanel {
         gbc.gridy = 3;
         gbc.gridx = 0;
         JLabel totalLabel = new JLabel("Total Amount:");
-        totalLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
         rightPanel.add(totalLabel, gbc);
         
         gbc.gridx = 1;
         JLabel totalValue = new JLabel("$599.50");
-        totalValue.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
         totalValue.setForeground(new Color(0, 123, 255));
         rightPanel.add(totalValue, gbc);
         
@@ -411,12 +394,10 @@ public class TodayBookingView extends JPanel {
         gbc.gridy = row;
         gbc.gridx = 0;
         JLabel labelComp = new JLabel(label);
-        labelComp.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
         panel.add(labelComp, gbc);
         
         gbc.gridx = 1;
         JLabel valueComp = new JLabel(value);
-        valueComp.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
         panel.add(valueComp, gbc);
     }
 
@@ -427,7 +408,6 @@ public class TodayBookingView extends JPanel {
         gbc.fill = GridBagConstraints.NONE;
         
         JLabel label = new JLabel(labelText);
-        label.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 13));
         panel.add(label, gbc);
         
         gbc.gridx = 1;
@@ -435,7 +415,6 @@ public class TodayBookingView extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         
         JTextField field = new JTextField(value, 15);
-        field.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 13));
         field.setPreferredSize(new Dimension(150, 25));
         panel.add(field, gbc);
     }
@@ -492,7 +471,6 @@ public class TodayBookingView extends JPanel {
             setForeground(Color.WHITE);
             setFocusPainted(false);
             setBorderPainted(false);
-            setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 11));
         }
         
         @Override
@@ -514,7 +492,6 @@ public class TodayBookingView extends JPanel {
             button.setForeground(Color.WHITE);
             button.setFocusPainted(false);
             button.setBorderPainted(false);
-            button.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 11));
             button.addActionListener(e -> fireEditingStopped());
         }
         
@@ -558,7 +535,10 @@ public class TodayBookingView extends JPanel {
     }
 
     public void setBookings(java.util.ArrayList<TodayBooking> bookings) {
-        // This method can be used to set actual booking data from the service
-        // For now, it does nothing as we are using sample data
+        this.bookings = bookings;
+
+        for (TodayBooking booking : this.bookings) {
+            cardsPanel.add(createRoomCard(booking));
+        }
     }
 }
