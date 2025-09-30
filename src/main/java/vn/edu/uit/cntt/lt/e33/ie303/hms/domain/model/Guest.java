@@ -20,7 +20,7 @@ public class Guest {
     private String description;
     private OffsetDateTime createdAt;
     private Long createdBy;
-    private OffsetDateTime updatedAt; 
+    private OffsetDateTime updatedAt;
     private Long updatedBy;
 
     public Guest() {
@@ -66,6 +66,7 @@ public class Guest {
         this.updatedBy = rs.getObject("updated_by", Long.class);
     }
 
+    // ===== getters / setters =====
     public Long getId() {
         return id;
     }
@@ -183,6 +184,8 @@ public class Guest {
         return this;
     }
 
+    // ===== SQL builders =====
+
     public static String findAllQuery() {
         return """
                 SELECT id, name, gender, date_of_birth, nationality, phone, email, address, description,
@@ -200,6 +203,7 @@ public class Guest {
                 """;
     }
 
+    // ✅ KHÔNG chèn created_at / updated_at để DB tự NOW()
     public static String insertQuery() {
         return """
                 INSERT INTO guests
@@ -238,6 +242,7 @@ public class Guest {
             ps.setNull(10, java.sql.Types.BIGINT);
     }
 
+    // ✅ Không đụng created_at/created_by; updated_at set NOW() trong SQL
     public static String updateQuery() {
         return """
                 UPDATE guests

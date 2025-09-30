@@ -143,6 +143,8 @@ public class Service {
         return this;
     }
 
+    // ================== Queries ==================
+
     public static String findAllQuery() {
         return "SELECT id, name, unit, price, description, status, created_at, created_by, updated_at, updated_by " +
                 "FROM services ORDER BY id";
@@ -153,6 +155,7 @@ public class Service {
                 "FROM services WHERE id = ?";
     }
 
+    // Insert: để DB tự set created_at/updated_at bằng DEFAULT NOW()
     public static String insertQuery() {
         return "INSERT INTO services (name, unit, price, description, status, created_by, updated_by) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -174,6 +177,7 @@ public class Service {
             ps.setNull(7, java.sql.Types.BIGINT);
     }
 
+    // Update: không đụng created_at/created_by; updated_at = NOW()
     public static String updateQuery() {
         return "UPDATE services " +
                 "SET name = ?, unit = ?, price = ?, description = ?, status = ?, updated_at = NOW(), updated_by = ? " +
