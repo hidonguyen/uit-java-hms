@@ -74,7 +74,6 @@ public class UserService implements IUserService {
 
     @Override
     public Integer delete(Long id) {
-        // TODO: Check foreign key constraints
         return repo.delete(id);
     }
 }
