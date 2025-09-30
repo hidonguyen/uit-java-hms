@@ -7,7 +7,7 @@ import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.BookingChargeType;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.BookingStatus;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.PaymentStatus;
 
-public class TodayBooking {
+public class TodayBookingDto {
     private Long id;
     private String bookingNo;
     private BookingChargeType chargeType;
@@ -32,9 +32,9 @@ public class TodayBooking {
     private OffsetDateTime updatedAt;
     private Long updatedBy;
 
-    public TodayBooking() {}
+    public TodayBookingDto() {}
 
-    public TodayBooking(ResultSet rs) throws SQLException {
+    public TodayBookingDto(ResultSet rs) throws SQLException {
         this.id = rs.getLong("id");
         this.bookingNo = rs.getString("booking_no");
         this.chargeType = BookingChargeType.valueOf(rs.getString("charge_type"));

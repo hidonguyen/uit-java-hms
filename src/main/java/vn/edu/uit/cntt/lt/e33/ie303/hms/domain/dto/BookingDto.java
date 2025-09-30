@@ -1,4 +1,4 @@
-package vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model;
+package vn.edu.uit.cntt.lt.e33.ie303.hms.domain.dto;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -6,83 +6,48 @@ import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.BookingChargeType;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.BookingStatus;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.PaymentStatus;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.BookingDetail;
 
-public class Booking {
-private Long id;
+public class BookingDto {
+    private Long id;
     private String bookingNo;
     private BookingChargeType chargeType;
     private OffsetDateTime checkin;
     private OffsetDateTime checkout;
     private Long roomId;
+    private String roomName;
     private Long roomTypeId;
+    private String roomTypeName;
     private Long primaryGuestId;
+    private String primaryGuestName;
+    private String primaryGuestPhone;
+    private String primaryGuestEmail;
     private int numAdults;
     private int numChildren;
     private BookingStatus status;
     private PaymentStatus paymentStatus;
     private String notes;
+    private Double totalRoomCharges;
+    private Double totalServiceCharges;
     private OffsetDateTime createdAt;
     private Long createdBy;
     private OffsetDateTime updatedAt;
     private Long updatedBy;
 
-    private ArrayList<BookingDetail> bookingDetails;
+    private ArrayList<BookingDetailDto> bookingDetails;
 
-    public Booking() {}
-
-    public Booking(Long id, String bookingNo, BookingChargeType chargeType, OffsetDateTime checkin, OffsetDateTime checkout, Long roomId, Long roomTypeId, Long primaryGuestId, int numAdults, int numChildren, BookingStatus status, PaymentStatus paymentStatus, String notes, OffsetDateTime createdAt, Long createdBy, OffsetDateTime updatedAt, Long updatedBy) {
-        this.id = id;
-        this.bookingNo = bookingNo;
-        this.chargeType = chargeType;
-        this.checkin = checkin;
-        this.checkout = checkout;
-        this.roomId = roomId;
-        this.roomTypeId = roomTypeId;
-        this.primaryGuestId = primaryGuestId;
-        this.numAdults = numAdults;
-        this.numChildren = numChildren;
-        this.status = status;
-        this.paymentStatus = paymentStatus;
-        this.notes = notes;
-        this.createdAt = createdAt;
-        this.createdBy = createdBy;
-        this.updatedAt = updatedAt;
-        this.updatedBy = updatedBy;
-
-        this.bookingDetails = new ArrayList<>();
-    }
-
-    public Booking(ResultSet rs) throws SQLException {
-        this.id = rs.getLong("id");
-        this.bookingNo = rs.getString("booking_no");
-        this.chargeType = BookingChargeType.valueOf(rs.getString("charge_type"));
-        this.checkin = rs.getObject("checkin", OffsetDateTime.class);
-        this.checkout = rs.getObject("checkout", OffsetDateTime.class);
-        this.roomId = rs.getObject("room_id") != null ? rs.getLong("room_id") : null;
-        this.roomTypeId = rs.getObject("room_type_id") != null ? rs.getLong("room_type_id") : null;
-        this.primaryGuestId = rs.getObject("primary_guest_id") != null ? rs.getLong("primary_guest_id") : null;
-        this.numAdults = rs.getInt("num_adults");
-        this.numChildren = rs.getInt("num_children");
-        this.status = BookingStatus.valueOf(rs.getString("status"));
-        this.paymentStatus = PaymentStatus.valueOf(rs.getString("payment_status"));
-        this.notes = rs.getString("notes");
-        this.createdAt = rs.getObject("created_at", OffsetDateTime.class);
-        this.createdBy = rs.getObject("created_by") != null ? rs.getLong("created_by") : null;
-        this.updatedAt = rs.getObject("updated_at", OffsetDateTime.class);
-        this.updatedBy = rs.getObject("updated_by") != null ? rs.getLong("updated_by") : null;
-
-        this.bookingDetails = new ArrayList<>();
-    }
+    public BookingDto() {}
 
     public Long getId() {
         return id;
     }
 
-    public Booking setId(Long id) {
+    public BookingDto setId(Long id) {
         this.id = id;
         return this;
     }
@@ -91,7 +56,7 @@ private Long id;
         return bookingNo;
     }
 
-    public Booking setBookingNo(String bookingNo) {
+    public BookingDto setBookingNo(String bookingNo) {
         this.bookingNo = bookingNo;
         return this;
     }
@@ -100,7 +65,7 @@ private Long id;
         return chargeType;
     }
 
-    public Booking setChargeType(BookingChargeType chargeType) {
+    public BookingDto setChargeType(BookingChargeType chargeType) {
         this.chargeType = chargeType;
         return this;
     }
@@ -109,7 +74,7 @@ private Long id;
         return checkin;
     }
 
-    public Booking setCheckin(OffsetDateTime checkin) {
+    public BookingDto setCheckin(OffsetDateTime checkin) {
         this.checkin = checkin;
         return this;
     }
@@ -118,7 +83,7 @@ private Long id;
         return checkout;
     }
 
-    public Booking setCheckout(OffsetDateTime checkout) {
+    public BookingDto setCheckout(OffsetDateTime checkout) {
         this.checkout = checkout;
         return this;
     }
@@ -127,8 +92,17 @@ private Long id;
         return roomId;
     }
 
-    public Booking setRoomId(Long roomId) {
+    public BookingDto setRoomId(Long roomId) {
         this.roomId = roomId;
+        return this;
+    }
+
+    public String getRoomName() {
+        return roomName;
+    }
+
+    public BookingDto setRoomName(String roomName) {
+        this.roomName = roomName;
         return this;
     }
 
@@ -136,8 +110,17 @@ private Long id;
         return roomTypeId;
     }
 
-    public Booking setRoomTypeId(Long roomTypeId) {
+    public BookingDto setRoomTypeId(Long roomTypeId) {
         this.roomTypeId = roomTypeId;
+        return this;
+    }
+
+    public String getRoomTypeName() {
+        return roomTypeName;
+    }
+
+    public BookingDto setRoomTypeName(String roomTypeName) {
+        this.roomTypeName = roomTypeName;
         return this;
     }
 
@@ -145,8 +128,35 @@ private Long id;
         return primaryGuestId;
     }
 
-    public Booking setPrimaryGuestId(Long primaryGuestId) {
+    public BookingDto setPrimaryGuestId(Long primaryGuestId) {
         this.primaryGuestId = primaryGuestId;
+        return this;
+    }
+
+    public String getPrimaryGuestName() {
+        return primaryGuestName;
+    }
+
+    public BookingDto setPrimaryGuestName(String primaryGuestName) {
+        this.primaryGuestName = primaryGuestName;
+        return this;
+    }
+
+    public String getPrimaryGuestPhone() {
+        return primaryGuestPhone;
+    }
+
+    public BookingDto setPrimaryGuestPhone(String primaryGuestPhone) {
+        this.primaryGuestPhone = primaryGuestPhone;
+        return this;
+    }
+
+    public String getPrimaryGuestEmail() {
+        return primaryGuestEmail;
+    }
+
+    public BookingDto setPrimaryGuestEmail(String primaryGuestEmail) {
+        this.primaryGuestEmail = primaryGuestEmail;
         return this;
     }
 
@@ -154,7 +164,7 @@ private Long id;
         return numAdults;
     }
 
-    public Booking setNumAdults(int numAdults) {
+    public BookingDto setNumAdults(int numAdults) {
         this.numAdults = numAdults;
         return this;
     }
@@ -163,7 +173,7 @@ private Long id;
         return numChildren;
     }
 
-    public Booking setNumChildren(int numChildren) {
+    public BookingDto setNumChildren(int numChildren) {
         this.numChildren = numChildren;
         return this;
     }
@@ -172,7 +182,7 @@ private Long id;
         return status;
     }
 
-    public Booking setStatus(BookingStatus status) {
+    public BookingDto setStatus(BookingStatus status) {
         this.status = status;
         return this;
     }
@@ -181,7 +191,7 @@ private Long id;
         return paymentStatus;
     }
 
-    public Booking setPaymentStatus(PaymentStatus paymentStatus) {
+    public BookingDto setPaymentStatus(PaymentStatus paymentStatus) {
         this.paymentStatus = paymentStatus;
         return this;
     }
@@ -190,8 +200,26 @@ private Long id;
         return notes;
     }
 
-    public Booking setNotes(String notes) {
+    public BookingDto setNotes(String notes) {
         this.notes = notes;
+        return this;
+    }
+
+    public Double getTotalRoomCharges() {
+        return totalRoomCharges;
+    }
+
+    public BookingDto setTotalRoomCharges(Double totalRoomCharges) {
+        this.totalRoomCharges = totalRoomCharges;
+        return this;
+    }
+
+    public Double getTotalServiceCharges() {
+        return totalServiceCharges;
+    }
+
+    public BookingDto setTotalServiceCharges(Double totalServiceCharges) {
+        this.totalServiceCharges = totalServiceCharges;
         return this;
     }
 
@@ -199,7 +227,7 @@ private Long id;
         return createdAt;
     }
 
-    public Booking setCreatedAt(OffsetDateTime createdAt) {
+    public BookingDto setCreatedAt(OffsetDateTime createdAt) {
         this.createdAt = createdAt;
         return this;
     }
@@ -208,7 +236,7 @@ private Long id;
         return createdBy;
     }
 
-    public Booking setCreatedBy(Long createdBy) {
+    public BookingDto setCreatedBy(Long createdBy) {
         this.createdBy = createdBy;
         return this;
     }
@@ -217,7 +245,7 @@ private Long id;
         return updatedAt;
     }
 
-    public Booking setUpdatedAt(OffsetDateTime updatedAt) {
+    public BookingDto setUpdatedAt(OffsetDateTime updatedAt) {
         this.updatedAt = updatedAt;
         return this;
     }
@@ -226,24 +254,38 @@ private Long id;
         return updatedBy;
     }
 
-    public Booking setUpdatedBy(Long updatedBy) {
+    public BookingDto setUpdatedBy(Long updatedBy) {
         this.updatedBy = updatedBy;
         return this;
     }
 
-    public ArrayList<BookingDetail> getBookingDetails() {
+    public ArrayList<BookingDetailDto> getBookingDetails() {
+        if (bookingDetails == null) {
+            bookingDetails = new ArrayList<>();
+        }
         return bookingDetails;
     }
 
-    public Booking setBookingDetails(List<BookingDetail> bookingDetails) {
-        this.bookingDetails = new ArrayList<>(bookingDetails);
-        return this;
-    }
-    public Booking addBookingDetail(BookingDetail bookingDetail) {
-        try {
-            this.bookingDetails.add(bookingDetail);
-        } catch (Exception e) {
-            e.printStackTrace();
+    public BookingDto setBookingDetails(List<BookingDetail> bookingDetails) {
+        this.bookingDetails = new ArrayList<>();
+        if (bookingDetails != null) {
+            for (BookingDetail detail : bookingDetails) {
+                this.bookingDetails.add(new BookingDetailDto()
+                        .setId(detail.getId())
+                        .setBookingId(detail.getBookingId())
+                        .setType(detail.getType())
+                        .setServiceId(detail.getServiceId())
+                        .setIssuedAt(detail.getIssuedAt())
+                        .setDescription(detail.getDescription())
+                        .setQuantity(detail.getQuantity())
+                        .setUnitPrice(detail.getUnitPrice())
+                        .setDiscountAmount(detail.getDiscountAmount())
+                        .setAmount(detail.getAmount())
+                        .setCreatedAt(detail.getCreatedAt())
+                        .setCreatedBy(detail.getCreatedBy())
+                        .setUpdatedAt(detail.getUpdatedAt())
+                        .setUpdatedBy(detail.getUpdatedBy()));
+            }
         }
         return this;
     }

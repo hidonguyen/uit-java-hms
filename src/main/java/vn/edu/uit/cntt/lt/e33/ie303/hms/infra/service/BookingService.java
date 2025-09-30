@@ -6,7 +6,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
-import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.dto.TodayBooking;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.dto.TodayBookingDto;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.Booking;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.repository.IBookingDetailRepository;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.repository.IBookingRepository;
@@ -29,7 +29,9 @@ public class BookingService implements IBookingService {
 
     @Override
     public Booking findById(Long id) {
-        return bookingRepository.findById(id);
+        Booking booking = bookingRepository.findById(id);
+        booking.setBookingDetails(bookingDetailRepository.findAllByBookingId(id));
+        return booking;
     }
 
     @Override
@@ -55,7 +57,7 @@ public class BookingService implements IBookingService {
     }
 
     @Override
-    public ArrayList<TodayBooking> findTodayBookings() {
+    public ArrayList<TodayBookingDto> findTodayBookings() {
         return bookingRepository.findTodayBookings();
     }
 }

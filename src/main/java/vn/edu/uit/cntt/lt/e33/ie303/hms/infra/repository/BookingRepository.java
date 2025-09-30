@@ -1,6 +1,6 @@
 package vn.edu.uit.cntt.lt.e33.ie303.hms.infra.repository;
 
-import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.dto.TodayBooking;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.dto.TodayBookingDto;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.Booking;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.repository.IBookingRepository;
 
@@ -85,13 +85,13 @@ public class BookingRepository implements IBookingRepository {
     }
 
     @Override
-    public ArrayList<TodayBooking> findTodayBookings() {
-        ArrayList<TodayBooking> todayBookings = new ArrayList<>();
+    public ArrayList<TodayBookingDto> findTodayBookings() {
+        ArrayList<TodayBookingDto> todayBookings = new ArrayList<>();
         try (Connection connection = ds.getConnection();
              PreparedStatement query = connection.prepareStatement(Booking.findTodayBookingsIncludeDetailsQuery());
                 ResultSet rs = query.executeQuery()) {
             while (rs.next()) {
-                todayBookings.add(new TodayBooking(rs));
+                todayBookings.add(new TodayBookingDto(rs));
             }
             return todayBookings;
         } catch (Exception e) {

@@ -8,17 +8,27 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 
-import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.dto.TodayBooking;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.dto.BookingDetailDto;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.dto.BookingDto;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.dto.GuestItem;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.dto.RoomItem;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.dto.ServiceItem;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.dto.TodayBookingDto;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.BookingChargeType;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.BookingDetailType;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.BookingStatus;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.PaymentMethod;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.ui.presenter.BookingPresenter;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.util.Constants;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.util.WrapLayout;
 
 public class TodayBookingView extends JPanel {
+    private BookingPresenter presenter;
 
     private JScrollPane roomCardsScrollPane;
     private JPanel cardsPanel;
 
-    private ArrayList<TodayBooking> bookings;
+    private ArrayList<TodayBookingDto> bookings;
 
     public TodayBookingView() {
         super(new BorderLayout());
@@ -33,10 +43,19 @@ public class TodayBookingView extends JPanel {
         newBookingBtn.setFocusPainted(false);
         newBookingBtn.setBorderPainted(false);
         newBookingBtn.setPreferredSize(new Dimension(150, 40));
-        newBookingBtn.addActionListener(_ -> showBookingDetailDialog(null));
+        newBookingBtn.addActionListener(_ -> showBookingDetailDialog((BookingDto) null));
+
+        JButton refreshBtn = new JButton("⟳ Refresh");
+        refreshBtn.setBackground(new Color(0, 123, 255));
+        refreshBtn.setForeground(Color.WHITE);
+        refreshBtn.setFocusPainted(false);
+        refreshBtn.setBorderPainted(false);
+        refreshBtn.setPreferredSize(new Dimension(150, 40));
+        refreshBtn.addActionListener(_ -> refreshData());
 
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.add(newBookingBtn, BorderLayout.EAST);
+        topPanel.add(refreshBtn, BorderLayout.WEST);
 
         headerPanel.add(topPanel, BorderLayout.NORTH);
         headerPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
@@ -55,13 +74,17 @@ public class TodayBookingView extends JPanel {
         add(roomCardsScrollPane, BorderLayout.CENTER);
     }
 
-    private JPanel createRoomCard(TodayBooking booking) {
+    public void refreshData() {
+        presenter.loadTodayBookingView();
+    }
+
+    private JPanel createRoomCard(TodayBookingDto booking) {
         JPanel card = new JPanel();
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setBackground(Color.WHITE);
-                card.setBorder(BorderFactory.createCompoundBorder(
-                        BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
-                        BorderFactory.createEmptyBorder(15, 15, 15, 15)));
+        card.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(220, 220, 220), 1),
+                BorderFactory.createEmptyBorder(15, 15, 15, 15)));
         card.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         card.setPreferredSize(new Dimension(300, 260));
         card.setMinimumSize(new Dimension(300, 260));
@@ -104,7 +127,8 @@ public class TodayBookingView extends JPanel {
         JLabel roomChargeValue = (JLabel) roomChargePanel.getComponent(1);
         roomChargeValue.setForeground(new Color(0, 150, 0));
 
-        JPanel serviceChargePanel = createInfoRow("Service Charges:", String.format("%,.0f", booking.getTotalServiceCharges()));
+        JPanel serviceChargePanel = createInfoRow("Service Charges:",
+                String.format("%,.0f", booking.getTotalServiceCharges()));
         JLabel serviceChargeValue = (JLabel) serviceChargePanel.getComponent(1);
         serviceChargeValue.setForeground(new Color(0, 150, 0));
 
@@ -134,7 +158,9 @@ public class TodayBookingView extends JPanel {
         card.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                // showBookingDetailDialog(booking);
+                if (presenter != null) {
+                    presenter.onBookingCardClicked(booking.getId());
+                }
             }
 
             @Override
@@ -162,7 +188,6 @@ public class TodayBookingView extends JPanel {
         panel.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 0));
 
         JLabel labelComp = new JLabel(label);
-
         JLabel valueComp = new JLabel(value);
 
         panel.add(labelComp, BorderLayout.WEST);
@@ -171,19 +196,20 @@ public class TodayBookingView extends JPanel {
         return panel;
     }
 
-    private void showBookingDetailDialog(BookingInfo booking) {
+    public void showBookingDetailDialog(BookingDto booking) {
         JDialog dialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this),
-                booking == null ? "New Booking" : "Booking Details", true);
-        dialog.setSize(800, 700);
+                booking == null ? "New Booking"
+                        : "Booking Details" + (booking.getBookingNo() == null ? "" : " - " + booking.getBookingNo()),
+                true);
+        if (booking != null) {
+            dialog.setSize(800, 600);
+        } else {
+            dialog.setSize(800, 300);
+        }
         dialog.setLocationRelativeTo(this);
 
         JPanel contentPanel = new JPanel(new BorderLayout());
         contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
-        // Header
-        JLabel headerLabel = new JLabel(
-                booking == null ? "Create New Booking" : "Booking Details - Room " + booking.roomNumber);
-        headerLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
 
         // Main content panel
         JPanel mainPanel = new JPanel(new BorderLayout());
@@ -192,10 +218,12 @@ public class TodayBookingView extends JPanel {
         JPanel generalInfoPanel = createGeneralInfoPanel(booking);
 
         // Services Panel (Bottom)
-        JPanel servicesPanel = createServicesPanel(booking);
+        if (booking != null) {
+            JPanel servicesPanel = createServicesPanel(booking);
+            mainPanel.add(servicesPanel, BorderLayout.CENTER);
+        }
 
         mainPanel.add(generalInfoPanel, BorderLayout.NORTH);
-        mainPanel.add(servicesPanel, BorderLayout.CENTER);
 
         // Buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -212,6 +240,12 @@ public class TodayBookingView extends JPanel {
                         "Confirm Check Out",
                         JOptionPane.YES_NO_OPTION);
                 if (result == JOptionPane.YES_OPTION) {
+                    int checkOutResult = presenter.checkOutBooking();
+                    if (checkOutResult == -1) {
+                        JOptionPane.showMessageDialog(dialog, "Error during check-out. Please try again.", "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
                     JOptionPane.showMessageDialog(dialog, "Guest checked out successfully!");
                     dialog.dispose();
                 }
@@ -228,6 +262,13 @@ public class TodayBookingView extends JPanel {
         saveBtn.setBorderPainted(false);
 
         saveBtn.addActionListener(e -> {
+            int saveResult = presenter.saveBooking();
+            if (saveResult == -1) {
+                JOptionPane.showMessageDialog(dialog, "Error during saving booking. Please try again.", "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             JOptionPane.showMessageDialog(dialog,
                     "Booking " + (booking == null ? "created" : "updated") + " successfully!");
             dialog.dispose();
@@ -238,7 +279,6 @@ public class TodayBookingView extends JPanel {
         buttonPanel.add(saveBtn);
         buttonPanel.add(cancelBtn);
 
-        contentPanel.add(headerLabel, BorderLayout.NORTH);
         contentPanel.add(mainPanel, BorderLayout.CENTER);
         contentPanel.add(buttonPanel, BorderLayout.SOUTH);
 
@@ -246,7 +286,7 @@ public class TodayBookingView extends JPanel {
         dialog.setVisible(true);
     }
 
-    private JPanel createGeneralInfoPanel(BookingInfo booking) {
+    private JPanel createGeneralInfoPanel(BookingDto booking) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)),
@@ -258,29 +298,89 @@ public class TodayBookingView extends JPanel {
         JPanel leftColumn = new JPanel(new GridBagLayout());
         JPanel rightColumn = new JPanel(new GridBagLayout());
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.anchor = GridBagConstraints.WEST;
-
-        // Left column fields
-        addFormFieldToColumn(leftColumn, gbc, 0, "Room Number:", booking != null ? booking.roomNumber : "");
-        addFormFieldToColumn(leftColumn, gbc, 1, "Room Type:", booking != null ? booking.roomType : "");
-        addFormFieldToColumn(leftColumn, gbc, 2, "Guest Name:", booking != null ? booking.guestName : "");
-        addFormFieldToColumn(leftColumn, gbc, 3, "Phone Number:", booking != null ? "+1 (555) 123-4567" : "");
-        addFormFieldToColumn(leftColumn, gbc, 4, "Email:", booking != null ? "guest@example.com" : "");
-        addFormFieldToColumn(leftColumn, gbc, 5, "ID Number:", booking != null ? "ID123456789" : "");
-
-        // Right column fields
+        GridBagConstraints gbcLeft = new GridBagConstraints();
+        gbcLeft.insets = new Insets(5, 5, 5, 5);
+        gbcLeft.anchor = GridBagConstraints.WEST;
         GridBagConstraints gbcRight = new GridBagConstraints();
         gbcRight.insets = new Insets(5, 5, 5, 5);
         gbcRight.anchor = GridBagConstraints.WEST;
 
-        addFormFieldToColumn(rightColumn, gbcRight, 0, "Check-in Date:", booking != null ? "Sep 28, 2025" : "");
-        addFormFieldToColumn(rightColumn, gbcRight, 1, "Check-in Time:", booking != null ? booking.checkInTime : "");
-        addFormFieldToColumn(rightColumn, gbcRight, 2, "Check-out Date:", booking != null ? "Sep 30, 2025" : "");
-        addFormFieldToColumn(rightColumn, gbcRight, 3, "Number of Guests:", booking != null ? "2" : "");
-        addFormFieldToColumn(rightColumn, gbcRight, 4, "Rate per Night:", booking != null ? "$180.00" : "");
-        addFormFieldToColumn(rightColumn, gbcRight, 5, "Payment Method:", booking != null ? "Credit Card" : "");
+        JComboBox<String> chargeTypeField = new JComboBox<>(
+                new String[] { BookingChargeType.Hour.name(), BookingChargeType.Night.name() });
+        addFormFieldToColumn(leftColumn, gbcLeft, 0, "Charge Type:", chargeTypeField);
+        JSpinner checkInSpinner = new JSpinner(new SpinnerDateModel());
+        JSpinner.DateEditor checkInEditor = new JSpinner.DateEditor(checkInSpinner,
+                Constants.DateTimeFormat.ddMMyyyyHHmm);
+        checkInSpinner.setEditor(checkInEditor);
+        checkInSpinner.setPreferredSize(new Dimension(150, 25));
+        addFormFieldToColumn(rightColumn, gbcRight, 0, "Check-in Time:", checkInSpinner);
+
+        JComboBox<RoomItem> roomComboBox = presenter.getRoomSelectionComboBox();
+        addFormFieldToColumn(leftColumn, gbcLeft, 1, "Room:", roomComboBox);
+        JTextField roomTypeField = new JTextField(20);
+        roomTypeField.setEditable(false);
+        addFormFieldToColumn(rightColumn, gbcRight, 1, "Room Type:", roomTypeField);
+        roomComboBox.addActionListener(e -> {
+            RoomItem selectedRoom = (RoomItem) roomComboBox.getSelectedItem();
+            if (selectedRoom != null) {
+                roomTypeField.setText(selectedRoom.getType());
+            }
+        });
+
+        JComboBox<GuestItem> guestComboBox = presenter.getGuestSelectionComboBox();
+        addFormFieldToColumn(leftColumn, gbcLeft, 2, "Guest:", guestComboBox);
+        JTextField guestPhoneField = new JTextField(20);
+        addFormFieldToColumn(rightColumn, gbcRight, 2, "Phone Number:", guestPhoneField);
+        guestComboBox.addActionListener(e -> {
+            GuestItem selectedGuest = (GuestItem) guestComboBox.getSelectedItem();
+            if (selectedGuest != null) {
+                guestPhoneField.setText(selectedGuest.getPhone());
+            }
+        });
+
+        JTextField numberAdultsField = new JTextField(20);
+        numberAdultsField.setHorizontalAlignment(JTextField.RIGHT);
+        numberAdultsField.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyTyped(java.awt.event.KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c)) {
+                    e.consume();
+                }
+            }
+        });
+        addFormFieldToColumn(leftColumn, gbcLeft, 3, "Number of Adults:", numberAdultsField);
+        JTextField numberChildrenField = new JTextField(20);
+        numberChildrenField.setHorizontalAlignment(JTextField.RIGHT);
+        numberChildrenField.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyTyped(java.awt.event.KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c)) {
+                    e.consume();
+                }
+            }
+        });
+        addFormFieldToColumn(rightColumn, gbcRight, 3, "Number of Children:", numberChildrenField);
+
+        if (booking != null) {
+            chargeTypeField.setSelectedItem(booking.getChargeType().name());
+            checkInSpinner.setValue(java.util.Date.from(booking.getCheckin().toInstant()));
+            for (int i = 0; i < roomComboBox.getItemCount(); i++) {
+                if (roomComboBox.getItemAt(i).getId().equals(booking.getRoomId())) {
+                    roomComboBox.setSelectedIndex(i);
+                    break;
+                }
+            }
+            for (int i = 0; i < guestComboBox.getItemCount(); i++) {
+                if (guestComboBox.getItemAt(i).getId().equals(booking.getPrimaryGuestId())) {
+                    guestComboBox.setSelectedIndex(i);
+                    break;
+                }
+            }
+            numberAdultsField.setText(String.valueOf(booking.getNumAdults()));
+            numberChildrenField.setText(String.valueOf(booking.getNumChildren()));
+        }
 
         JPanel formPanel = new JPanel(new GridLayout(1, 2, 20, 0));
         formPanel.add(leftColumn);
@@ -290,7 +390,7 @@ public class TodayBookingView extends JPanel {
         return panel;
     }
 
-    private JPanel createServicesPanel(BookingInfo booking) {
+    private JPanel createServicesPanel(BookingDto booking) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)),
@@ -313,16 +413,19 @@ public class TodayBookingView extends JPanel {
         headerPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 
         // Services table
-        String[] columnNames = { "Service", "Description", "Qty", "Unit Price", "Total", "Date", "Action" };
-        Object[][] serviceData = {};
-
-        if (booking != null) {
-            serviceData = new Object[][] {
-                    { "Room Service", "Breakfast delivery", "1", "$25.00", "$25.00", "Sep 28", "Remove" },
-                    { "Laundry", "Dry cleaning", "3", "$15.00", "$45.00", "Sep 28", "Remove" },
-                    { "Spa Service", "Massage therapy", "1", "$80.00", "$80.00", "Sep 29", "Remove" },
-                    { "Minibar", "Beverages and snacks", "1", "$35.00", "$35.00", "Sep 28", "Remove" }
-            };
+        String[] columnNames = { "Time", "Type", "Description", "Qty", "Unit Price", "Total", "Action" };
+        ArrayList<BookingDetailDto> details = booking != null ? booking.getBookingDetails() : new ArrayList<>();
+        Object[][] serviceData = new Object[details.size()][7];
+        for (int i = 0; i < details.size(); i++) {
+            BookingDetailDto detail = details.get(i);
+            serviceData[i][0] = detail.getIssuedAt()
+                    .format(DateTimeFormatter.ofPattern(Constants.DateTimeFormat.ddMMyyyyHHmm));
+            serviceData[i][1] = detail.getType().name();
+            serviceData[i][2] = detail.getDescription() + " (" + detail.getServiceName() + ")";
+            serviceData[i][3] = detail.getQuantity();
+            serviceData[i][4] = String.format("%,.0f", detail.getUnitPrice());
+            serviceData[i][5] = String.format("%,.0f", detail.getAmount());
+            serviceData[i][6] = "Remove";
         }
 
         JTable servicesTable = new JTable(serviceData, columnNames) {
@@ -334,16 +437,15 @@ public class TodayBookingView extends JPanel {
 
         servicesTable.setRowHeight(30);
         servicesTable.getTableHeader().setBackground(new Color(248, 249, 250));
-        servicesTable.setSelectionBackground(new Color(230, 240, 255));
 
         // Set column widths
         servicesTable.getColumnModel().getColumn(0).setPreferredWidth(100);
-        servicesTable.getColumnModel().getColumn(1).setPreferredWidth(150);
-        servicesTable.getColumnModel().getColumn(2).setPreferredWidth(40);
-        servicesTable.getColumnModel().getColumn(3).setPreferredWidth(80);
-        servicesTable.getColumnModel().getColumn(4).setPreferredWidth(80);
-        servicesTable.getColumnModel().getColumn(5).setPreferredWidth(60);
-        servicesTable.getColumnModel().getColumn(6).setPreferredWidth(70);
+        servicesTable.getColumnModel().getColumn(1).setPreferredWidth(50);
+        servicesTable.getColumnModel().getColumn(2).setPreferredWidth(200);
+        servicesTable.getColumnModel().getColumn(3).setPreferredWidth(30);
+        servicesTable.getColumnModel().getColumn(4).setPreferredWidth(70);
+        servicesTable.getColumnModel().getColumn(5).setPreferredWidth(70);
+        servicesTable.getColumnModel().getColumn(6).setPreferredWidth(60);
 
         // Add button renderer for Action column
         servicesTable.getColumnModel().getColumn(6).setCellRenderer(new ButtonRenderer());
@@ -354,7 +456,7 @@ public class TodayBookingView extends JPanel {
         tableScrollPane.setPreferredSize(new Dimension(0, 150));
 
         // Services summary panel
-        JPanel summaryPanel = createServicesSummary();
+        JPanel summaryPanel = createServicesSummary(booking);
 
         // Main services content
         JPanel servicesContent = new JPanel(new BorderLayout());
@@ -366,7 +468,7 @@ public class TodayBookingView extends JPanel {
         return panel;
     }
 
-    private JPanel createServicesSummary() {
+    private JPanel createServicesSummary(BookingDto booking) {
         JPanel summaryPanel = new JPanel(new BorderLayout());
         summaryPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(220, 220, 220)),
@@ -378,9 +480,10 @@ public class TodayBookingView extends JPanel {
         gbc.anchor = GridBagConstraints.EAST;
 
         // Summary rows
-        addSummaryRow(rightPanel, gbc, 0, "Room Charges:", "$360.00");
-        addSummaryRow(rightPanel, gbc, 1, "Services Subtotal:", "$185.00");
-        addSummaryRow(rightPanel, gbc, 2, "Tax (10%):", "$54.50");
+        Double roomCharges = booking != null ? booking.getTotalRoomCharges() : 0.0;
+        Double serviceCharges = booking != null ? booking.getTotalServiceCharges() : 0.0;
+        addSummaryRow(rightPanel, gbc, 0, "Room Charges:", String.format("%,.0f", roomCharges));
+        addSummaryRow(rightPanel, gbc, 1, "Services Subtotal:", String.format("%,.0f", serviceCharges));
 
         // Total row with different styling
         gbc.gridy = 3;
@@ -389,7 +492,7 @@ public class TodayBookingView extends JPanel {
         rightPanel.add(totalLabel, gbc);
 
         gbc.gridx = 1;
-        JLabel totalValue = new JLabel("$599.50");
+        JLabel totalValue = new JLabel(String.format("%,.0f", roomCharges + serviceCharges));
         totalValue.setForeground(new Color(0, 123, 255));
         rightPanel.add(totalValue, gbc);
 
@@ -408,7 +511,8 @@ public class TodayBookingView extends JPanel {
         panel.add(valueComp, gbc);
     }
 
-    private void addFormFieldToColumn(JPanel panel, GridBagConstraints gbc, int row, String labelText, String value) {
+    private void addFormFieldToColumn(JPanel panel, GridBagConstraints gbc, int row, String labelText,
+            Component field) {
         gbc.gridx = 0;
         gbc.gridy = row;
         gbc.weightx = 0;
@@ -421,7 +525,6 @@ public class TodayBookingView extends JPanel {
         gbc.weightx = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JTextField field = new JTextField(value, 15);
         field.setPreferredSize(new Dimension(150, 25));
         panel.add(field, gbc);
     }
@@ -429,7 +532,7 @@ public class TodayBookingView extends JPanel {
     private void showAddServiceDialog() {
         JDialog dialog = new JDialog();
         dialog.setTitle("Add Service");
-        dialog.setSize(400, 250);
+        dialog.setSize(400, 300);
         dialog.setLocationRelativeTo(this);
         dialog.setModal(true);
 
@@ -440,10 +543,84 @@ public class TodayBookingView extends JPanel {
         gbc.insets = new Insets(8, 5, 8, 5);
         gbc.anchor = GridBagConstraints.WEST;
 
-        addFormFieldToColumn(contentPanel, gbc, 0, "Service:", "");
-        addFormFieldToColumn(contentPanel, gbc, 1, "Description:", "");
-        addFormFieldToColumn(contentPanel, gbc, 2, "Quantity:", "");
-        addFormFieldToColumn(contentPanel, gbc, 3, "Unit Price:", "");
+        JSpinner issuedAtSpinner = new JSpinner(new SpinnerDateModel());
+        JSpinner.DateEditor issuedAtEditor = new JSpinner.DateEditor(issuedAtSpinner,
+                Constants.DateTimeFormat.ddMMyyyyHHmm);
+        issuedAtSpinner.setEditor(issuedAtEditor);
+        issuedAtSpinner.setPreferredSize(new Dimension(150, 25));
+        addFormFieldToColumn(contentPanel, gbc, 0, "Time:", issuedAtSpinner);
+        JComboBox<String> detailTypeField = new JComboBox<>(new String[] { BookingDetailType.Room.name(),
+                BookingDetailType.Service.name(), BookingDetailType.Fee.name(), BookingDetailType.Adjustment.name() });
+        addFormFieldToColumn(contentPanel, gbc, 1, "Type:", detailTypeField);
+
+        JTextField descriptionField = new JTextField(20);
+        addFormFieldToColumn(contentPanel, gbc, 2, "Description:", descriptionField);
+
+        JComboBox<ServiceItem> serviceComboBox = presenter.getServiceSelectionComboBox();
+        addFormFieldToColumn(contentPanel, gbc, 3, "Service:", serviceComboBox);
+        JTextField unitPriceField = new JTextField(20);
+        unitPriceField.setHorizontalAlignment(JTextField.RIGHT);
+        unitPriceField.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyTyped(java.awt.event.KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c)) {
+                    e.consume();
+                }
+            }
+        });
+        unitPriceField.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            private void formatPrice() {
+                SwingUtilities.invokeLater(() -> {
+                    String text = unitPriceField.getText().replace(",", "").trim();
+                    if (!text.isEmpty()) {
+                        try {
+                            double value = Double.parseDouble(text);
+                            String formatted = String.format("%,.0f", value);
+                            if (!unitPriceField.getText().equals(formatted)) {
+                                unitPriceField.setText(formatted);
+                            }
+                        } catch (NumberFormatException ex) {
+                            // Ignore formatting if not a valid number
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                formatPrice();
+            }
+
+            @Override
+            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                formatPrice();
+            }
+
+            @Override
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+                formatPrice();
+            }
+        });
+        addFormFieldToColumn(contentPanel, gbc, 4, "Price:", unitPriceField);
+        serviceComboBox.addActionListener(e -> {
+            ServiceItem selectedService = (ServiceItem) serviceComboBox.getSelectedItem();
+            if (selectedService != null) {
+                unitPriceField.setText(String.format("%,.0f", selectedService.getUnitPrice()));
+            }
+        });
+        JTextField quantityField = new JTextField(20);
+        quantityField.setHorizontalAlignment(JTextField.RIGHT);
+        quantityField.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyTyped(java.awt.event.KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c)) {
+                    e.consume();
+                }
+            }
+        });
+        addFormFieldToColumn(contentPanel, gbc, 5, "Quantity:", quantityField);
 
         JPanel buttonPanel = new JPanel(new FlowLayout());
         JButton addBtn = new JButton("Add Service");
@@ -455,6 +632,32 @@ public class TodayBookingView extends JPanel {
         addBtn.setBorderPainted(false);
 
         addBtn.addActionListener(e -> {
+            // Validate inputs
+            if (BookingDetailType.valueOf(detailTypeField.getSelectedItem().toString()) == BookingDetailType.Service
+                    && ((ServiceItem) serviceComboBox.getSelectedItem()).getId() == -1L) {
+                JOptionPane.showMessageDialog(dialog, "Please select a valid service.", "Validation Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (BookingDetailType.valueOf(detailTypeField.getSelectedItem().toString()) != BookingDetailType.Service
+                    && descriptionField.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(dialog, "Please enter a description.", "Validation Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (quantityField.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(dialog, "Please enter a quantity.", "Validation Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            int result = presenter.addServiceToBooking(
+                    (java.util.Date) issuedAtSpinner.getValue(),
+                    (String) detailTypeField.getSelectedItem(),
+                    descriptionField.getText().trim(),
+                    (ServiceItem) serviceComboBox.getSelectedItem(),
+                    quantityField.getText().trim());
+
             JOptionPane.showMessageDialog(dialog, "Service added successfully!");
             dialog.dispose();
         });
@@ -526,38 +729,35 @@ public class TodayBookingView extends JPanel {
         }
     }
 
-    // Data class for booking information
-    private static class BookingInfo {
-        String roomNumber;
-        String guestName;
-        String roomType;
-        String checkInTime;
-        String estimatedCharges;
+    public void setPresenter(BookingPresenter presenter) {
+        this.presenter = presenter;
+    }
 
-        BookingInfo(String roomNumber, String guestName, String roomType, String checkInTime, String estimatedCharges) {
-            this.roomNumber = roomNumber;
-            this.guestName = guestName;
-            this.roomType = roomType;
-            this.checkInTime = checkInTime;
-            this.estimatedCharges = estimatedCharges;
+    public void setBookings(java.util.ArrayList<TodayBookingDto> bookings) {
+        this.bookings = bookings;
+
+        for (TodayBookingDto booking : this.bookings) {
+            cardsPanel.add(createRoomCard(booking));
         }
     }
 
-    public void setBookings(java.util.ArrayList<TodayBooking> bookings) {
-        this.bookings = bookings;
-
-        for (TodayBooking booking : this.bookings) {
-            cardsPanel.add(createRoomCard(booking));
-            cardsPanel.add(createRoomCard(booking));
-            cardsPanel.add(createRoomCard(booking));
-            cardsPanel.add(createRoomCard(booking));
-            cardsPanel.add(createRoomCard(booking));
-            cardsPanel.add(createRoomCard(booking));
-            cardsPanel.add(createRoomCard(booking));
-            cardsPanel.add(createRoomCard(booking));
-            cardsPanel.add(createRoomCard(booking));
-            cardsPanel.add(createRoomCard(booking));
-            cardsPanel.add(createRoomCard(booking));
-        }
+    public BookingDto getCurrentBookingDto() {
+        // For simplicity, return a dummy booking. In a real application, this would
+        // return the actual booking being viewed/edited.
+        BookingDto booking = new BookingDto();
+        booking.setId(1L);
+        booking.setBookingNo("BKG123456");
+        booking.setRoomName("101");
+        booking.setRoomTypeName("Deluxe");
+        booking.setPrimaryGuestName("John Doe");
+        booking.setPrimaryGuestPhone("+1 (555) 123-4567");
+        booking.setNumAdults(2);
+        booking.setNumChildren(0);
+        booking.setCheckin(java.time.OffsetDateTime.of(2025, 9, 28, 14, 0, 0, 0, java.time.ZoneOffset.UTC));
+        booking.setCheckout(java.time.OffsetDateTime.of(2025, 9, 30, 12, 0, 0, 0, java.time.ZoneOffset.UTC));
+        booking.setTotalRoomCharges(360.00);
+        booking.setTotalServiceCharges(185.00);
+        booking.setStatus(BookingStatus.CheckedIn);
+        return booking;
     }
 }
