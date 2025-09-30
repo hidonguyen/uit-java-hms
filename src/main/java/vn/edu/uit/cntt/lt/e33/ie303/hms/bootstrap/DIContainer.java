@@ -18,12 +18,14 @@ public final class DIContainer {
     private final IRoomTypeRepository roomTypeRepository;
     private final IServiceRepository serviceRepository;
     private final IUserRepository userRepository;
+    private final IReportRepository reportRepository;
 
     private final IUserService userService;
     private final IServiceService serviceService;
     private final IRoomService roomService;
     private final IRoomTypeService roomTypeService;
     private final IGuestService guestService;
+    private final IReportService reportService;
 
     private DIContainer() {
         AppConfig config = AppConfig.load();
@@ -37,12 +39,15 @@ public final class DIContainer {
         this.roomTypeRepository = new RoomTypeRepository(dataSource);
         this.serviceRepository = new ServiceRepository(dataSource);
         this.userRepository = new UserRepository(dataSource);
+        this.reportRepository = new ReportRepository(dataSource);
 
         this.userService = new UserService(userRepository);
         this.serviceService = new ServiceService(serviceRepository);
         this.roomService = new RoomService(roomRepository);
         this.roomTypeService = new RoomTypeService(roomTypeRepository);
         this.guestService = new GuestService(guestRepository);
+        this.reportService = new ReportService(reportRepository);
+
     }
 
     public static DIContainer getInstance() {
@@ -102,5 +107,9 @@ public final class DIContainer {
 
     public IGuestService getGuestService() {
         return guestService;
+    }
+
+    public IReportService getReportService() {
+        return reportService;
     }
 }

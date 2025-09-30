@@ -40,7 +40,7 @@ public class UserService implements IUserService {
         }
 
         user.setLastLoginAt(OffsetDateTime.now());
-        // repo.update(user);
+        repo.update(user);
         
         return user;
     }

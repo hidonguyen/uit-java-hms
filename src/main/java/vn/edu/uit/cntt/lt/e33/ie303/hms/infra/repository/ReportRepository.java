@@ -15,26 +15,26 @@ public class ReportRepository implements IReportRepository {
 
     @Override
     public List<ReportRoomRevenuePoint> getRoomRevenue(ReportDateRangeParams params) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return List.of();
     }
 
     @Override
     public List<ReportRevenueByRoomType> getRevenueByRoomType(ReportDateRangeParams params) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return List.of();
     }
 
     @Override
     public List<ReportServiceRevenueItem> getServiceRevenue(ReportDateRangeParams params) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return List.of();
     }
 
     @Override
     public List<ReportGuestMix> getGuestMix(ReportDateRangeParams params) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return List.of();
     }
 
     @Override
     public List<ReportOccupancyPoint> getOccupancy(ReportDateRangeParams params) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return List.of();
     }
 }

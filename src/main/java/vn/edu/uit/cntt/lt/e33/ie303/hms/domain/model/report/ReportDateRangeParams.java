@@ -1,57 +1,59 @@
 package vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.report;
 
-import java.time.OffsetDateTime;
-import java.util.List;
+import java.time.LocalDate;
 
 public class ReportDateRangeParams {
-    private OffsetDateTime from;
-    private OffsetDateTime to;
-    private String granularity;
-    private List<Long> roomTypeIds;
+    private LocalDate from;
+    private LocalDate to;
+    private String granularity; // "DAY", "WEEK", "MONTH", "YEAR"
 
     public ReportDateRangeParams() {
     }
 
-    public ReportDateRangeParams(OffsetDateTime from, OffsetDateTime to, String granularity, List<Long> roomTypeIds) {
+    public ReportDateRangeParams(LocalDate from, LocalDate to, String granularity) {
         this.from = from;
         this.to = to;
         this.granularity = granularity;
-        this.roomTypeIds = roomTypeIds;
     }
 
-    public OffsetDateTime getFrom() {
+    public LocalDate getFrom() {
         return from;
     }
 
-    public ReportDateRangeParams setFrom(OffsetDateTime from) {
+    public void setFrom(LocalDate from) {
         this.from = from;
-        return this;
     }
 
-    public OffsetDateTime getTo() {
+    public LocalDate getTo() {
         return to;
     }
 
-    public ReportDateRangeParams setTo(OffsetDateTime to) {
+    public void setTo(LocalDate to) {
         this.to = to;
-        return this;
     }
 
     public String getGranularity() {
         return granularity;
     }
 
-    public ReportDateRangeParams setGranularity(String granularity) {
+    public void setGranularity(String granularity) {
         this.granularity = granularity;
-        return this;
     }
 
-    public List<Long> getRoomTypeIds() {
-        return roomTypeIds;
+    public static ReportDateRangeParams today() {
+        LocalDate now = LocalDate.now();
+        return new ReportDateRangeParams(now, now, "DAY");
     }
 
-    public ReportDateRangeParams setRoomTypeIds(List<Long> roomTypeIds) {
-        this.roomTypeIds = roomTypeIds;
-        return this;
+    public static ReportDateRangeParams thisMonth() {
+        LocalDate start = LocalDate.now().withDayOfMonth(1);
+        LocalDate end = start.plusMonths(1).minusDays(1);
+        return new ReportDateRangeParams(start, end, "DAY");
+    }
+
+    public static ReportDateRangeParams thisYear() {
+        LocalDate start = LocalDate.now().withDayOfYear(1);
+        LocalDate end = start.plusYears(1).minusDays(1);
+        return new ReportDateRangeParams(start, end, "MONTH");
     }
 }
