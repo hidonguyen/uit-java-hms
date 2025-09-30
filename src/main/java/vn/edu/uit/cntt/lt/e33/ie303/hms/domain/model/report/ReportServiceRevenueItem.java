@@ -62,4 +62,19 @@ public class ReportServiceRevenueItem {
         this.quantity = quantity;
         return this;
     }
+
+    public static String findQuery() {
+        return """
+                SELECT s.id AS service_id,
+                       s.name AS service_name,
+                       COALESCE(SUM(bd.amount),0) AS revenue,
+                       COALESCE(SUM(bd.quantity),0) AS quantity
+                FROM booking_details bd
+                JOIN services s ON s.id = bd.service_id
+                WHERE bd.type = 'Service'
+                  AND (bd.issued_at AT TIME ZONE 'Asia/Ho_Chi_Minh')::date BETWEEN ?::date AND ?::date
+                GROUP BY s.id, s.name
+                ORDER BY revenue DESC
+                """;
+    }
 }

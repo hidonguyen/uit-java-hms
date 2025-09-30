@@ -64,4 +64,43 @@ public class ReportOccupancyPoint {
         this.occupancyPct = occupancyPct;
         return this;
     }
+
+    public static String findQuery() {
+        return """
+                WITH d AS (
+                  SELECT generate_series(?::date, ?::date, interval '1 day')::date AS dte
+                ),
+                room_base AS (
+                  SELECT r.id AS room_id, r.room_type_id FROM rooms r
+                  WHERE (COALESCE(?, false) OR r.room_type_id = ANY(?))
+                ),
+                occ AS (
+                  SELECT (b.checkin AT TIME ZONE 'Asia/Ho_Chi_Minh')::date AS start_date,
+                         COALESCE((b.checkout AT TIME ZONE 'Asia/Ho_Chi_Minh')::date,
+                                  (b.checkin AT TIME ZONE 'Asia/Ho_Chi_Minh')::date) AS end_date,
+                         b.room_id
+                  FROM bookings b
+                )
+                SELECT d.dte AS date,
+                       COUNT(rb.room_id) AS available_rooms,
+                       COUNT(DISTINCT rb.room_id) FILTER (
+                         WHERE EXISTS (
+                           SELECT 1 FROM occ o
+                           WHERE o.room_id = rb.room_id AND d.dte >= o.start_date AND d.dte < o.end_date
+                         )
+                       ) AS occupied_rooms,
+                       CASE WHEN COUNT(rb.room_id)=0 THEN 0
+                            ELSE ROUND(100.0 * COUNT(DISTINCT rb.room_id) FILTER (
+                                   WHERE EXISTS (
+                                     SELECT 1 FROM occ o
+                                     WHERE o.room_id = rb.room_id AND d.dte >= o.start_date AND d.dte < o.end_date
+                                   )
+                                 ) / COUNT(rb.room_id), 2)
+                       END AS occupancy_pct
+                FROM d
+                CROSS JOIN room_base rb
+                GROUP BY d.dte
+                ORDER BY d.dte
+                """;
+    }
 }

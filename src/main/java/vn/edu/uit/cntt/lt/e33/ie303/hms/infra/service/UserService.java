@@ -39,8 +39,8 @@ public class UserService implements IUserService {
                     Constants.ErrorMessage.USER_PASSWORD_IS_INCORRECT);
         }
 
-        user.setLastLoginAt(OffsetDateTime.now());
-        repo.update(user);
+        // user.setLastLoginAt(OffsetDateTime.now());
+        // repo.update(user);
         
         return user;
     }

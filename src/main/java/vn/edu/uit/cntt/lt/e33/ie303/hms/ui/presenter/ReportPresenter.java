@@ -1,37 +1,27 @@
 package vn.edu.uit.cntt.lt.e33.ie303.hms.ui.presenter;
 
+import javax.swing.*;
 import java.util.List;
 
-import javax.swing.JFrame;
-import javax.swing.SwingWorker;
-
 import vn.edu.uit.cntt.lt.e33.ie303.hms.bootstrap.DIContainer;
-import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.report.ReportDateRangeParams;
-import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.report.ReportGuestMix;
-import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.report.ReportKpiSummary;
-import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.report.ReportOccupancyPoint;
-import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.report.ReportRevenueByRoomType;
-import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.report.ReportRoomRevenuePoint;
-import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.report.ReportServiceRevenueItem;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.report.*;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.service.IReportService;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.ui.view.report.ReportsView;
 
 public class ReportPresenter {
     private final ReportsView view;
     private final IReportService service;
-
     private ReportDateRangeParams currentParams;
 
     public ReportPresenter(JFrame parentFrame) {
         this.view = new ReportsView();
         this.service = DIContainer.getInstance().getReportService();
-
         this.view.onFilterDateRange(params -> {
             this.currentParams = params;
             loadData();
         });
-
-        this.currentParams = ReportDateRangeParams.today();
+        this.currentParams = ReportDateRangeParams.last7Days();
+        this.view.setFilterRange(currentParams);
         loadData();
     }
 
@@ -49,8 +39,7 @@ public class ReportPresenter {
             @Override
             protected void done() {
                 try {
-                    ReportKpiSummary kpi = get();
-                    view.setKpiSummary(kpi);
+                    view.setKpiSummary(get());
                 } catch (Exception e) {
                     view.showErrorMessage(e.getMessage());
                 }
@@ -67,6 +56,22 @@ public class ReportPresenter {
             protected void done() {
                 try {
                     view.setRoomRevenueData(get());
+                } catch (Exception e) {
+                    view.showErrorMessage(e.getMessage());
+                }
+            }
+        }.execute();
+
+        new SwingWorker<List<ReportOccupancyPoint>, Void>() {
+            @Override
+            protected List<ReportOccupancyPoint> doInBackground() {
+                return service.getOccupancy(currentParams);
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    view.setOccupancyData(get());
                 } catch (Exception e) {
                     view.showErrorMessage(e.getMessage());
                 }
@@ -115,22 +120,6 @@ public class ReportPresenter {
             protected void done() {
                 try {
                     view.setGuestMixData(get());
-                } catch (Exception e) {
-                    view.showErrorMessage(e.getMessage());
-                }
-            }
-        }.execute();
-
-        new SwingWorker<List<ReportOccupancyPoint>, Void>() {
-            @Override
-            protected List<ReportOccupancyPoint> doInBackground() {
-                return service.getOccupancy(currentParams);
-            }
-
-            @Override
-            protected void done() {
-                try {
-                    view.setOccupancyData(get());
                 } catch (Exception e) {
                     view.showErrorMessage(e.getMessage());
                 }

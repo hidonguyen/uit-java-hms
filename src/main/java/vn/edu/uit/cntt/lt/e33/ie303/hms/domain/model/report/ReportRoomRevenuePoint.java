@@ -40,10 +40,18 @@ public class ReportRoomRevenuePoint {
         return this;
     }
 
-    public static String queryByDateRange() {
-        return "SELECT (bd.issued_at AT TIME ZONE 'Asia/Ho_Chi_Minh')::date AS date, " +
-                "SUM(bd.amount) AS revenue " +
-                "FROM booking_details bd WHERE bd.type = 'Room' AND bd.issued_at BETWEEN ? AND ? " +
-                "GROUP BY date ORDER BY date ASC";
+    public static String findQuery() {
+        return """
+                WITH d AS (
+                    SELECT generate_series(?::date, ?::date, interval '1 day')::date AS dte
+                )
+                SELECT d.dte AS date, COALESCE(SUM(bd.amount),0) AS revenue
+                FROM d
+                LEFT JOIN booking_details bd
+                  ON bd.type = 'Room'
+                 AND (bd.issued_at AT TIME ZONE 'Asia/Ho_Chi_Minh')::date = d.dte
+                GROUP BY d.dte
+                ORDER BY d.dte
+                """;
     }
 }

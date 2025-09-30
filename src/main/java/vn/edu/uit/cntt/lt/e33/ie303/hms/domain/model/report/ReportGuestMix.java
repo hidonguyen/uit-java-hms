@@ -51,10 +51,28 @@ public class ReportGuestMix {
         return this;
     }
 
-    public static String queryByDateRange() {
-        return "SELECT dte AS date, " +
-                "SUM(CASE WHEN is_new THEN 1 ELSE 0 END) AS new_guests, " +
-                "SUM(CASE WHEN is_new = false THEN 1 ELSE 0 END) AS returning_guests " +
-                "FROM report_guest_mix(?, ?) GROUP BY dte ORDER BY dte ASC";
+    public static String findQuery() {
+        return """
+                WITH d AS (
+                  SELECT generate_series(?::date, ?::date, interval '1 day')::date AS dte
+                ),
+                gb AS (
+                  SELECT b.id, b.primary_guest_id, (b.checkin AT TIME ZONE 'Asia/Ho_Chi_Minh')::date AS chk
+                  FROM bookings b
+                  WHERE b.primary_guest_id IS NOT NULL
+                ),
+                firsts AS (
+                  SELECT primary_guest_id, MIN(chk) AS first_chk
+                  FROM gb GROUP BY primary_guest_id
+                )
+                SELECT d.dte AS date,
+                       COUNT(DISTINCT CASE WHEN f.first_chk = d.dte THEN gb.primary_guest_id END) AS new_guests,
+                       COUNT(DISTINCT CASE WHEN f.first_chk < d.dte THEN gb.primary_guest_id END) AS returning_guests
+                FROM d
+                LEFT JOIN gb ON gb.chk = d.dte
+                LEFT JOIN firsts f ON f.primary_guest_id = gb.primary_guest_id
+                GROUP BY d.dte
+                ORDER BY d.dte
+                """;
     }
 }
