@@ -46,7 +46,6 @@ public class GuestService implements IGuestService {
 
     @Override
     public Integer delete(Long id) {
-        // TODO: ràng buộc nếu guest đã gắn booking...
         return repo.delete(id);
     }
 }

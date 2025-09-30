@@ -11,16 +11,16 @@ import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.GuestGender;
 public class Guest {
     private Long id;
     private String name;
-    private GuestGender gender; // map <-> VARCHAR
-    private LocalDate dateOfBirth; // map <-> DATE
+    private GuestGender gender;
+    private LocalDate dateOfBirth; 
     private String nationality;
     private String phone;
     private String email;
     private String address;
     private String description;
-    private OffsetDateTime createdAt; // DB default NOW()
+    private OffsetDateTime createdAt;
     private Long createdBy;
-    private OffsetDateTime updatedAt; // DB default NOW() / update NOW()
+    private OffsetDateTime updatedAt;
     private Long updatedBy;
 
     public Guest() {
