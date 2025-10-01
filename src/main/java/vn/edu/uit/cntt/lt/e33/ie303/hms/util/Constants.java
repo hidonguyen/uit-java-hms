@@ -122,6 +122,11 @@ public class Constants {
         public static final String CREATE_GUEST_SUCCESS = "Guest created successfully.";
         public static final String UPDATE_GUEST_SUCCESS = "Guest updated successfully.";
         public static final String DELETE_GUEST_SUCCESS = "Guest deleted successfully.";
+
+        // Booking
+        public static final String CREATE_BOOKING_SUCCESS = "Booking created successfully.";
+        public static final String UPDATE_BOOKING_SUCCESS = "Booking updated successfully.";
+        public static final String DELETE_BOOKING_SUCCESS = "Booking deleted successfully.";
     }
 
     // ===================== ERROR TITLE =====================

@@ -66,7 +66,12 @@ public class BookingPresenter {
                     try {
                         Booking booking = new Booking();
                         booking.setId(bookingDto.getId());
-                        booking.setBookingNo(bookingDto.getBookingNo());
+                        if (booking.getId() == null) {
+                            // New booking, generate booking no
+                            booking.setBookingNo(bookingService.generateBookingNo());
+                        } else {
+                            booking.setBookingNo(bookingDto.getBookingNo());
+                        }
                         booking.setChargeType(bookingDto.getChargeType());
                         booking.setCheckin(bookingDto.getCheckin());
                         booking.setCheckout(bookingDto.getCheckout());
@@ -107,8 +112,9 @@ public class BookingPresenter {
                     try {
                         if (get() > 0) {
                             todayBookingView.showSuccessMessage(bookingDto.getId() == null
-                                    ? Constants.SuccessMessage.CREATE_GUEST_SUCCESS
-                                    : Constants.SuccessMessage.UPDATE_GUEST_SUCCESS);
+                                    ? Constants.SuccessMessage.CREATE_BOOKING_SUCCESS
+                                    : Constants.SuccessMessage.UPDATE_BOOKING_SUCCESS);
+                            loadTodayBookingView();
                         }
                     } catch (Exception ex) {
                         todayBookingView.showErrorMessage(ex.getMessage());
@@ -297,5 +303,10 @@ public class BookingPresenter {
             return new GuestItem(guest.getId(), guest.getName(), guest.getPhone());
         }
         return null;
+    }
+
+    public Object onAddServiceClicked() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'onAddServiceClicked'");
     }
 }

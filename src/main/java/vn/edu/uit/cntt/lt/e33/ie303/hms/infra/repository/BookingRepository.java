@@ -98,4 +98,20 @@ public class BookingRepository implements IBookingRepository {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public String findLastBookingNo(String pattern) {
+        try (Connection connection = ds.getConnection();
+             PreparedStatement ps = connection.prepareStatement(Booking.findLastBookingNoQuery())) {
+            ps.setString(1, pattern);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("booking_no");
+                }
+                return null;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -33,10 +33,12 @@ public class TodayBookingView extends JPanel {
 
     public void setBookings(List<TodayBookingDto> bookings) {
         this.bookings = bookings;
-
+        cardsPanel.removeAll();
         for (TodayBookingDto booking : this.bookings) {
             cardsPanel.add(createRoomCard(booking));
         }
+        cardsPanel.revalidate();
+        cardsPanel.repaint();
     }
 
     private void initializeComponents() {

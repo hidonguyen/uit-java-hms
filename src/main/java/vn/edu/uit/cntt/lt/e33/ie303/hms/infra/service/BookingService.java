@@ -58,4 +58,24 @@ public class BookingService implements IBookingService {
     public List<TodayBookingDto> findTodayBookings() {
         return bookingRepository.findTodayBookings();
     }
+
+    @Override
+    public String generateBookingNo() {
+        String prefix = "BKG";
+        String datePart = LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyMMdd"));
+        String lastBookingNo = bookingRepository.findLastBookingNo(prefix + datePart + "%");
+        int nextSequence = 1;
+        if (lastBookingNo != null && lastBookingNo.length() == 12) {
+            String lastSequenceStr = lastBookingNo.substring(9);
+            try {
+                int lastSequence = Integer.parseInt(lastSequenceStr);
+                nextSequence = lastSequence + 1;
+            } catch (NumberFormatException e) {
+                // Ignore and use nextSequence = 1 as default
+                nextSequence = 1;
+            }
+        }
+
+        return prefix + datePart + String.format("%03d", nextSequence);
+    }
 }

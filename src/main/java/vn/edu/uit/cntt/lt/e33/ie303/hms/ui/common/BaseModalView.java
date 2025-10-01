@@ -146,6 +146,17 @@ public abstract class BaseModalView extends JDialog {
         formPanel.add(field, gc);
     }
 
+    protected void addFormField(JComponent field, int row, int col, int colspan) {
+        int colBase = col * 2;
+
+        gc.gridx = colBase;
+        gc.gridy = row;
+        gc.gridwidth = colspan;
+        gc.weightx = 1;
+
+        formPanel.add(field, gc);
+    }
+
     protected void styleFormField(JComponent field) {
         if (field instanceof JTextField) {
             JTextField textField = (JTextField) field;

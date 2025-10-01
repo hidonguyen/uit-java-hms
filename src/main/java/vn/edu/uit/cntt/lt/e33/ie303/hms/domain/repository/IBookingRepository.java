@@ -12,4 +12,5 @@ public interface IBookingRepository {
     int update(Booking booking);
     int delete(Long id);
     List<TodayBookingDto> findTodayBookings();
+    String findLastBookingNo(String pattern);
 }

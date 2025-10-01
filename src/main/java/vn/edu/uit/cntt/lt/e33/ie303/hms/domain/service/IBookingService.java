@@ -17,4 +17,6 @@ public interface IBookingService {
     Integer delete(Long id);
 
     List<TodayBookingDto> findTodayBookings();
+
+    String generateBookingNo();
 }

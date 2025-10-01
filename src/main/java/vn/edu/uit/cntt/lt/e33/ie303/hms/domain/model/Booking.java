@@ -278,6 +278,10 @@ private Long id;
         """;
     }
 
+    public static String findLastBookingNoQuery() {
+        return "SELECT booking_no FROM bookings WHERE booking_no LIKE ? ORDER BY booking_no DESC LIMIT 1";
+    }
+
     public static String findByIdQuery() {
         return "SELECT id, booking_no, charge_type, checkin, checkout, room_id, room_type_id, primary_guest_id, num_adults, num_children, status, payment_status, notes, created_at, created_by, updated_at, updated_by FROM bookings WHERE id = ?";
     }
