@@ -1,4 +1,4 @@
-package vn.edu.uit.cntt.lt.e33.ie303.hms.util;
+package vn.edu.uit.cntt.lt.e33.ie303.hms.util.ui;
 
 import java.awt.Component;
 import java.awt.Container;

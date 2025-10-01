@@ -3,7 +3,7 @@ package vn.edu.uit.cntt.lt.e33.ie303.hms.domain.dto;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,8 +17,8 @@ public class BookingDto {
     private Long id;
     private String bookingNo;
     private BookingChargeType chargeType;
-    private OffsetDateTime checkin;
-    private OffsetDateTime checkout;
+    private LocalDateTime checkin;
+    private LocalDateTime checkout;
     private Long roomId;
     private String roomName;
     private Long roomTypeId;
@@ -34,9 +34,9 @@ public class BookingDto {
     private String notes;
     private Double totalRoomCharges;
     private Double totalServiceCharges;
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
     private Long createdBy;
-    private OffsetDateTime updatedAt;
+    private LocalDateTime updatedAt;
     private Long updatedBy;
 
     private ArrayList<BookingDetailDto> bookingDetails;
@@ -70,20 +70,20 @@ public class BookingDto {
         return this;
     }
 
-    public OffsetDateTime getCheckin() {
+    public LocalDateTime getCheckin() {
         return checkin;
     }
 
-    public BookingDto setCheckin(OffsetDateTime checkin) {
+    public BookingDto setCheckin(LocalDateTime checkin) {
         this.checkin = checkin;
         return this;
     }
 
-    public OffsetDateTime getCheckout() {
+    public LocalDateTime getCheckout() {
         return checkout;
     }
 
-    public BookingDto setCheckout(OffsetDateTime checkout) {
+    public BookingDto setCheckout(LocalDateTime checkout) {
         this.checkout = checkout;
         return this;
     }
@@ -223,11 +223,11 @@ public class BookingDto {
         return this;
     }
 
-    public OffsetDateTime getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public BookingDto setCreatedAt(OffsetDateTime createdAt) {
+    public BookingDto setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
         return this;
     }
@@ -241,11 +241,11 @@ public class BookingDto {
         return this;
     }
 
-    public OffsetDateTime getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public BookingDto setUpdatedAt(OffsetDateTime updatedAt) {
+    public BookingDto setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
         return this;
     }

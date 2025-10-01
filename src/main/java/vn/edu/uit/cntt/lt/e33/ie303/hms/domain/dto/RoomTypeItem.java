@@ -1,10 +1,10 @@
 package vn.edu.uit.cntt.lt.e33.ie303.hms.domain.dto;
 
-public class RoomItem {
+public class RoomTypeItem {
     private Long id;
     private String name;
 
-    public RoomItem(Long id, String name) {
+    public RoomTypeItem(Long id, String name) {
         this.id = id;
         this.name = name;
     }

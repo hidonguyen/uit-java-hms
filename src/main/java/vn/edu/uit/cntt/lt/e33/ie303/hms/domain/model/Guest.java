@@ -4,7 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.GuestGender;
 
@@ -18,9 +18,9 @@ public class Guest {
     private String email;
     private String address;
     private String description;
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
     private Long createdBy;
-    private OffsetDateTime updatedAt;
+    private LocalDateTime updatedAt;
     private Long updatedBy;
 
     public Guest() {
@@ -29,7 +29,7 @@ public class Guest {
     public Guest(
             Long id, String name, GuestGender gender, LocalDate dateOfBirth,
             String nationality, String phone, String email, String address, String description,
-            OffsetDateTime createdAt, Long createdBy, OffsetDateTime updatedAt, Long updatedBy) {
+            LocalDateTime createdAt, Long createdBy, LocalDateTime updatedAt, Long updatedBy) {
 
         this.id = id;
         this.name = name;
@@ -60,9 +60,9 @@ public class Guest {
         this.address = rs.getString("address");
         this.description = rs.getString("description");
 
-        this.createdAt = rs.getObject("created_at", OffsetDateTime.class);
+        this.createdAt = rs.getObject("created_at", LocalDateTime.class);
         this.createdBy = rs.getObject("created_by", Long.class); // giữ được null
-        this.updatedAt = rs.getObject("updated_at", OffsetDateTime.class);
+        this.updatedAt = rs.getObject("updated_at", LocalDateTime.class);
         this.updatedBy = rs.getObject("updated_by", Long.class);
     }
 
@@ -148,11 +148,11 @@ public class Guest {
         return this;
     }
 
-    public OffsetDateTime getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public Guest setCreatedAt(OffsetDateTime createdAt) {
+    public Guest setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
         return this;
     }
@@ -166,11 +166,11 @@ public class Guest {
         return this;
     }
 
-    public OffsetDateTime getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public Guest setUpdatedAt(OffsetDateTime updatedAt) {
+    public Guest setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
         return this;
     }

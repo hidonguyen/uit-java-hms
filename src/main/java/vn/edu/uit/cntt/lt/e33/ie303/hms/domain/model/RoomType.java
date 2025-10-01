@@ -3,7 +3,7 @@ package vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 public class RoomType {
     private Long id;
@@ -16,9 +16,9 @@ public class RoomType {
     private double extraAdultFee;
     private double extraChildFee;
     private String description;
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
     private Long createdBy;
-    private OffsetDateTime updatedAt;
+    private LocalDateTime updatedAt;
     private Long updatedBy;
 
     public RoomType() {
@@ -27,8 +27,8 @@ public class RoomType {
     public RoomType(
             Long id, String code, String name, int baseOccupancy, int maxOccupancy,
             double baseRate, double hourRate, double extraAdultFee, double extraChildFee,
-            String description, OffsetDateTime createdAt, Long createdBy,
-            OffsetDateTime updatedAt, Long updatedBy) {
+            String description, LocalDateTime createdAt, Long createdBy,
+            LocalDateTime updatedAt, Long updatedBy) {
         this.id = id;
         this.code = code;
         this.name = name;
@@ -56,9 +56,9 @@ public class RoomType {
         this.extraAdultFee = rs.getDouble("extra_adult_fee");
         this.extraChildFee = rs.getDouble("extra_child_fee");
         this.description = rs.getString("description");
-        this.createdAt = rs.getObject("created_at", OffsetDateTime.class);
+        this.createdAt = rs.getObject("created_at", LocalDateTime.class);
         this.createdBy = rs.getObject("created_by", Long.class);
-        this.updatedAt = rs.getObject("updated_at", OffsetDateTime.class);
+        this.updatedAt = rs.getObject("updated_at", LocalDateTime.class);
         this.updatedBy = rs.getObject("updated_by", Long.class);
     }
 
@@ -152,11 +152,11 @@ public class RoomType {
         return this;
     }
 
-    public OffsetDateTime getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public RoomType setCreatedAt(OffsetDateTime createdAt) {
+    public RoomType setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
         return this;
     }
@@ -170,11 +170,11 @@ public class RoomType {
         return this;
     }
 
-    public OffsetDateTime getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public RoomType setUpdatedAt(OffsetDateTime updatedAt) {
+    public RoomType setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
         return this;
     }

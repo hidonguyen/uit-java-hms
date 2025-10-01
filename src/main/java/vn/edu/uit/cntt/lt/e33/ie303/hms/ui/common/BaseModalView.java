@@ -247,6 +247,10 @@ public abstract class BaseModalView extends JDialog {
 
     public abstract void setModel(Object model);
 
+    public void clearForm() {
+        
+    }
+
     protected void finalizeModal() {
         pack();
         setLocationRelativeTo(getParent());

@@ -85,8 +85,8 @@ public class BookingRepository implements IBookingRepository {
     }
 
     @Override
-    public ArrayList<TodayBookingDto> findTodayBookings() {
-        ArrayList<TodayBookingDto> todayBookings = new ArrayList<>();
+    public List<TodayBookingDto> findTodayBookings() {
+        List<TodayBookingDto> todayBookings = new ArrayList<>();
         try (Connection connection = ds.getConnection();
              PreparedStatement query = connection.prepareStatement(Booking.findTodayBookingsIncludeDetailsQuery());
                 ResultSet rs = query.executeQuery()) {

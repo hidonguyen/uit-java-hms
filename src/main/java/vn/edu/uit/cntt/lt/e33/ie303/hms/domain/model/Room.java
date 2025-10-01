@@ -3,7 +3,7 @@ package vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.HousekeepingStatus;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.RoomStatus;
@@ -15,14 +15,14 @@ public class Room {
     private String description;
     private HousekeepingStatus housekeepingStatus;
     private RoomStatus status;
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
     private Long createdBy;
-    private OffsetDateTime updatedAt;
+    private LocalDateTime updatedAt;
     private Long updatedBy;
 
     public Room() {}
 
-    public Room(Long id, String name, Long roomTypeId, String description, HousekeepingStatus housekeepingStatus, RoomStatus status, OffsetDateTime createdAt, Long createdBy, OffsetDateTime updatedAt, Long updatedBy) {
+    public Room(Long id, String name, Long roomTypeId, String description, HousekeepingStatus housekeepingStatus, RoomStatus status, LocalDateTime createdAt, Long createdBy, LocalDateTime updatedAt, Long updatedBy) {
         this.id = id;
         this.name = name;
         this.roomTypeId = roomTypeId;
@@ -42,9 +42,9 @@ public class Room {
         this.description = rs.getString("description");
         this.housekeepingStatus = HousekeepingStatus.valueOf(rs.getString("housekeeping_status"));
         this.status = RoomStatus.valueOf(rs.getString("status"));
-        this.createdAt = rs.getObject("created_at", OffsetDateTime.class);
+        this.createdAt = rs.getObject("created_at", LocalDateTime.class);
         this.createdBy = rs.getLong("created_by");
-        this.updatedAt = rs.getObject("updated_at", OffsetDateTime.class);
+        this.updatedAt = rs.getObject("updated_at", LocalDateTime.class);
         this.updatedBy = rs.getLong("updated_by");
     }
 
@@ -102,11 +102,11 @@ public class Room {
         return this;
     }
 
-    public OffsetDateTime getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public Room setCreatedAt(OffsetDateTime createdAt) {
+    public Room setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
         return this;
     }
@@ -120,11 +120,11 @@ public class Room {
         return this;
     }
 
-    public OffsetDateTime getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public Room setUpdatedAt(OffsetDateTime updatedAt) {
+    public Room setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
         return this;
     }
@@ -140,6 +140,10 @@ public class Room {
 
     public static String findAllQuery() {
         return "SELECT id, name, room_type_id, description, housekeeping_status, status, created_at, created_by, updated_at, updated_by FROM rooms";
+    }
+
+    public static String findByRoomTypeIdQuery() {
+        return "SELECT id, name, room_type_id, description, housekeeping_status, status, created_at, created_by, updated_at, updated_by FROM rooms WHERE room_type_id = ?";
     }
 
     public static String findByIdQuery() {

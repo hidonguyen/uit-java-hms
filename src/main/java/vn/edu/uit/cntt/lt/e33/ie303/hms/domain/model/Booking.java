@@ -3,7 +3,7 @@ package vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,8 +15,8 @@ public class Booking {
 private Long id;
     private String bookingNo;
     private BookingChargeType chargeType;
-    private OffsetDateTime checkin;
-    private OffsetDateTime checkout;
+    private LocalDateTime checkin;
+    private LocalDateTime checkout;
     private Long roomId;
     private Long roomTypeId;
     private Long primaryGuestId;
@@ -25,16 +25,16 @@ private Long id;
     private BookingStatus status;
     private PaymentStatus paymentStatus;
     private String notes;
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
     private Long createdBy;
-    private OffsetDateTime updatedAt;
+    private LocalDateTime updatedAt;
     private Long updatedBy;
 
     private ArrayList<BookingDetail> bookingDetails;
 
     public Booking() {}
 
-    public Booking(Long id, String bookingNo, BookingChargeType chargeType, OffsetDateTime checkin, OffsetDateTime checkout, Long roomId, Long roomTypeId, Long primaryGuestId, int numAdults, int numChildren, BookingStatus status, PaymentStatus paymentStatus, String notes, OffsetDateTime createdAt, Long createdBy, OffsetDateTime updatedAt, Long updatedBy) {
+    public Booking(Long id, String bookingNo, BookingChargeType chargeType, LocalDateTime checkin, LocalDateTime checkout, Long roomId, Long roomTypeId, Long primaryGuestId, int numAdults, int numChildren, BookingStatus status, PaymentStatus paymentStatus, String notes, LocalDateTime createdAt, Long createdBy, LocalDateTime updatedAt, Long updatedBy) {
         this.id = id;
         this.bookingNo = bookingNo;
         this.chargeType = chargeType;
@@ -60,8 +60,8 @@ private Long id;
         this.id = rs.getLong("id");
         this.bookingNo = rs.getString("booking_no");
         this.chargeType = BookingChargeType.valueOf(rs.getString("charge_type"));
-        this.checkin = rs.getObject("checkin", OffsetDateTime.class);
-        this.checkout = rs.getObject("checkout", OffsetDateTime.class);
+        this.checkin = rs.getObject("checkin", LocalDateTime.class);
+        this.checkout = rs.getObject("checkout", LocalDateTime.class);
         this.roomId = rs.getObject("room_id") != null ? rs.getLong("room_id") : null;
         this.roomTypeId = rs.getObject("room_type_id") != null ? rs.getLong("room_type_id") : null;
         this.primaryGuestId = rs.getObject("primary_guest_id") != null ? rs.getLong("primary_guest_id") : null;
@@ -70,9 +70,9 @@ private Long id;
         this.status = BookingStatus.valueOf(rs.getString("status"));
         this.paymentStatus = PaymentStatus.valueOf(rs.getString("payment_status"));
         this.notes = rs.getString("notes");
-        this.createdAt = rs.getObject("created_at", OffsetDateTime.class);
+        this.createdAt = rs.getObject("created_at", LocalDateTime.class);
         this.createdBy = rs.getObject("created_by") != null ? rs.getLong("created_by") : null;
-        this.updatedAt = rs.getObject("updated_at", OffsetDateTime.class);
+        this.updatedAt = rs.getObject("updated_at", LocalDateTime.class);
         this.updatedBy = rs.getObject("updated_by") != null ? rs.getLong("updated_by") : null;
 
         this.bookingDetails = new ArrayList<>();
@@ -105,20 +105,20 @@ private Long id;
         return this;
     }
 
-    public OffsetDateTime getCheckin() {
+    public LocalDateTime getCheckin() {
         return checkin;
     }
 
-    public Booking setCheckin(OffsetDateTime checkin) {
+    public Booking setCheckin(LocalDateTime checkin) {
         this.checkin = checkin;
         return this;
     }
 
-    public OffsetDateTime getCheckout() {
+    public LocalDateTime getCheckout() {
         return checkout;
     }
 
-    public Booking setCheckout(OffsetDateTime checkout) {
+    public Booking setCheckout(LocalDateTime checkout) {
         this.checkout = checkout;
         return this;
     }
@@ -195,11 +195,11 @@ private Long id;
         return this;
     }
 
-    public OffsetDateTime getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public Booking setCreatedAt(OffsetDateTime createdAt) {
+    public Booking setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
         return this;
     }
@@ -213,11 +213,11 @@ private Long id;
         return this;
     }
 
-    public OffsetDateTime getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public Booking setUpdatedAt(OffsetDateTime updatedAt) {
+    public Booking setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
         return this;
     }
@@ -241,6 +241,9 @@ private Long id;
     }
     public Booking addBookingDetail(BookingDetail bookingDetail) {
         try {
+            if (this.bookingDetails == null)
+                this.bookingDetails = new ArrayList<>();
+                
             this.bookingDetails.add(bookingDetail);
         } catch (Exception e) {
             e.printStackTrace();

@@ -3,7 +3,7 @@ package vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.ServiceStatus;
 
@@ -14,16 +14,16 @@ public class Service {
     private double price;
     private String description;
     private ServiceStatus status;
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
     private Long createdBy;
-    private OffsetDateTime updatedAt;
+    private LocalDateTime updatedAt;
     private Long updatedBy;
 
     public Service() {
     }
 
     public Service(Long id, String name, String unit, double price, String description, ServiceStatus status,
-            OffsetDateTime createdAt, Long createdBy, OffsetDateTime updatedAt, Long updatedBy) {
+            LocalDateTime createdAt, Long createdBy, LocalDateTime updatedAt, Long updatedBy) {
         this.id = id;
         this.name = name;
         this.unit = unit;
@@ -43,12 +43,12 @@ public class Service {
         this.price = rs.getDouble("price");
         this.description = rs.getString("description");
         this.status = ServiceStatus.valueOf(rs.getString("status"));
-        this.createdAt = rs.getObject("created_at", OffsetDateTime.class);
+        this.createdAt = rs.getObject("created_at", LocalDateTime.class);
 
         long createdByVal = rs.getLong("created_by");
         this.createdBy = rs.wasNull() ? null : createdByVal;
 
-        this.updatedAt = rs.getObject("updated_at", OffsetDateTime.class);
+        this.updatedAt = rs.getObject("updated_at", LocalDateTime.class);
         long updatedByVal = rs.getLong("updated_by");
         this.updatedBy = rs.wasNull() ? null : updatedByVal;
     }
@@ -107,11 +107,11 @@ public class Service {
         return this;
     }
 
-    public OffsetDateTime getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public Service setCreatedAt(OffsetDateTime createdAt) {
+    public Service setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
         return this;
     }
@@ -125,11 +125,11 @@ public class Service {
         return this;
     }
 
-    public OffsetDateTime getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public Service setUpdatedAt(OffsetDateTime updatedAt) {
+    public Service setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
         return this;
     }

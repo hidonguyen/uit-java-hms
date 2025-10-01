@@ -1,6 +1,5 @@
 package vn.edu.uit.cntt.lt.e33.ie303.hms.domain.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.dto.TodayBookingDto;
@@ -17,5 +16,5 @@ public interface IBookingService {
 
     Integer delete(Long id);
 
-    ArrayList<TodayBookingDto> findTodayBookings();
+    List<TodayBookingDto> findTodayBookings();
 }

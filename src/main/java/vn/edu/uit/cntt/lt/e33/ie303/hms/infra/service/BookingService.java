@@ -1,8 +1,6 @@
 package vn.edu.uit.cntt.lt.e33.ie303.hms.infra.service;
 
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,16 +35,16 @@ public class BookingService implements IBookingService {
     @Override
     public Integer create(Booking booking) {
         booking.setId(null);
-        booking.setCreatedAt(OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC));
+        booking.setCreatedAt(LocalDateTime.now());
         booking.setCreatedBy(LoggedInUser.ID);
-        booking.setUpdatedAt(OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC));
+        booking.setUpdatedAt(LocalDateTime.now());
         booking.setUpdatedBy(LoggedInUser.ID);
         return bookingRepository.insert(booking);
     }
 
     @Override
     public Integer update(Booking booking) {
-        booking.setUpdatedAt(OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC));
+        booking.setUpdatedAt(LocalDateTime.now());
         booking.setUpdatedBy(LoggedInUser.ID);
         return bookingRepository.update(booking);
     }
@@ -57,7 +55,7 @@ public class BookingService implements IBookingService {
     }
 
     @Override
-    public ArrayList<TodayBookingDto> findTodayBookings() {
+    public List<TodayBookingDto> findTodayBookings() {
         return bookingRepository.findTodayBookings();
     }
 }

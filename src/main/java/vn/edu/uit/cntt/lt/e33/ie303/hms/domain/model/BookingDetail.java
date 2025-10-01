@@ -3,7 +3,7 @@ package vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.BookingDetailType;
 
@@ -12,20 +12,20 @@ public class BookingDetail {
     private Long bookingId;
     private BookingDetailType type;
     private Long serviceId;
-    private OffsetDateTime issuedAt;
+    private LocalDateTime issuedAt;
     private String description;
     private int quantity;
     private double unitPrice;
     private double discountAmount;
     private double amount;
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
     private Long createdBy;
-    private OffsetDateTime updatedAt;
+    private LocalDateTime updatedAt;
     private Long updatedBy;
 
     public BookingDetail() {}
 
-    public BookingDetail(Long id, Long bookingId, BookingDetailType type, Long serviceId, OffsetDateTime issuedAt, String description, int quantity, double unitPrice, double discountAmount, double amount, OffsetDateTime createdAt, Long createdBy, OffsetDateTime updatedAt, Long updatedBy) {
+    public BookingDetail(Long id, Long bookingId, BookingDetailType type, Long serviceId, LocalDateTime issuedAt, String description, int quantity, double unitPrice, double discountAmount, double amount, LocalDateTime createdAt, Long createdBy, LocalDateTime updatedAt, Long updatedBy) {
         this.id = id;
         this.bookingId = bookingId;
         this.type = type;
@@ -47,15 +47,15 @@ public class BookingDetail {
         this.bookingId = rs.getLong("booking_id");
         this.type = BookingDetailType.valueOf(rs.getString("type"));
         this.serviceId = rs.getLong("service_id");
-        this.issuedAt = rs.getObject("issued_at", OffsetDateTime.class);
+        this.issuedAt = rs.getObject("issued_at", LocalDateTime.class);
         this.description = rs.getString("description");
         this.quantity = rs.getInt("quantity");
         this.unitPrice = rs.getDouble("unit_price");
         this.discountAmount = rs.getDouble("discount_amount");
         this.amount = rs.getDouble("amount");
-        this.createdAt = rs.getObject("created_at", OffsetDateTime.class);
+        this.createdAt = rs.getObject("created_at", LocalDateTime.class);
         this.createdBy = rs.getLong("created_by");
-        this.updatedAt = rs.getObject("updated_at", OffsetDateTime.class);
+        this.updatedAt = rs.getObject("updated_at", LocalDateTime.class);
         this.updatedBy = rs.getLong("updated_by");
     }
 
@@ -95,11 +95,11 @@ public class BookingDetail {
         return this;
     }
 
-    public OffsetDateTime getIssuedAt() {
+    public LocalDateTime getIssuedAt() {
         return issuedAt;
     }
 
-    public BookingDetail setIssuedAt(OffsetDateTime issuedAt) {
+    public BookingDetail setIssuedAt(LocalDateTime issuedAt) {
         this.issuedAt = issuedAt;
         return this;
     }
@@ -149,7 +149,7 @@ public class BookingDetail {
         return this;
     }
 
-    public OffsetDateTime getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
@@ -157,7 +157,7 @@ public class BookingDetail {
         return createdBy;
     }
 
-    public BookingDetail setCreatedAt(OffsetDateTime createdAt) {
+    public BookingDetail setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
         return this;
     }
@@ -167,11 +167,11 @@ public class BookingDetail {
         return this;
     }
 
-    public OffsetDateTime getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public BookingDetail setUpdatedAt(OffsetDateTime updatedAt) {
+    public BookingDetail setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
         return this;
     }
