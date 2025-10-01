@@ -24,8 +24,10 @@ public final class AppConfig {
     public static AppConfig load() {
         Properties p = new Properties();
         try (InputStream in = AppConfig.class.getClassLoader().getResourceAsStream("app.properties")) {
-            if (in != null) p.load(in);
-        } catch (IOException ignored) {}
+            if (in != null)
+                p.load(in);
+        } catch (IOException ignored) {
+        }
         String url = getEnvOrDefault("DB_URL", p.getProperty("db.url", "jdbc:postgresql://localhost:5432/hms"));
         String user = getEnvOrDefault("DB_USER", p.getProperty("db.user", "postgres"));
         String pass = getEnvOrDefault("DB_PASSWORD", p.getProperty("db.password", "postgres"));
@@ -39,6 +41,9 @@ public final class AppConfig {
     }
 
     public static DataSource dataSource(AppConfig cfg) {
+        System.setProperty("user.timezone", "UTC");
+        java.util.TimeZone.setDefault(java.util.TimeZone.getTimeZone("UTC"));
+
         HikariConfig hc = new HikariConfig();
         hc.setJdbcUrl(cfg.dbUrl);
         hc.setUsername(cfg.dbUser);
@@ -46,6 +51,7 @@ public final class AppConfig {
         hc.setMaximumPoolSize(5);
         hc.setMinimumIdle(1);
         hc.setPoolName("hms-app-pool");
+
         return new HikariDataSource(hc);
     }
 }
