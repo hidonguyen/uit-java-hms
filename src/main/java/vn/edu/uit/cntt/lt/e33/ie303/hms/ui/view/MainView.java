@@ -20,6 +20,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.User;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.ui.presenter.BookingHistoryPresenter;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.ui.presenter.BookingPresenter;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.ui.presenter.GuestPresenter;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.ui.presenter.ReportPresenter;
@@ -55,6 +56,7 @@ public class MainView extends JFrame {
     private final RoomTypePresenter roomTypePresenter;
     private final GuestPresenter guestPresenter;
     private final ReportPresenter reportPresenter;
+    private final BookingHistoryPresenter bookingHistoryPresenter;
 
     public MainView() {
         super("UIT Hotel Management Pro");
@@ -68,6 +70,7 @@ public class MainView extends JFrame {
         roomTypePresenter = new RoomTypePresenter(parentFrame);
         guestPresenter = new GuestPresenter(parentFrame);
         reportPresenter = new ReportPresenter(parentFrame);
+        bookingHistoryPresenter = new BookingHistoryPresenter();
 
         // Configure tabbed pane
         tabbedPane.setTabPlacement(JTabbedPane.TOP);
@@ -104,6 +107,7 @@ public class MainView extends JFrame {
         tabbedPane.addTab("Room Type", roomTypePresenter.getView());
         tabbedPane.addTab("Guests", guestPresenter.getView());
         tabbedPane.addTab("Reports", reportPresenter.getView());
+        tabbedPane.addTab("Booking History", bookingHistoryPresenter.getView());
 
         mainPanel.add(tabbedPane, BorderLayout.CENTER);
         add(mainPanel, BorderLayout.CENTER);

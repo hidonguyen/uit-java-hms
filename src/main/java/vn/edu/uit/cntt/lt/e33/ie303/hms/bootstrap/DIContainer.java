@@ -19,6 +19,7 @@ public final class DIContainer {
     private final IServiceRepository serviceRepository;
     private final IUserRepository userRepository;
     private final IReportRepository reportRepository;
+    private final IBookingHistoryRepository bookingHistoryRepository;
 
     private final IUserService userService;
     private final IServiceService serviceService;
@@ -26,6 +27,7 @@ public final class DIContainer {
     private final IRoomTypeService roomTypeService;
     private final IGuestService guestService;
     private final IReportService reportService;
+    private final IBookingHistoryService bookingHistoryService;
 
     private DIContainer() {
         AppConfig config = AppConfig.load();
@@ -40,6 +42,7 @@ public final class DIContainer {
         this.serviceRepository = new ServiceRepository(dataSource);
         this.userRepository = new UserRepository(dataSource);
         this.reportRepository = new ReportRepository(dataSource);
+        this.bookingHistoryRepository = new BookingHistoryRepository(dataSource);
 
         this.userService = new UserService(userRepository);
         this.serviceService = new ServiceService(serviceRepository);
@@ -47,6 +50,7 @@ public final class DIContainer {
         this.roomTypeService = new RoomTypeService(roomTypeRepository);
         this.guestService = new GuestService(guestRepository);
         this.reportService = new ReportService(reportRepository);
+        this.bookingHistoryService = new BookingHistoryService(bookingHistoryRepository);
 
     }
 
@@ -111,5 +115,9 @@ public final class DIContainer {
 
     public IReportService getReportService() {
         return reportService;
+    }
+
+    public IBookingHistoryService getBookingHistoryService() {
+        return bookingHistoryService;
     }
 }
