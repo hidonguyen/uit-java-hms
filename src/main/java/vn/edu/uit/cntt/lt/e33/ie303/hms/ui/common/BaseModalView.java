@@ -56,7 +56,7 @@ public abstract class BaseModalView extends JDialog {
         header.setBackground(CARD_COLOR);
         header.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 1, 0, BORDER_COLOR),
-                BorderFactory.createEmptyBorder(16, 20, 16, 20)));
+                BorderFactory.createEmptyBorder(12, 16, 12, 16)));
 
         JLabel titleLabel = new JLabel(getTitle());
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
@@ -69,10 +69,10 @@ public abstract class BaseModalView extends JDialog {
     protected JPanel createFormPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(CARD_COLOR);
-        panel.setBorder(BorderFactory.createEmptyBorder(24, 24, 24, 24));
+        panel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
 
         gc = new GridBagConstraints();
-        gc.insets = new Insets(8, 8, 8, 8);
+        gc.insets = new Insets(4, 6, 4, 6);
         gc.fill = GridBagConstraints.HORIZONTAL;
         gc.anchor = GridBagConstraints.WEST;
 
@@ -80,7 +80,7 @@ public abstract class BaseModalView extends JDialog {
     }
 
     private JPanel createFooter() {
-        JPanel footer = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 16));
+        JPanel footer = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 12));
         footer.setBackground(BACKGROUND_COLOR);
         footer.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, BORDER_COLOR));
 
@@ -104,7 +104,7 @@ public abstract class BaseModalView extends JDialog {
         button.setFont(new Font("Segoe UI", Font.CENTER_BASELINE, 13));
         button.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(isPrimary ? bg : BORDER_COLOR, 1, true),
-                BorderFactory.createEmptyBorder(10, 20, 10, 20)));
+                BorderFactory.createEmptyBorder(8, 16, 8, 16)));
         button.setFocusPainted(false);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
@@ -166,13 +166,13 @@ public abstract class BaseModalView extends JDialog {
             comboBox.setForeground(TEXT_COLOR);
         }
 
-        field.setPreferredSize(new Dimension(200, 36));
+        field.setPreferredSize(new Dimension(180, 32));
     }
 
     private Border createFieldBorder() {
         return BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(BORDER_COLOR, 1, true),
-                BorderFactory.createEmptyBorder(8, 12, 8, 12));
+                BorderFactory.createEmptyBorder(6, 10, 6, 10));
     }
 
     private void setupEventHandlers() {
@@ -212,12 +212,12 @@ public abstract class BaseModalView extends JDialog {
         errorDialog.setLayout(new BorderLayout());
         errorDialog.getContentPane().setBackground(Color.WHITE);
 
-        JPanel content = new JPanel(new BorderLayout(16, 16));
-        content.setBorder(BorderFactory.createEmptyBorder(24, 24, 24, 24));
+        JPanel content = new JPanel(new BorderLayout(12, 12));
+        content.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
         content.setBackground(Color.WHITE);
 
         JLabel messageLabel = new JLabel(
-                "<html><div style='max-width:320px;'>" + (message == null ? "" : message) + "</div></html>");
+                "<html><div style='max-width:300px;'>" + (message == null ? "" : message) + "</div></html>");
         messageLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         messageLabel.setForeground(TEXT_COLOR);
         content.add(messageLabel, BorderLayout.CENTER);
@@ -232,7 +232,7 @@ public abstract class BaseModalView extends JDialog {
 
         errorDialog.add(content);
         errorDialog.pack();
-        errorDialog.setMinimumSize(new Dimension(360, errorDialog.getHeight()));
+        errorDialog.setMinimumSize(new Dimension(320, errorDialog.getHeight()));
         errorDialog.setLocationRelativeTo(this);
         errorDialog.setVisible(true);
     }

@@ -1,8 +1,14 @@
 package vn.edu.uit.cntt.lt.e33.ie303.hms.ui.presenter;
 
+import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
-import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
 import javax.swing.table.AbstractTableModel;
 
 import vn.edu.uit.cntt.lt.e33.ie303.hms.bootstrap.DIContainer;
@@ -18,11 +24,14 @@ public class ServicePresenter {
     private final IServiceService service;
 
     private List<Service> services = new ArrayList<>();
+    private final NumberFormat vndFormat;
 
     public ServicePresenter(JFrame parentFrame) {
         this.view = new ServiceView();
         this.modal = new CreateOrEditServiceModal(parentFrame);
         this.service = DIContainer.getInstance().getServiceService();
+        this.vndFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+        this.vndFormat.setMaximumFractionDigits(0);
 
         this.view.onAdd(_ -> {
             modal.setModel(null);
@@ -73,12 +82,12 @@ public class ServicePresenter {
         this.view.onSearch(_ -> {
             String query = view.getSearchQuery();
             if (query == null || query.isEmpty()) {
-                view.setTableModel(new ServiceTableModel(services));
+                view.setTableModel(new ServiceTableModel(services, vndFormat));
             } else {
                 List<Service> filtered = services.stream()
                         .filter(s -> s.getName().toLowerCase().contains(query.toLowerCase()))
                         .toList();
-                view.setTableModel(new ServiceTableModel(filtered));
+                view.setTableModel(new ServiceTableModel(filtered, vndFormat));
             }
         });
 
@@ -136,7 +145,7 @@ public class ServicePresenter {
             protected void done() {
                 try {
                     services = get();
-                    view.setTableModel(new ServiceTableModel(services));
+                    view.setTableModel(new ServiceTableModel(services, vndFormat));
                 } catch (Exception e) {
                     view.showErrorMessage(e.getMessage());
                 }
@@ -149,8 +158,11 @@ public class ServicePresenter {
                 "Created By", "Updated At", "Updated By" };
         private final List<Service> data;
 
-        ServiceTableModel(List<Service> data) {
+        private final NumberFormat vndFormat;
+
+        ServiceTableModel(List<Service> data, NumberFormat vndFormat) {
             this.data = data;
+            this.vndFormat = vndFormat;
         }
 
         @Override
@@ -175,7 +187,7 @@ public class ServicePresenter {
                 case 0 -> o.getId();
                 case 1 -> o.getName();
                 case 2 -> o.getUnit();
-                case 3 -> o.getPrice();
+                case 3 -> vndFormat.format(o.getPrice());
                 case 4 -> o.getDescription();
                 case 5 -> o.getStatus();
                 case 6 -> o.getCreatedAt() == null ? null

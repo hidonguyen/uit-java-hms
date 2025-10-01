@@ -75,7 +75,7 @@ public abstract class BaseTableView extends JPanel {
 
     private void initializeComponents() {
         setBackground(Color.WHITE);
-        setBorder(new EmptyBorder(20, 20, 20, 20));
+        setBorder(new EmptyBorder(12, 12, 12, 12)); // giảm padding
 
         setupButtons();
         setupLayout();
@@ -108,7 +108,7 @@ public abstract class BaseTableView extends JPanel {
     private JPanel createHeaderPanel() {
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(Color.WHITE);
-        headerPanel.setBorder(new EmptyBorder(0, 0, 20, 0));
+        headerPanel.setBorder(new EmptyBorder(0, 0, 12, 0)); // giảm spacing
 
         JLabel titleLabel = new JLabel(getModuleName() + " Management");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
@@ -129,14 +129,14 @@ public abstract class BaseTableView extends JPanel {
         searchContainer.setBackground(SECONDARY_COLOR);
         searchContainer.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(BORDER_COLOR, 1, true),
-                new EmptyBorder(5, 10, 5, 5)));
-        searchContainer.setPreferredSize(new Dimension(280, 40));
+                new EmptyBorder(4, 8, 4, 4))); // giảm padding
+        searchContainer.setPreferredSize(new Dimension(260, 34)); // gọn lại
 
         searchField.setBorder(null);
         searchField.setBackground(SECONDARY_COLOR);
         searchContainer.add(searchField, BorderLayout.CENTER);
 
-        searchBtn.setPreferredSize(new Dimension(80, 30));
+        searchBtn.setPreferredSize(new Dimension(72, 28)); // gọn lại
         searchBtn.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         searchContainer.add(searchBtn, BorderLayout.EAST);
 
@@ -145,17 +145,17 @@ public abstract class BaseTableView extends JPanel {
     }
 
     private JPanel createActionPanel() {
-        JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 20));
+        JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 12)); // giảm gap
         actionPanel.setBackground(Color.WHITE);
 
-        addBtn.setPreferredSize(new Dimension(140, 40));
-        editBtn.setPreferredSize(new Dimension(100, 40));
-        deleteBtn.setPreferredSize(new Dimension(100, 40));
+        addBtn.setPreferredSize(new Dimension(128, 34)); // gọn lại
+        editBtn.setPreferredSize(new Dimension(92, 34)); // gọn lại
+        deleteBtn.setPreferredSize(new Dimension(92, 34)); // gọn lại
 
         actionPanel.add(addBtn);
-        actionPanel.add(Box.createHorizontalStrut(10));
+        actionPanel.add(Box.createHorizontalStrut(8)); // giảm khoảng cách
         actionPanel.add(editBtn);
-        actionPanel.add(Box.createHorizontalStrut(10));
+        actionPanel.add(Box.createHorizontalStrut(8));
         actionPanel.add(deleteBtn);
 
         return actionPanel;
@@ -180,7 +180,7 @@ public abstract class BaseTableView extends JPanel {
         table.setShowGrid(false);
         table.setAutoCreateRowSorter(true);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        table.setRowHeight(45);
+        table.setRowHeight(36); // giảm từ 45
         table.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         table.setForeground(TEXT_COLOR);
         table.setSelectionBackground(new Color(219, 234, 254));
@@ -193,7 +193,7 @@ public abstract class BaseTableView extends JPanel {
         header.setForeground(TEXT_COLOR);
         header.setFont(new Font("Segoe UI", Font.BOLD, 14));
         header.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, BORDER_COLOR));
-        header.setPreferredSize(new Dimension(header.getPreferredSize().width, 50));
+        header.setPreferredSize(new Dimension(header.getPreferredSize().width, 40)); // giảm từ 50
 
         DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer() {
             @Override
@@ -204,7 +204,7 @@ public abstract class BaseTableView extends JPanel {
                 if (!isSelected) {
                     c.setBackground((row % 2 == 0) ? Color.WHITE : new Color(249, 250, 251));
                 }
-                setBorder(new EmptyBorder(10, 15, 10, 15));
+                setBorder(new EmptyBorder(6, 10, 6, 10)); // giảm padding cell
                 return c;
             }
         };
@@ -233,7 +233,7 @@ public abstract class BaseTableView extends JPanel {
         button.setBackground(bgColor);
         button.setForeground(textColor);
         button.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        button.setBorder(BorderFactory.createEmptyBorder(8, 14, 8, 14)); // giảm padding nút
         button.setFocusPainted(false);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         button.setOpaque(true);
@@ -336,7 +336,7 @@ public abstract class BaseTableView extends JPanel {
 
     public void showErrorMessage(String message) {
         JOptionPane.showMessageDialog(this,
-                "<html><div style='padding: 10px; font-family: Segoe UI; font-size: 14px;'>" + message
+                "<html><div style='padding: 8px; font-family: Segoe UI; font-size: 14px;'>" + message
                         + "</div></html>",
                 "Error - " + getErrorTitle(),
                 JOptionPane.ERROR_MESSAGE);
@@ -344,7 +344,7 @@ public abstract class BaseTableView extends JPanel {
 
     public void showSuccessMessage(String message) {
         JOptionPane.showMessageDialog(this,
-                "<html><div style='padding: 10px; font-family: Segoe UI; font-size: 14px;'>" + message
+                "<html><div style='padding: 8px; font-family: Segoe UI; font-size: 14px;'>" + message
                         + "</div></html>",
                 "Success - " + getErrorTitle(),
                 JOptionPane.INFORMATION_MESSAGE);
