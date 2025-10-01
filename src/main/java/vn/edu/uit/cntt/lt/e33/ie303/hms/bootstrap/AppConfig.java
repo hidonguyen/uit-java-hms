@@ -52,8 +52,6 @@ public final class AppConfig {
         hc.setMinimumIdle(1);
         hc.setPoolName("hms-app-pool");
 
-        hc.addDataSourceProperty("serverTimezone", "UTC");
-
         return new HikariDataSource(hc);
     }
 }

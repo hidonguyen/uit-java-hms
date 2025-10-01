@@ -74,11 +74,6 @@ public class ReportKpiSummary {
         return occupancyRate;
     }
 
-    public ReportKpiSummary setOccupancyRate(BigDecimal occupancyRate) {
-        this.occupancyRate = occupancyRate;
-        return this;
-    }
-
     public BigDecimal getAdr() {
         return adr;
     }

@@ -1,8 +1,13 @@
 package vn.edu.uit.cntt.lt.e33.ie303.hms.ui.view.guest;
 
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -80,16 +85,47 @@ public class CreateOrEditGuestModal extends BaseModalView {
 
     private void styleDatePicker(DatePicker datePicker) {
         datePicker.getComponentDateTextField().setBorder(createFieldBorder());
-        datePicker.getComponentDateTextField().setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 13));
-        datePicker.getComponentDateTextField().setBackground(java.awt.Color.WHITE);
+        datePicker.getComponentDateTextField().setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        datePicker.getComponentDateTextField().setBackground(Color.WHITE);
         datePicker.getComponentDateTextField().setForeground(TEXT_COLOR);
-        datePicker.setPreferredSize(new java.awt.Dimension(200, 36));
 
         datePicker.getComponentToggleCalendarButton().setBackground(PRIMARY_COLOR);
-        datePicker.getComponentToggleCalendarButton().setForeground(java.awt.Color.WHITE);
-        datePicker.getComponentToggleCalendarButton().setBorder(javax.swing.BorderFactory.createEmptyBorder());
+        datePicker.getComponentToggleCalendarButton().setForeground(Color.WHITE);
+        datePicker.getComponentToggleCalendarButton().setBorder(BorderFactory.createEmptyBorder());
         datePicker.getComponentToggleCalendarButton().setFocusPainted(false);
-        datePicker.getComponentToggleCalendarButton().setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        datePicker.getComponentToggleCalendarButton().setCursor(new Cursor(Cursor.HAND_CURSOR));
+        datePicker.getComponentToggleCalendarButton().setText("▼");
+        datePicker.getComponentToggleCalendarButton().setFont(new Font("Segoe UI", Font.PLAIN, 16));
+
+        datePicker.setPreferredSize(new Dimension(200, 36));
+
+        DatePickerSettings settings = datePicker.getSettings();
+
+        Font calendarFont = new Font("Segoe UI", Font.PLAIN, 13);
+        settings.setFontValidDate(calendarFont);
+        settings.setFontInvalidDate(calendarFont);
+        settings.setFontVetoedDate(calendarFont);
+        settings.setFontCalendarDateLabels(calendarFont);
+        settings.setFontCalendarWeekdayLabels(new Font("Segoe UI", Font.BOLD, 12));
+        settings.setFontCalendarWeekNumberLabels(calendarFont);
+        settings.setFontMonthAndYearMenuLabels(new Font("Segoe UI", Font.BOLD, 14));
+        settings.setFontMonthAndYearNavigationButtons(new Font("Segoe UI", Font.BOLD, 16));
+
+        settings.setColor(DatePickerSettings.DateArea.BackgroundOverallCalendarPanel, Color.WHITE);
+        settings.setColor(DatePickerSettings.DateArea.BackgroundMonthAndYearMenuLabels, Color.WHITE);
+        settings.setColor(DatePickerSettings.DateArea.BackgroundTopLeftLabelAboveWeekNumbers, Color.WHITE);
+        settings.setColor(DatePickerSettings.DateArea.BackgroundCalendarPanelLabelsOnHover, new Color(243, 244, 246));
+        settings.setColor(DatePickerSettings.DateArea.CalendarBackgroundSelectedDate, PRIMARY_COLOR);
+        settings.setColor(DatePickerSettings.DateArea.CalendarBorderSelectedDate, PRIMARY_COLOR);
+        settings.setColor(DatePickerSettings.DateArea.BackgroundTodayLabel, new Color(243, 244, 246));
+        settings.setColor(DatePickerSettings.DateArea.BackgroundClearLabel, new Color(243, 244, 246));
+        settings.setColor(DatePickerSettings.DateArea.CalendarDefaultBackgroundHighlightedDates,
+                new Color(224, 231, 255));
+        settings.setColor(DatePickerSettings.DateArea.CalendarDefaultTextHighlightedDates, PRIMARY_COLOR);
+
+        settings.setFormatForDatesCommonEra("dd/MM/yyyy");
+        settings.setTranslationToday("Hôm nay");
+        settings.setTranslationClear("Xóa");
     }
 
     private javax.swing.border.Border createFieldBorder() {

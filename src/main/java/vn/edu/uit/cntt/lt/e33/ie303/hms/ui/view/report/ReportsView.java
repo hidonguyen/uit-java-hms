@@ -10,6 +10,10 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -20,38 +24,42 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
-import javax.swing.SpinnerDateModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.block.BlockBorder;
+import org.jfree.chart.labels.PieSectionLabelGenerator;
+import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
+import org.jfree.chart.title.LegendTitle;
+import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 
+import com.github.lgooddatepicker.components.DatePicker;
+import com.github.lgooddatepicker.components.DatePickerSettings;
+
+import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.report.ReportBookingCountPoint;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.report.ReportDateRangeParams;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.report.ReportGuestMix;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.report.ReportKpiSummary;
-import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.report.ReportOccupancyPoint;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.report.ReportRevenueByRoomType;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.report.ReportRoomRevenuePoint;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.report.ReportServiceRevenueItem;
-
-import java.time.format.DateTimeFormatter;
 
 public class ReportsView extends JPanel {
     private static final Color PRIMARY = new Color(79, 70, 229);
     private static final Color SECONDARY = new Color(236, 72, 153);
     private static final Color SUCCESS = new Color(34, 197, 94);
-    private static final Color WARNING = new Color(251, 146, 60);
     private static final Color INFO = new Color(59, 130, 246);
     private static final Color BG_LIGHT = new Color(249, 250, 251);
     private static final Color CARD_BG = Color.WHITE;
@@ -62,23 +70,22 @@ public class ReportsView extends JPanel {
     };
 
     private final JComboBox<String> quickRange;
-    private final JSpinner fromSpinner;
-    private final JSpinner toSpinner;
+    private final DatePicker fromPicker;
+    private final DatePicker toPicker;
+
     private final JComboBox<String> granularity;
     private final JButton applyBtn;
 
     private final JLabel kpiRevenue;
     private final JLabel kpiRoomRevenue;
     private final JLabel kpiServiceRevenue;
-    private final JLabel kpiOcc;
     private final JLabel kpiGuests;
 
     private final DefaultCategoryDataset revenueDataset;
-    private final DefaultCategoryDataset occDataset;
+    private final DefaultCategoryDataset bookingCountDataset;
     private final DefaultPieDataset roomTypePie;
     private final DefaultPieDataset servicePie;
     private final DefaultPieDataset guestMixPie;
-
     private Consumer<ReportDateRangeParams> filterHandler;
 
     public ReportsView() {
@@ -88,8 +95,8 @@ public class ReportsView extends JPanel {
 
         JPanel toolbar = createToolbar();
         quickRange = (JComboBox<String>) getComponentByName(toolbar, "quickRange");
-        fromSpinner = (JSpinner) getComponentByName(toolbar, "fromSpinner");
-        toSpinner = (JSpinner) getComponentByName(toolbar, "toSpinner");
+        fromPicker = (DatePicker) getComponentByName(toolbar, "fromPicker");
+        toPicker = (DatePicker) getComponentByName(toolbar, "toPicker");
         granularity = (JComboBox<String>) getComponentByName(toolbar, "granularity");
         applyBtn = (JButton) getComponentByName(toolbar, "applyBtn");
 
@@ -97,11 +104,10 @@ public class ReportsView extends JPanel {
         kpiRevenue = (JLabel) getComponentByName(kpiPanel, "kpiRevenue");
         kpiRoomRevenue = (JLabel) getComponentByName(kpiPanel, "kpiRoomRevenue");
         kpiServiceRevenue = (JLabel) getComponentByName(kpiPanel, "kpiServiceRevenue");
-        kpiOcc = (JLabel) getComponentByName(kpiPanel, "kpiOcc");
         kpiGuests = (JLabel) getComponentByName(kpiPanel, "kpiGuests");
 
         revenueDataset = new DefaultCategoryDataset();
-        occDataset = new DefaultCategoryDataset();
+        bookingCountDataset = new DefaultCategoryDataset();
         roomTypePie = new DefaultPieDataset();
         servicePie = new DefaultPieDataset();
         guestMixPie = new DefaultPieDataset();
@@ -139,14 +145,13 @@ public class ReportsView extends JPanel {
         qr.setName("quickRange");
         styleComboBox(qr);
 
-        JSpinner fs = new JSpinner(new SpinnerDateModel());
-        JSpinner ts = new JSpinner(new SpinnerDateModel());
-        fs.setName("fromSpinner");
-        ts.setName("toSpinner");
-        styleSpinner(fs);
-        styleSpinner(ts);
-        ((JSpinner.DateEditor) fs.getEditor()).getFormat().applyPattern("dd/MM/yyyy");
-        ((JSpinner.DateEditor) ts.getEditor()).getFormat().applyPattern("dd/MM/yyyy");
+        DatePicker fromDatePicker = createStyledDatePicker();
+        DatePicker toDatePicker = createStyledDatePicker();
+        fromDatePicker.setName("fromPicker");
+        toDatePicker.setName("toPicker");
+
+        fromDatePicker.setDate(LocalDate.now().minusDays(7));
+        toDatePicker.setDate(LocalDate.now());
 
         JComboBox<String> gr = new JComboBox<>(new String[] { "DAY", "WEEK", "MONTH", "YEAR" });
         gr.setName("granularity");
@@ -160,9 +165,9 @@ public class ReportsView extends JPanel {
         toolbar.add(qr);
         toolbar.add(Box.createHorizontalStrut(8));
         toolbar.add(createLabel("Từ:"));
-        toolbar.add(fs);
+        toolbar.add(fromDatePicker);
         toolbar.add(createLabel("Đến:"));
-        toolbar.add(ts);
+        toolbar.add(toDatePicker);
         toolbar.add(Box.createHorizontalStrut(8));
         toolbar.add(createLabel("Chi tiết:"));
         toolbar.add(gr);
@@ -172,6 +177,102 @@ public class ReportsView extends JPanel {
         return toolbar;
     }
 
+    private DatePicker createStyledDatePicker() {
+        DatePickerSettings settings = new DatePickerSettings();
+
+        settings.setFormatForDatesCommonEra("dd/MM/yyyy");
+        settings.setTranslationToday("Hôm nay");
+        settings.setTranslationClear("Xóa");
+
+        Font regularFont = new Font("Segoe UI", Font.PLAIN, 13);
+        Font boldFont = new Font("Segoe UI", Font.BOLD, 12);
+        Font titleFont = new Font("Segoe UI", Font.BOLD, 14);
+
+        settings.setFontValidDate(regularFont);
+        settings.setFontInvalidDate(regularFont);
+        settings.setFontVetoedDate(regularFont);
+        settings.setFontCalendarDateLabels(regularFont);
+        settings.setFontCalendarWeekdayLabels(boldFont);
+        settings.setFontCalendarWeekNumberLabels(regularFont);
+        settings.setFontMonthAndYearMenuLabels(titleFont);
+        settings.setFontMonthAndYearNavigationButtons(new Font("Segoe UI", Font.BOLD, 16));
+
+        settings.setColor(DatePickerSettings.DateArea.BackgroundOverallCalendarPanel, Color.WHITE);
+        settings.setColor(DatePickerSettings.DateArea.BackgroundMonthAndYearMenuLabels, Color.WHITE);
+        settings.setColor(DatePickerSettings.DateArea.BackgroundTopLeftLabelAboveWeekNumbers, Color.WHITE);
+        settings.setColor(DatePickerSettings.DateArea.BackgroundCalendarPanelLabelsOnHover, new Color(243, 244, 246));
+        settings.setColor(DatePickerSettings.DateArea.CalendarBackgroundSelectedDate, PRIMARY);
+        settings.setColor(DatePickerSettings.DateArea.CalendarBorderSelectedDate, PRIMARY);
+        settings.setColor(DatePickerSettings.DateArea.BackgroundTodayLabel, new Color(243, 244, 246));
+        settings.setColor(DatePickerSettings.DateArea.BackgroundClearLabel, new Color(243, 244, 246));
+        settings.setColor(DatePickerSettings.DateArea.CalendarDefaultBackgroundHighlightedDates,
+                new Color(224, 231, 255));
+        settings.setColor(DatePickerSettings.DateArea.CalendarDefaultTextHighlightedDates, PRIMARY);
+
+        DatePicker datePicker = new DatePicker(settings);
+
+        datePicker.getComponentDateTextField().setFont(regularFont);
+        datePicker.getComponentDateTextField().setPreferredSize(new Dimension(140, 36));
+        datePicker.getComponentDateTextField().setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(new Color(209, 213, 219), 1, true),
+                        BorderFactory.createEmptyBorder(8, 12, 8, 12)));
+        datePicker.getComponentDateTextField().setBackground(Color.WHITE);
+        datePicker.getComponentDateTextField().setForeground(new Color(31, 41, 55));
+
+        datePicker.getComponentToggleCalendarButton().setBackground(PRIMARY);
+        datePicker.getComponentToggleCalendarButton().setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(PRIMARY, 1, true),
+                        BorderFactory.createEmptyBorder(6, 10, 6, 10)));
+        datePicker.getComponentToggleCalendarButton().setFocusPainted(false);
+        datePicker.getComponentToggleCalendarButton().setText("▼");
+        datePicker.getComponentToggleCalendarButton().setForeground(Color.WHITE);
+        datePicker.getComponentToggleCalendarButton().setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        datePicker.getComponentToggleCalendarButton().addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                datePicker.getComponentToggleCalendarButton().setBackground(
+                        new Color(67, 56, 202));
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                datePicker.getComponentToggleCalendarButton().setBackground(PRIMARY);
+            }
+        });
+
+        return datePicker;
+    }
+
+    private void applyFilter() {
+        if (filterHandler == null)
+            return;
+
+        LocalDate from = fromPicker.getDate();
+        LocalDate to = toPicker.getDate();
+
+        if (from == null || to == null) {
+            showErrorMessage("Vui lòng chọn ngày bắt đầu và kết thúc");
+            return;
+        }
+
+        if (from.isAfter(to)) {
+            showErrorMessage("Ngày bắt đầu phải trước ngày kết thúc");
+            return;
+        }
+
+        String g = (String) granularity.getSelectedItem();
+        ReportDateRangeParams p = new ReportDateRangeParams(from, to, g, java.util.List.of());
+        filterHandler.accept(p);
+    }
+
+    public void setFilterRange(ReportDateRangeParams p) {
+        fromPicker.setDate(p.getFrom());
+        toPicker.setDate(p.getTo());
+        if (p.getGranularity() != null)
+            granularity.setSelectedItem(p.getGranularity());
+    }
+
     private JPanel createKpiPanel() {
         JPanel panel = new JPanel(new GridLayout(1, 5, 16, 0));
         panel.setBackground(BG_LIGHT);
@@ -179,19 +280,16 @@ public class ReportsView extends JPanel {
         JLabel rev = new JLabel("-");
         JLabel room = new JLabel("-");
         JLabel service = new JLabel("-");
-        JLabel occ = new JLabel("-");
         JLabel guests = new JLabel("-");
 
         rev.setName("kpiRevenue");
         room.setName("kpiRoomRevenue");
         service.setName("kpiServiceRevenue");
-        occ.setName("kpiOcc");
         guests.setName("kpiGuests");
 
         panel.add(createKpiCard("Tổng doanh thu", rev, PRIMARY));
         panel.add(createKpiCard("Doanh thu phòng", room, SUCCESS));
         panel.add(createKpiCard("Doanh thu dịch vụ", service, INFO));
-        panel.add(createKpiCard("Công suất TB", occ, WARNING));
         panel.add(createKpiCard("Tổng khách", guests, SECONDARY));
 
         return panel;
@@ -220,23 +318,29 @@ public class ReportsView extends JPanel {
 
     private JPanel createChartsPanel() {
         JTabbedPane tabs = new JTabbedPane();
-        tabs.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        tabs.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         tabs.setBackground(BG_LIGHT);
+
+        tabs.setBorder(BorderFactory.createEmptyBorder());
+        tabs.setForeground(new Color(55, 65, 81));
 
         JFreeChart revenueChart = createLineChart("Doanh thu theo thời gian", "Thời gian", "VND (triệu)",
                 revenueDataset);
-        JFreeChart occChart = createLineChart("Công suất theo thời gian", "Thời gian", "Phần trăm (%)", occDataset);
+        JFreeChart bookingChart = createBarChart("Số booking theo ngày", "Thời gian", "Số booking",
+                bookingCountDataset);
         JFreeChart roomTypeChart = createPieChart("Doanh thu theo loại phòng", roomTypePie);
         JFreeChart serviceChart = createPieChart("Doanh thu dịch vụ", servicePie);
         JFreeChart guestMixChart = createPieChart("Phân bổ khách", guestMixPie);
 
-        JPanel trendPanel = new JPanel(new GridLayout(1, 2, 16, 0));
+        JPanel trendPanel = new JPanel(new GridLayout(1, 2, 20, 0));
         trendPanel.setBackground(BG_LIGHT);
+        trendPanel.setBorder(new EmptyBorder(16, 16, 16, 16));
         trendPanel.add(createChartCard(revenueChart));
-        trendPanel.add(createChartCard(occChart));
+        trendPanel.add(createChartCard(bookingChart));
 
-        JPanel mixPanel = new JPanel(new GridLayout(1, 3, 16, 0));
+        JPanel mixPanel = new JPanel(new GridLayout(1, 3, 20, 0));
         mixPanel.setBackground(BG_LIGHT);
+        mixPanel.setBorder(new EmptyBorder(16, 16, 16, 16));
         mixPanel.add(createChartCard(roomTypeChart));
         mixPanel.add(createChartCard(serviceChart));
         mixPanel.add(createChartCard(guestMixChart));
@@ -246,8 +350,8 @@ public class ReportsView extends JPanel {
 
         JPanel wrapper = new JPanel(new BorderLayout());
         wrapper.setBackground(BG_LIGHT);
-        wrapper.setBorder(new EmptyBorder(16, 0, 0, 0));
-        wrapper.add(tabs);
+        wrapper.setBorder(new EmptyBorder(20, 16, 16, 16));
+        wrapper.add(tabs, BorderLayout.CENTER);
 
         return wrapper;
     }
@@ -261,6 +365,8 @@ public class ReportsView extends JPanel {
         chart.getTitle().setPaint(new Color(31, 41, 55));
 
         CategoryPlot plot = chart.getCategoryPlot();
+        NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+        rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
         plot.setBackgroundPaint(Color.WHITE);
         plot.setRangeGridlinePaint(new Color(229, 231, 235));
         plot.setOutlineVisible(false);
@@ -274,21 +380,108 @@ public class ReportsView extends JPanel {
         return chart;
     }
 
-    private JFreeChart createPieChart(String title, DefaultPieDataset dataset) {
-        JFreeChart chart = ChartFactory.createPieChart(title, dataset, true, true, false);
+    private JFreeChart createBarChart(String title, String xLabel, String yLabel, DefaultCategoryDataset dataset) {
+        JFreeChart chart = ChartFactory.createBarChart(
+                title,
+                xLabel,
+                yLabel,
+                dataset,
+                PlotOrientation.VERTICAL,
+                true,
+                true,
+                false);
 
         chart.setBackgroundPaint(CARD_BG);
         chart.getTitle().setFont(new Font("Segoe UI", Font.BOLD, 16));
         chart.getTitle().setPaint(new Color(31, 41, 55));
 
+        CategoryPlot plot = chart.getCategoryPlot();
+        NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+        rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+
+        rangeAxis.setAutoRangeIncludesZero(true);
+        rangeAxis.setAutoRangeMinimumSize(2.0);
+        double upperMargin = 0.15;
+        rangeAxis.setUpperMargin(upperMargin);
+
+        plot.setBackgroundPaint(Color.WHITE);
+        plot.setRangeGridlinePaint(new Color(229, 231, 235));
+        plot.setOutlineVisible(false);
+
+        org.jfree.chart.renderer.category.BarRenderer renderer = (org.jfree.chart.renderer.category.BarRenderer) plot
+                .getRenderer();
+        renderer.setSeriesPaint(0, INFO);
+        renderer.setDrawBarOutline(false);
+        renderer.setBarPainter(new org.jfree.chart.renderer.category.StandardBarPainter());
+
+        return chart;
+    }
+
+    private JFreeChart createPieChart(String title, DefaultPieDataset dataset) {
+        JFreeChart chart = ChartFactory.createPieChart(title, dataset, true, true, false);
+
+        chart.setBackgroundPaint(CARD_BG);
+        chart.setBorderVisible(false);
+
+        chart.getTitle().setFont(new Font("Segoe UI", Font.BOLD, 18));
+        chart.getTitle().setPaint(new Color(17, 24, 39));
+        chart.getTitle().setPadding(new RectangleInsets(4, 0, 4, 0));
+
         PiePlot plot = (PiePlot) chart.getPlot();
         plot.setBackgroundPaint(Color.WHITE);
         plot.setOutlineVisible(false);
         plot.setShadowPaint(null);
+        plot.setCircular(true);
+        plot.setInsets(new RectangleInsets(5, 5, 5, 5));
         plot.setLabelFont(new Font("Segoe UI", Font.PLAIN, 11));
+        plot.setLabelBackgroundPaint(new Color(255, 255, 255, 240));
+        plot.setLabelOutlinePaint(new Color(229, 231, 235));
+        plot.setLabelOutlineStroke(new BasicStroke(1.0f));
+        plot.setLabelShadowPaint(new Color(0, 0, 0, 15));
+        plot.setLabelPaint(new Color(31, 41, 55));
 
-        for (int i = 0; i < CHART_COLORS.length; i++) {
-            plot.setSectionPaint(i, CHART_COLORS[i % CHART_COLORS.length]);
+        PieSectionLabelGenerator labelGenerator = new StandardPieSectionLabelGenerator(
+                "{0}: {2}",
+                NumberFormat.getNumberInstance(),
+                new DecimalFormat("0.#%"));
+        plot.setLabelGenerator(labelGenerator);
+
+        plot.setLabelGap(0.05);
+        plot.setInteriorGap(0.02);
+        plot.setMaximumLabelWidth(0.22);
+        plot.setLabelLinkMargin(0.015);
+        plot.setLabelLinkPaint(new Color(156, 163, 175));
+        plot.setLabelLinkStroke(new BasicStroke(1.2f));
+
+        int itemCount = dataset.getItemCount();
+        for (int i = 0; i < itemCount; i++) {
+            Comparable<?> key = dataset.getKey(i);
+            plot.setSectionPaint(key, CHART_COLORS[i % CHART_COLORS.length]);
+
+            plot.setSectionOutlinePaint(key, new Color(255, 255, 255, 180));
+            plot.setSectionOutlineStroke(key, new BasicStroke(2.0f));
+        }
+
+        if (itemCount > 0) {
+            Comparable<?> largestKey = dataset.getKey(0);
+            double maxValue = dataset.getValue(0).doubleValue();
+
+            for (int i = 1; i < itemCount; i++) {
+                double value = dataset.getValue(i).doubleValue();
+                if (value > maxValue) {
+                    maxValue = value;
+                    largestKey = dataset.getKey(i);
+                }
+            }
+            plot.setExplodePercent(largestKey, 0.08);
+        }
+        LegendTitle legend = chart.getLegend();
+        if (legend != null) {
+            legend.setItemFont(new Font("Segoe UI", Font.PLAIN, 11));
+            legend.setBackgroundPaint(new Color(249, 250, 251));
+            legend.setFrame(new BlockBorder(new Color(229, 231, 235)));
+            legend.setPadding(new RectangleInsets(8, 8, 8, 8));
+            legend.setItemLabelPadding(new RectangleInsets(2, 4, 2, 4));
         }
 
         return chart;
@@ -318,11 +511,6 @@ public class ReportsView extends JPanel {
     private void styleComboBox(JComboBox<?> combo) {
         combo.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         combo.setPreferredSize(new Dimension(120, 36));
-    }
-
-    private void styleSpinner(JSpinner spinner) {
-        spinner.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        spinner.setPreferredSize(new Dimension(120, 36));
     }
 
     private void styleButton(JButton button) {
@@ -361,26 +549,6 @@ public class ReportsView extends JPanel {
         applyFilter();
     }
 
-    private void applyFilter() {
-        if (filterHandler == null)
-            return;
-        java.util.Date f = (java.util.Date) fromSpinner.getValue();
-        java.util.Date t = (java.util.Date) toSpinner.getValue();
-        String g = (String) granularity.getSelectedItem();
-        ReportDateRangeParams p = new ReportDateRangeParams(
-                new java.sql.Date(f.getTime()).toLocalDate(),
-                new java.sql.Date(t.getTime()).toLocalDate(),
-                g, java.util.List.of());
-        filterHandler.accept(p);
-    }
-
-    public void setFilterRange(ReportDateRangeParams p) {
-        fromSpinner.setValue(java.sql.Date.valueOf(p.getFrom()));
-        toSpinner.setValue(java.sql.Date.valueOf(p.getTo()));
-        if (p.getGranularity() != null)
-            granularity.setSelectedItem(p.getGranularity());
-    }
-
     public void onFilterDateRange(Consumer<ReportDateRangeParams> handler) {
         this.filterHandler = handler;
     }
@@ -389,8 +557,6 @@ public class ReportsView extends JPanel {
         kpiRevenue.setText(formatCurrency(kpi == null ? null : kpi.getTotalRevenue()));
         kpiRoomRevenue.setText(formatCurrency(kpi == null ? null : kpi.getRoomRevenue()));
         kpiServiceRevenue.setText(formatCurrency(kpi == null ? null : kpi.getServiceRevenue()));
-        kpiOcc.setText(
-                kpi == null || kpi.getOccupancyRate() == null ? "-" : String.format("%.1f%%", kpi.getOccupancyRate()));
         kpiGuests.setText(kpi == null ? "-" : String.format("%,d", kpi.getTotalGuests()));
     }
 
@@ -429,13 +595,13 @@ public class ReportsView extends JPanel {
         }
     }
 
-    public void setOccupancyData(List<ReportOccupancyPoint> data) {
-        occDataset.clear();
+    public void setBookingCountData(List<ReportBookingCountPoint> data) {
+        bookingCountDataset.clear();
         if (data != null) {
             DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM");
-            data.forEach(p -> occDataset.addValue(
-                    p.getOccupancyPct(),
-                    "Công suất",
+            data.forEach(p -> bookingCountDataset.addValue(
+                    p.getBookingCount().intValue(),
+                    "Số booking",
                     p.getDate().format(df)));
         }
     }
