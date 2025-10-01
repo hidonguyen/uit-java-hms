@@ -47,7 +47,6 @@ public final class DIContainer {
         this.roomTypeService = new RoomTypeService(roomTypeRepository);
         this.guestService = new GuestService(guestRepository);
         this.reportService = new ReportService(reportRepository);
-
     }
 
     public static DIContainer getInstance() {
