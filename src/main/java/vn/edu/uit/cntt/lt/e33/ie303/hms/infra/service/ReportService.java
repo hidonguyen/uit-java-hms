@@ -4,6 +4,7 @@ import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.report.*;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.repository.IReportRepository;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.service.IReportService;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class ReportService implements IReportService {
@@ -15,7 +16,39 @@ public class ReportService implements IReportService {
 
     @Override
     public ReportKpiSummary getKpi(ReportDateRangeParams params) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        BigDecimal totalRevenue = BigDecimal.ZERO;
+        BigDecimal roomRevenue = BigDecimal.ZERO;
+        BigDecimal serviceRevenue = BigDecimal.ZERO;
+        long totalGuests = 0;
+        long newGuests = 0;
+        long returningGuests = 0;
+
+        List<ReportRoomRevenuePoint> roomRevList = repo.getRoomRevenue(params);
+        for (ReportRoomRevenuePoint r : roomRevList) {
+            roomRevenue = roomRevenue.add(r.getRevenue());
+        }
+
+        List<ReportServiceRevenueItem> serviceRevList = repo.getServiceRevenue(params);
+        for (ReportServiceRevenueItem s : serviceRevList) {
+            serviceRevenue = serviceRevenue.add(s.getRevenue());
+        }
+
+        totalRevenue = roomRevenue.add(serviceRevenue);
+
+        List<ReportGuestMix> guestMixList = repo.getGuestMix(params);
+        for (ReportGuestMix g : guestMixList) {
+            newGuests += g.getNewGuests();
+            returningGuests += g.getReturningGuests();
+        }
+        totalGuests = newGuests + returningGuests;
+
+        return new ReportKpiSummary()
+                .setTotalRevenue(totalRevenue)
+                .setRoomRevenue(roomRevenue)
+                .setServiceRevenue(serviceRevenue)
+                .setTotalGuests(totalGuests)
+                .setNewGuests(newGuests)
+                .setReturningGuests(returningGuests);
     }
 
     @Override
@@ -39,7 +72,7 @@ public class ReportService implements IReportService {
     }
 
     @Override
-    public List<ReportOccupancyPoint> getOccupancy(ReportDateRangeParams params) {
-        return repo.getOccupancy(params);
+    public List<ReportBookingCountPoint> getOccupancy(ReportDateRangeParams params) {
+        return repo.getBookingCounts(params);
     }
 }

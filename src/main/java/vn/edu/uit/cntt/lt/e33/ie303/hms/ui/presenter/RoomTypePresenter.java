@@ -1,7 +1,9 @@
 package vn.edu.uit.cntt.lt.e33.ie303.hms.ui.presenter;
 
+import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.Locale;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 
@@ -17,12 +19,17 @@ public class RoomTypePresenter {
     private final CreateOrEditRoomTypeModal modal;
     private final IRoomTypeService service;
 
+    private final NumberFormat vndFormat;
+
     private List<RoomType> roomTypes = new ArrayList<>();
 
     public RoomTypePresenter(JFrame parentFrame) {
         this.view = new RoomTypeView();
         this.modal = new CreateOrEditRoomTypeModal(parentFrame);
         this.service = DIContainer.getInstance().getRoomTypeService();
+
+        this.vndFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+        this.vndFormat.setMaximumFractionDigits(0);
 
         this.view.onAdd(_ -> {
             modal.setModel(null);
@@ -73,14 +80,14 @@ public class RoomTypePresenter {
         this.view.onSearch(_ -> {
             String q = view.getSearchQuery();
             if (q == null || q.isEmpty()) {
-                view.setTableModel(new RoomTypeTableModel(roomTypes));
+                view.setTableModel(new RoomTypeTableModel(roomTypes, vndFormat));
             } else {
                 String qq = q.toLowerCase();
                 List<RoomType> filtered = roomTypes.stream()
                         .filter(rt -> (rt.getCode() != null && rt.getCode().toLowerCase().contains(qq))
                                 || (rt.getName() != null && rt.getName().toLowerCase().contains(qq)))
                         .toList();
-                view.setTableModel(new RoomTypeTableModel(filtered));
+                view.setTableModel(new RoomTypeTableModel(filtered, vndFormat));
             }
         });
 
@@ -135,7 +142,7 @@ public class RoomTypePresenter {
             protected void done() {
                 try {
                     roomTypes = get();
-                    view.setTableModel(new RoomTypeTableModel(roomTypes));
+                    view.setTableModel(new RoomTypeTableModel(roomTypes, vndFormat));
                 } catch (Exception e) {
                     view.showErrorMessage(e.getMessage());
                 }
@@ -155,8 +162,11 @@ public class RoomTypePresenter {
         };
         private final List<RoomType> data;
 
-        RoomTypeTableModel(List<RoomType> data) {
-            this.data = data;
+        private final NumberFormat vndFormat;
+
+        RoomTypeTableModel(List<RoomType> data, NumberFormat vndFormat) {
+            this.data = data != null ? data : Collections.emptyList();
+            this.vndFormat = vndFormat;
         }
 
         @Override
@@ -184,10 +194,10 @@ public class RoomTypePresenter {
                 case 2 -> o.getName();
                 case 3 -> o.getBaseOccupancy();
                 case 4 -> o.getMaxOccupancy();
-                case 5 -> o.getBaseRate();
-                case 6 -> o.getHourRate();
-                case 7 -> o.getExtraAdultFee();
-                case 8 -> o.getExtraChildFee();
+                case 5 -> vndFormat.format(o.getBaseRate());
+                case 6 -> vndFormat.format(o.getHourRate());
+                case 7 -> vndFormat.format(o.getExtraAdultFee());
+                case 8 -> vndFormat.format(o.getExtraChildFee());
                 case 9 -> o.getDescription();
                 case 10 -> o.getCreatedAt() == null ? null : o.getCreatedAt().format(fmt);
                 case 11 -> o.getCreatedBy();

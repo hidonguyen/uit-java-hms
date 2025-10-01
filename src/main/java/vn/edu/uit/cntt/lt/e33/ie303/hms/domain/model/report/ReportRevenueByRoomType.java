@@ -62,4 +62,21 @@ public class ReportRevenueByRoomType {
         this.revenue = revenue;
         return this;
     }
+
+    public static String findQuery() {
+        return """
+                SELECT b.room_type_id AS room_type_id,
+                       rt.code AS room_type_code,
+                       rt.name AS room_type_name,
+                       COALESCE(SUM(bd.amount),0) AS revenue
+                FROM booking_details bd
+                JOIN bookings b ON b.id = bd.booking_id
+                JOIN room_types rt ON rt.id = b.room_type_id
+                WHERE bd.type = 'Room'
+                  AND (bd.issued_at AT TIME ZONE 'Asia/Ho_Chi_Minh')::date BETWEEN ?::date AND ?::date
+                  AND (COALESCE(?, false) OR b.room_type_id = ANY(?))
+                GROUP BY b.room_type_id, rt.code, rt.name
+                ORDER BY revenue DESC
+                """;
+    }
 }

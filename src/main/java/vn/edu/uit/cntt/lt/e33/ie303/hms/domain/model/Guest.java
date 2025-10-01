@@ -20,7 +20,7 @@ public class Guest {
     private String description;
     private OffsetDateTime createdAt;
     private Long createdBy;
-    private OffsetDateTime updatedAt;
+    private OffsetDateTime updatedAt; 
     private Long updatedBy;
 
     public Guest() {
