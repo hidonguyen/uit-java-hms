@@ -41,9 +41,6 @@ public final class AppConfig {
     }
 
     public static DataSource dataSource(AppConfig cfg) {
-        System.setProperty("user.timezone", "UTC");
-        java.util.TimeZone.setDefault(java.util.TimeZone.getTimeZone("UTC"));
-
         HikariConfig hc = new HikariConfig();
         hc.setJdbcUrl(cfg.dbUrl);
         hc.setUsername(cfg.dbUser);
@@ -51,8 +48,6 @@ public final class AppConfig {
         hc.setMaximumPoolSize(5);
         hc.setMinimumIdle(1);
         hc.setPoolName("hms-app-pool");
-
-        hc.addDataSourceProperty("serverTimezone", "UTC");
 
         return new HikariDataSource(hc);
     }
