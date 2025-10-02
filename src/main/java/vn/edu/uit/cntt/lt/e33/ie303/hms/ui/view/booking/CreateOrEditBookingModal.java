@@ -3,40 +3,33 @@ package vn.edu.uit.cntt.lt.e33.ie303.hms.ui.view.booking;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Desktop.Action;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.sql.Date;
-import java.sql.Time;
+import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 
 import com.github.lgooddatepicker.components.DatePickerSettings;
 import com.github.lgooddatepicker.components.DateTimePicker;
-import com.github.lgooddatepicker.components.TimePicker;
 import com.github.lgooddatepicker.components.TimePickerSettings;
 
-import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
@@ -48,16 +41,9 @@ import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.dto.RoomTypeItem;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.BookingChargeType;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.BookingStatus;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.PaymentStatus;
-import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.UserRole;
-import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.UserStatus;
-import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.Guest;
-import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.Room;
-import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.RoomType;
-import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.User;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.ui.common.BaseModalView;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.ui.presenter.BookingPresenter;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.util.Constants;
-import vn.edu.uit.cntt.lt.e33.ie303.hms.util.CryptoHelper;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.util.UIUtils;
 
 public class CreateOrEditBookingModal extends BaseModalView {
@@ -88,10 +74,10 @@ public class CreateOrEditBookingModal extends BaseModalView {
     private JLabel roomChargesLabel;
     private JLabel serviceChargesLabel;
     private JLabel totalAmountLabel;
-
-
+    
+    private JScrollPane tableScrollPane;
+    private JTable servicesTable;
     private final String[] DetailTableColumnNames = { "Time", "Type", "Description", "Qty", "Unit Price", "Total", "Action" };
-    private DefaultTableModel bookingDetailTableModel;
     private JPanel bookingDetailTablePanel;
     private JPanel summaryPanel;
 
@@ -221,33 +207,14 @@ public class CreateOrEditBookingModal extends BaseModalView {
         servicesHeaderPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 5, 0));
 
         // Services table
-        bookingDetailTableModel = new DefaultTableModel(new Object[0][DetailTableColumnNames.length], DetailTableColumnNames) {
+        servicesTable = new JTable(new Object[0][DetailTableColumnNames.length], DetailTableColumnNames) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return column == 6; // Only action column is editable
             }
         };
 
-        JTable servicesTable = new JTable(bookingDetailTableModel);
-        servicesTable.setRowHeight(36);
-        servicesTable.getTableHeader().setBackground(new Color(248, 249, 250));
-        servicesTable.getTableHeader().setReorderingAllowed(false);
-        servicesTable.setShowGrid(true);
-
-        // Set column widths
-        servicesTable.getColumnModel().getColumn(0).setPreferredWidth(100);
-        servicesTable.getColumnModel().getColumn(1).setPreferredWidth(50);
-        servicesTable.getColumnModel().getColumn(2).setPreferredWidth(200);
-        servicesTable.getColumnModel().getColumn(3).setPreferredWidth(30);
-        servicesTable.getColumnModel().getColumn(4).setPreferredWidth(70);
-        servicesTable.getColumnModel().getColumn(5).setPreferredWidth(70);
-        servicesTable.getColumnModel().getColumn(6).setPreferredWidth(60);
-
-        // Add button renderer for Action column
-        servicesTable.getColumnModel().getColumn(6).setCellRenderer(new ButtonRenderer());
-        servicesTable.getColumnModel().getColumn(6).setCellEditor(new ButtonEditor());
-
-        JScrollPane tableScrollPane = new JScrollPane(servicesTable);
+        tableScrollPane = new JScrollPane(servicesTable);
         tableScrollPane.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220)));
         tableScrollPane.setPreferredSize(new Dimension(0, 200));
 
@@ -288,63 +255,6 @@ public class CreateOrEditBookingModal extends BaseModalView {
         panel.add(totalAmountPanel, BorderLayout.SOUTH);
 
         return panel;
-    }
-
-    // Button renderer and editor classes for the table
-    private class ButtonRenderer extends JButton implements javax.swing.table.TableCellRenderer {
-        public ButtonRenderer() {
-            setOpaque(true);
-            setText("Remove");
-            setBackground(new Color(220, 53, 69));
-            setForeground(UIUtils.TEXT_COLOR);
-            setFocusPainted(false);
-            setBorderPainted(false);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
-                int row, int column) {
-            return this;
-        }
-    }
-
-    private class ButtonEditor extends DefaultCellEditor {
-        private JButton button;
-        private boolean isPushed;
-
-        public ButtonEditor() {
-            super(new JCheckBox());
-            button = new JButton();
-            button.setOpaque(true);
-            button.setText("Remove");
-            button.setBackground(new Color(220, 53, 69));
-            button.setForeground(UIUtils.TEXT_COLOR);
-            button.setFocusPainted(false);
-            button.setBorderPainted(false);
-            button.addActionListener(e -> fireEditingStopped());
-        }
-
-        @Override
-        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row,
-                int column) {
-            isPushed = true;
-            return button;
-        }
-
-        @Override
-        public Object getCellEditorValue() {
-            if (isPushed) {
-                JOptionPane.showMessageDialog(button, "Service removed!");
-            }
-            isPushed = false;
-            return "Remove";
-        }
-
-        @Override
-        public boolean stopCellEditing() {
-            isPushed = false;
-            return super.stopCellEditing();
-        }
     }
 
     @Override
@@ -451,13 +361,31 @@ public class CreateOrEditBookingModal extends BaseModalView {
         chargeTypeCombo.setSelectedItem(booking.getChargeType());
         checkInTimePicker.setDateTimePermissive(booking.getCheckin());
         checkOutTimePicker.setDateTimePermissive(booking.getCheckout());
-        RoomTypeItem selectedRoomType = presenter.getRoomTypeItemById(booking.getRoomTypeId());
-        roomTypeCombo.setSelectedItem(selectedRoomType != null ? selectedRoomType : roomTypes.getElementAt(0));
-        RoomItem selectedRoom = presenter.getRoomItemById(booking.getRoomId());
-        roomCombo.setSelectedItem(selectedRoom != null ? selectedRoom : rooms.getElementAt(0));
-        GuestItem selectedGuest = presenter.getGuestItemById(booking.getPrimaryGuestId());
-        guestCombo.setSelectedItem(selectedGuest != null ? selectedGuest : guests.getElementAt(0));
-        guestPhoneField.setText(selectedGuest != null ? selectedGuest.getPhone() : "");
+        
+        for (int i = 0; i < roomTypes.getSize(); i++) {
+            RoomTypeItem item = roomTypes.getElementAt(i);
+            if (item != null && item.getId() != null && item.getId().equals(booking.getRoomTypeId())) {
+                roomTypeCombo.setSelectedIndex(i);
+                break;
+            }
+        }
+        
+        for (int i = 0; i < rooms.getSize(); i++) {
+            RoomItem item = rooms.getElementAt(i);
+            if (item != null && item.getId() != null && item.getId().equals(booking.getRoomId())) {
+                roomCombo.setSelectedIndex(i);
+                break;
+            }
+        }
+
+        for (int i = 0; i < guests.getSize(); i++) {
+            GuestItem item = guests.getElementAt(i);
+            if (item != null && item.getId() != null && item.getId().equals(booking.getPrimaryGuestId())) {
+                guestCombo.setSelectedIndex(i);
+                break;
+            }
+        }
+
         numAdultsField.setText(String.valueOf(booking.getNumAdults()));
         numChildrenField.setText(String.valueOf(booking.getNumChildren()));
         statusCombo.setSelectedItem(booking.getStatus());
@@ -474,16 +402,48 @@ public class CreateOrEditBookingModal extends BaseModalView {
         Object[][] serviceData = new Object[booking.getBookingDetails().size()][7];
         for (int i = 0; i < booking.getBookingDetails().size(); i++) {
             BookingDetailDto detail = booking.getBookingDetails().get(i);
-            serviceData[i][0] = detail.getIssuedAt()
-                    .format(DateTimeFormatter.ofPattern(Constants.DateTimeFormat.ddMMyyyyHHmm));
+            serviceData[i][0] = detail.getIssuedAt().format(DateTimeFormatter.ofPattern(Constants.DateTimeFormat.ddMMyyyyHHmm));
             serviceData[i][1] = detail.getType().name();
             serviceData[i][2] = detail.getDescription() + " (" + detail.getServiceName() + ")";
             serviceData[i][3] = detail.getQuantity();
             serviceData[i][4] = String.format("%,.0f", detail.getUnitPrice());
             serviceData[i][5] = String.format("%,.0f", detail.getAmount());
-            serviceData[i][6] = "Remove";
+            serviceData[i][6] = null;
         }
-        bookingDetailTableModel.setDataVector(serviceData, DetailTableColumnNames);
+        
+        servicesTable = new JTable(serviceData, DetailTableColumnNames){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 6; // Only action column is editable
+            }
+        };
+        servicesTable.setRowHeight(36);
+        servicesTable.getTableHeader().setBackground(new Color(248, 249, 250));
+        servicesTable.getTableHeader().setReorderingAllowed(false);
+        servicesTable.setShowGrid(true);
+
+        // Set column widths
+        servicesTable.getColumn("Time").setPreferredWidth(100);
+        servicesTable.getColumn("Type").setPreferredWidth(30);
+        servicesTable.getColumn("Description").setPreferredWidth(200);
+        servicesTable.getColumn("Qty").setPreferredWidth(20);
+        // Set horizontal alignment for "Qty" column cells to center
+        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+        rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+        servicesTable.getColumn("Qty").setCellRenderer(rightRenderer);
+        servicesTable.getColumn("Unit Price").setPreferredWidth(70);
+        servicesTable.getColumn("Unit Price").setCellRenderer(rightRenderer);
+        servicesTable.getColumn("Total").setPreferredWidth(70);
+        servicesTable.getColumn("Total").setCellRenderer(rightRenderer);
+        servicesTable.getColumn("Action").setPreferredWidth(30);
+
+        // Add button renderer for Action column
+        servicesTable.getColumn("Action").setCellRenderer(new IconButtonRenderer());
+        servicesTable.getColumn("Action").setCellEditor(new IconButtonEditor(new JCheckBox(), servicesTable));
+
+        tableScrollPane.setViewportView(servicesTable);
+        tableScrollPane.revalidate();
+        tableScrollPane.repaint();
 
         Double roomCharges = booking.getTotalRoomCharges();
         Double serviceCharges = booking.getTotalServiceCharges();
@@ -523,10 +483,85 @@ public class CreateOrEditBookingModal extends BaseModalView {
         updatedAtField.setText("");
         updatedByField.setText("");
 
-        bookingDetailTableModel.setRowCount(0);
+        servicesTable.setModel(new DefaultTableModel(new Object[0][DetailTableColumnNames.length], DetailTableColumnNames) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 6; // Only action column is editable
+            }
+        });
 
         roomChargesLabel.setText(String.format("%,.0f", 0d));
         serviceChargesLabel.setText(String.format("%,.0f", 0d));
         totalAmountLabel.setText(String.format("%,.0f", 0d));
+    }
+
+    /// Renderer: hiển thị nút icon
+    class IconButtonRenderer extends JButton implements TableCellRenderer {
+        public IconButtonRenderer() {
+            setOpaque(true);
+            // set icon trash can
+            setIcon(UIManager.getIcon("OptionPane.errorIcon")); // icon thùng rác tạm (có thể thay bằng icon thùng rác thực tế)
+            setToolTipText("Delete");
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int column) {
+            return this;
+        }
+    }
+
+    // Editor: xử lý khi click icon
+    class IconButtonEditor extends DefaultCellEditor {
+        protected JButton button;
+        private JTable table;
+        private boolean clicked;
+        private int row;
+
+        public IconButtonEditor(JCheckBox checkBox, JTable table) {
+            super(checkBox);
+            this.table = table;
+
+            button = new JButton();
+            button.setOpaque(true);
+            button.setIcon(UIManager.getIcon("OptionPane.errorIcon")); // icon thùng rác tạm (có thể thay bằng icon thùng rác thực tế)
+            button.setToolTipText("Delete");
+
+            button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    fireEditingStopped(); // bắt buộc để gọi getCellEditorValue()
+                }
+            });
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value,
+                boolean isSelected, int row, int column) {
+            this.row = row;
+            clicked = true;
+            return button;
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            if (clicked) {
+                int option = JOptionPane.showConfirmDialog(button,
+                        "Delete row " + row + "?", "Confirm Delete",
+                        JOptionPane.YES_NO_OPTION);
+
+                if (option == JOptionPane.YES_OPTION) {
+                    table.remove(row); // Xóa row
+                }
+            }
+            clicked = false;
+            return null;
+        }
+
+        @Override
+        public boolean stopCellEditing() {
+            clicked = false;
+            return super.stopCellEditing();
+        }
     }
 }

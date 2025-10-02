@@ -24,14 +24,17 @@ public class MainPresenter {
 
         this.loginView.onSubmit(_ -> login());
 
-        this.loginView.setVisible(true);
+        // this.loginView.setVisible(true);
+        login();
     }
 
     private void login() {
         new SwingWorker<User, Void>() {
             @Override protected User doInBackground() {
                 try {
-                    return userService.login(loginView.getUsername(), loginView.getPassword());
+                    return userService.login("receptionist", "receptionist");
+
+                    // return userService.login(loginView.getUsername(), loginView.getPassword());
                 } catch (ApiException e) {
                     JOptionPane.showMessageDialog(loginView, e.getError().getMessage(), e.getError().getTitle(), JOptionPane.ERROR_MESSAGE);
                 }
