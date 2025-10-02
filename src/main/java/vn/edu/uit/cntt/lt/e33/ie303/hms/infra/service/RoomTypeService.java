@@ -28,16 +28,16 @@ public class RoomTypeService implements IRoomTypeService {
     @Override
     public Integer create(RoomType roomType) {
         roomType.setId(null);
-        roomType.setCreatedAt(OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC));
+        roomType.setCreatedAt(LocalDateTime.now());
         roomType.setCreatedBy(LoggedInUser.ID);
-        roomType.setUpdatedAt(OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC));
+        roomType.setUpdatedAt(LocalDateTime.now());
         roomType.setUpdatedBy(LoggedInUser.ID);
         return repo.insert(roomType);
     }
 
     @Override
     public Integer update(RoomType roomType) {
-        roomType.setUpdatedAt(OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC));
+        roomType.setUpdatedAt(LocalDateTime.now());
         roomType.setUpdatedBy(LoggedInUser.ID);
         return repo.update(roomType);
     }

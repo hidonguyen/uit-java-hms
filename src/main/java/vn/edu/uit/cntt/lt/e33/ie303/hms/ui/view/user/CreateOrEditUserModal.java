@@ -1,8 +1,6 @@
 package vn.edu.uit.cntt.lt.e33.ie303.hms.ui.view.user;
 
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -95,15 +93,15 @@ public class CreateOrEditUserModal extends BaseModalView {
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern(Constants.DateTimeFormat.ddMMyyyyHHmm);
         if (!lastLoginField.getText().trim().isEmpty())
             user.setLastLoginAt(
-                    OffsetDateTime.of(LocalDateTime.parse(lastLoginField.getText().trim(), fmt), ZoneOffset.UTC));
+                    LocalDateTime.parse(lastLoginField.getText().trim(), fmt));
         if (!createdAtField.getText().trim().isEmpty())
             user.setCreatedAt(
-                    OffsetDateTime.of(LocalDateTime.parse(createdAtField.getText().trim(), fmt), ZoneOffset.UTC));
+                    LocalDateTime.parse(createdAtField.getText().trim(), fmt));
         if (!createdByField.getText().trim().isEmpty())
             user.setCreatedBy(Long.parseLong(createdByField.getText().trim()));
         if (!updatedAtField.getText().trim().isEmpty())
             user.setUpdatedAt(
-                    OffsetDateTime.of(LocalDateTime.parse(updatedAtField.getText().trim(), fmt), ZoneOffset.UTC));
+                    LocalDateTime.parse(updatedAtField.getText().trim(), fmt));
         if (!updatedByField.getText().trim().isEmpty())
             user.setUpdatedBy(Long.parseLong(updatedByField.getText().trim()));
         return user;

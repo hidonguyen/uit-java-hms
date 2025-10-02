@@ -119,6 +119,7 @@ public class GuestPresenter {
     }
 
     public GuestView getView() {
+        view.authorize();
         return view;
     }
 

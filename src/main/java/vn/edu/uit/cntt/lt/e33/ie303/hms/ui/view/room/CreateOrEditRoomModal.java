@@ -1,8 +1,6 @@
 package vn.edu.uit.cntt.lt.e33.ie303.hms.ui.view.room;
 
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.swing.ComboBoxModel;
@@ -126,12 +124,12 @@ public class CreateOrEditRoomModal extends BaseModalView {
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern(Constants.DateTimeFormat.ddMMyyyyHHmm);
         if (!createdAtField.getText().trim().isEmpty())
             r.setCreatedAt(
-                    OffsetDateTime.of(LocalDateTime.parse(createdAtField.getText().trim(), fmt), ZoneOffset.UTC));
+                    LocalDateTime.parse(createdAtField.getText().trim(), fmt));
         if (!createdByField.getText().trim().isEmpty())
             r.setCreatedBy(Long.parseLong(createdByField.getText().trim()));
         if (!updatedAtField.getText().trim().isEmpty())
             r.setUpdatedAt(
-                    OffsetDateTime.of(LocalDateTime.parse(updatedAtField.getText().trim(), fmt), ZoneOffset.UTC));
+                    LocalDateTime.parse(updatedAtField.getText().trim(), fmt));
         if (!updatedByField.getText().trim().isEmpty())
             r.setUpdatedBy(Long.parseLong(updatedByField.getText().trim()));
         return r;

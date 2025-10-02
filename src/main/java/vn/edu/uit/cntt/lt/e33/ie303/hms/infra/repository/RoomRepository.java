@@ -20,14 +20,31 @@ public class RoomRepository implements IRoomRepository {
 
     @Override
     public List<Room> findAll() {
-        List<Room> services = new ArrayList<>();
+        List<Room> rooms = new ArrayList<>();
         try (Connection connection = ds.getConnection();
                 PreparedStatement query = connection.prepareStatement(Room.findAllQuery());
                 ResultSet rs = query.executeQuery()) {
             while (rs.next()) {
-                services.add(new Room(rs));
+                rooms.add(new Room(rs));
             }
-            return services;
+            return rooms;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<Room> findByRoomTypeId(Long roomTypeId) {
+        List<Room> rooms = new ArrayList<>();
+        try (Connection connection = ds.getConnection();
+                PreparedStatement query = connection.prepareStatement(Room.findByRoomTypeIdQuery())) {
+            query.setLong(1, roomTypeId);
+            try (ResultSet rs = query.executeQuery()) {
+                while (rs.next()) {
+                    rooms.add(new Room(rs));
+                }
+                return rooms;
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

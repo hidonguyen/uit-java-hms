@@ -3,7 +3,7 @@ package vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.UserRole;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.UserStatus;
@@ -14,15 +14,15 @@ public class User {
     private UserRole role;
     private String passwordHash;
     private UserStatus status;
-    private OffsetDateTime lastLoginAt;
-    private OffsetDateTime createdAt;
+    private LocalDateTime lastLoginAt;
+    private LocalDateTime createdAt;
     private Long createdBy;
-    private OffsetDateTime updatedAt;
+    private LocalDateTime updatedAt;
     private Long updatedBy;
 
     public User() {}
 
-    public User(Long id, String username, UserRole role, String passwordHash, UserStatus status, OffsetDateTime lastLoginAt, OffsetDateTime createdAt, Long createdBy, OffsetDateTime updatedAt, Long updatedBy) {
+    public User(Long id, String username, UserRole role, String passwordHash, UserStatus status, LocalDateTime lastLoginAt, LocalDateTime createdAt, Long createdBy, LocalDateTime updatedAt, Long updatedBy) {
         this.id = id;
         this.username = username;
         this.role = role;
@@ -42,10 +42,10 @@ public class User {
             this.role = UserRole.valueOf(rs.getString("role"));
             this.passwordHash = rs.getString("password_hash");
             this.status = UserStatus.valueOf(rs.getString("status"));
-            this.lastLoginAt = rs.getObject("last_login_at", OffsetDateTime.class);
-            this.createdAt = rs.getObject("created_at", OffsetDateTime.class);
+            this.lastLoginAt = rs.getObject("last_login_at", LocalDateTime.class);
+            this.createdAt = rs.getObject("created_at", LocalDateTime.class);
             this.createdBy = rs.getLong("created_by");
-            this.updatedAt = rs.getObject("updated_at", OffsetDateTime.class);
+            this.updatedAt = rs.getObject("updated_at", LocalDateTime.class);
             this.updatedBy = rs.getLong("updated_by");
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -97,20 +97,20 @@ public class User {
         return this;
     }
 
-    public OffsetDateTime getLastLoginAt() {
+    public LocalDateTime getLastLoginAt() {
         return lastLoginAt;
     }
 
-    public User setLastLoginAt(OffsetDateTime lastLoginAt) {
+    public User setLastLoginAt(LocalDateTime lastLoginAt) {
         this.lastLoginAt = lastLoginAt;
         return this;
     }
 
-    public OffsetDateTime getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public User setCreatedAt(OffsetDateTime createdAt) {
+    public User setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
         return this;
     }
@@ -124,11 +124,11 @@ public class User {
         return this;
     }
 
-    public OffsetDateTime getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public User setUpdatedAt(OffsetDateTime updatedAt) {
+    public User setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
         return this;
     }

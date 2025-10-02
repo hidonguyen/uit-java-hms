@@ -28,6 +28,9 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
 
+import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.UserRole;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.util.LoggedInUser;
+
 public abstract class BaseTableView extends JPanel {
     protected static final Color PRIMARY_COLOR = new Color(59, 130, 246);
     protected static final Color SECONDARY_COLOR = new Color(248, 250, 252);
@@ -73,9 +76,20 @@ public abstract class BaseTableView extends JPanel {
         initializeComponents();
     }
 
+    public void authorize() {
+        if (LoggedInUser.ROLE != UserRole.Manager) {
+            if (actionPanel != null) {
+                actionPanel.remove(editBtn);
+                actionPanel.remove(deleteBtn);
+                actionPanel.revalidate();
+                actionPanel.repaint();
+            }
+        }
+    }
+
     private void initializeComponents() {
         setBackground(Color.WHITE);
-        setBorder(new EmptyBorder(12, 12, 12, 12)); // giảm padding
+        setBorder(new EmptyBorder(12, 12, 12, 12));
 
         setupButtons();
         setupLayout();
@@ -108,7 +122,7 @@ public abstract class BaseTableView extends JPanel {
     private JPanel createHeaderPanel() {
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(Color.WHITE);
-        headerPanel.setBorder(new EmptyBorder(0, 0, 12, 0)); // giảm spacing
+        headerPanel.setBorder(new EmptyBorder(0, 0, 12, 0));
 
         JLabel titleLabel = new JLabel(getModuleName() + " Management");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
@@ -129,14 +143,14 @@ public abstract class BaseTableView extends JPanel {
         searchContainer.setBackground(SECONDARY_COLOR);
         searchContainer.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(BORDER_COLOR, 1, true),
-                new EmptyBorder(4, 8, 4, 4))); // giảm padding
-        searchContainer.setPreferredSize(new Dimension(260, 34)); // gọn lại
+                new EmptyBorder(4, 8, 4, 4)));
+        searchContainer.setPreferredSize(new Dimension(260, 34));
 
         searchField.setBorder(null);
         searchField.setBackground(SECONDARY_COLOR);
         searchContainer.add(searchField, BorderLayout.CENTER);
 
-        searchBtn.setPreferredSize(new Dimension(72, 28)); // gọn lại
+        searchBtn.setPreferredSize(new Dimension(72, 28));
         searchBtn.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         searchContainer.add(searchBtn, BorderLayout.EAST);
 
@@ -145,15 +159,15 @@ public abstract class BaseTableView extends JPanel {
     }
 
     private JPanel createActionPanel() {
-        JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 12)); // giảm gap
+        JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 12));
         actionPanel.setBackground(Color.WHITE);
 
-        addBtn.setPreferredSize(new Dimension(128, 34)); // gọn lại
-        editBtn.setPreferredSize(new Dimension(92, 34)); // gọn lại
-        deleteBtn.setPreferredSize(new Dimension(92, 34)); // gọn lại
+        addBtn.setPreferredSize(new Dimension(128, 34));
+        editBtn.setPreferredSize(new Dimension(92, 34));
+        deleteBtn.setPreferredSize(new Dimension(92, 34));
 
         actionPanel.add(addBtn);
-        actionPanel.add(Box.createHorizontalStrut(8)); // giảm khoảng cách
+        actionPanel.add(Box.createHorizontalStrut(8));
         actionPanel.add(editBtn);
         actionPanel.add(Box.createHorizontalStrut(8));
         actionPanel.add(deleteBtn);
@@ -193,7 +207,7 @@ public abstract class BaseTableView extends JPanel {
         header.setForeground(TEXT_COLOR);
         header.setFont(new Font("Segoe UI", Font.BOLD, 14));
         header.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, BORDER_COLOR));
-        header.setPreferredSize(new Dimension(header.getPreferredSize().width, 40)); // giảm từ 50
+        header.setPreferredSize(new Dimension(header.getPreferredSize().width, 40));
 
         DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer() {
             @Override
@@ -204,7 +218,7 @@ public abstract class BaseTableView extends JPanel {
                 if (!isSelected) {
                     c.setBackground((row % 2 == 0) ? Color.WHITE : new Color(249, 250, 251));
                 }
-                setBorder(new EmptyBorder(6, 10, 6, 10)); // giảm padding cell
+                setBorder(new EmptyBorder(6, 10, 6, 10));
                 return c;
             }
         };
@@ -233,7 +247,7 @@ public abstract class BaseTableView extends JPanel {
         button.setBackground(bgColor);
         button.setForeground(textColor);
         button.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        button.setBorder(BorderFactory.createEmptyBorder(8, 14, 8, 14)); // giảm padding nút
+        button.setBorder(BorderFactory.createEmptyBorder(8, 14, 8, 14));
         button.setFocusPainted(false);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         button.setOpaque(true);

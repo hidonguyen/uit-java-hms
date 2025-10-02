@@ -19,6 +19,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
+import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.UserRole;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.User;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.ui.presenter.BookingPresenter;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.ui.presenter.GuestPresenter;
@@ -28,6 +29,7 @@ import vn.edu.uit.cntt.lt.e33.ie303.hms.ui.presenter.RoomTypePresenter;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.ui.presenter.ServicePresenter;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.ui.presenter.UserPresenter;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.util.Constants;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.util.LoggedInUser;
 
 public class MainView extends JFrame {
     // Main content area
@@ -96,15 +98,6 @@ public class MainView extends JFrame {
     }
 
     private void setupMainPanel() {
-        tabbedPane.addTab("Today Bookings", bookingPresenter.getTodayBookingView());
-        tabbedPane.addTab("Users", userPresenter.getView());
-
-        tabbedPane.addTab("Services", servicePresenter.getView());
-        tabbedPane.addTab("Rooms", roomPresenter.getView());
-        tabbedPane.addTab("Room Type", roomTypePresenter.getView());
-        tabbedPane.addTab("Guests", guestPresenter.getView());
-        tabbedPane.addTab("Reports", reportPresenter.getView());
-
         mainPanel.add(tabbedPane, BorderLayout.CENTER);
         add(mainPanel, BorderLayout.CENTER);
     }
@@ -175,6 +168,27 @@ public class MainView extends JFrame {
         this.currentUser = user;
         if (user != null) {
             userInfoLabel.setText("User: " + user.getUsername() + " (" + user.getRole() + ")");
+
+            switch (LoggedInUser.ROLE) {
+                case UserRole.Manager -> {
+                    tabbedPane.addTab("Reports", reportPresenter.getView());
+                    tabbedPane.addTab("Today Bookings", bookingPresenter.loadTodayBookingView());
+                    tabbedPane.addTab("Users", userPresenter.getView());
+                    tabbedPane.addTab("Guests", guestPresenter.getView());
+                    tabbedPane.addTab("Services", servicePresenter.getView());
+                    tabbedPane.addTab("Room Type", roomTypePresenter.getView());
+                    tabbedPane.addTab("Rooms", roomPresenter.getView());
+                }
+                case UserRole.Receptionist -> {
+                    tabbedPane.addTab("Today Bookings", bookingPresenter.loadTodayBookingView());
+                    tabbedPane.addTab("Guests", guestPresenter.getView());
+                    tabbedPane.addTab("Services", servicePresenter.getView());
+                }
+                default -> {
+                    // No tabs for unknown roles
+                }
+            }
+
         } else {
             userInfoLabel.setText("Not logged in");
         }

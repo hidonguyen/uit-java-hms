@@ -146,6 +146,17 @@ public abstract class BaseModalView extends JDialog {
         formPanel.add(field, gc);
     }
 
+    protected void addFormField(JComponent field, int row, int col, int colspan) {
+        int colBase = col * 2;
+
+        gc.gridx = colBase;
+        gc.gridy = row;
+        gc.gridwidth = colspan;
+        gc.weightx = 1;
+
+        formPanel.add(field, gc);
+    }
+
     protected void styleFormField(JComponent field) {
         if (field instanceof JTextField) {
             JTextField textField = (JTextField) field;
@@ -232,6 +243,7 @@ public abstract class BaseModalView extends JDialog {
 
         errorDialog.add(content);
         errorDialog.pack();
+        errorDialog.setResizable(false);
         errorDialog.setMinimumSize(new Dimension(320, errorDialog.getHeight()));
         errorDialog.setLocationRelativeTo(this);
         errorDialog.setVisible(true);
@@ -246,6 +258,10 @@ public abstract class BaseModalView extends JDialog {
     public abstract Object getModel();
 
     public abstract void setModel(Object model);
+
+    public void clearForm() {
+        
+    }
 
     protected void finalizeModal() {
         pack();

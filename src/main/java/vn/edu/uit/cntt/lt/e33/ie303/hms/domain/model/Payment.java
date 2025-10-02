@@ -3,27 +3,27 @@ package vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.PaymentMethod;
 
 public class Payment {
     private Long id;
     private Long bookingId;
-    private OffsetDateTime paidAt;
+    private LocalDateTime paidAt;
     private PaymentMethod paymentMethod;
     private String referenceNo;
     private double amount;
     private String payerName;
     private String notes;
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
     private Long createdBy;
-    private OffsetDateTime updatedAt;
+    private LocalDateTime updatedAt;
     private Long updatedBy;
 
     public Payment() {}
 
-    public Payment(Long id, Long bookingId, OffsetDateTime paidAt, PaymentMethod paymentMethod, String referenceNo, double amount, String payerName, String notes, OffsetDateTime createdAt, Long createdBy, OffsetDateTime updatedAt, Long updatedBy) {
+    public Payment(Long id, Long bookingId, LocalDateTime paidAt, PaymentMethod paymentMethod, String referenceNo, double amount, String payerName, String notes, LocalDateTime createdAt, Long createdBy, LocalDateTime updatedAt, Long updatedBy) {
         this.id = id;
         this.bookingId = bookingId;
         this.paidAt = paidAt;
@@ -41,15 +41,15 @@ public class Payment {
     public Payment(ResultSet rs) throws SQLException {
         this.id = rs.getLong("id");
         this.bookingId = rs.getLong("booking_id");
-        this.paidAt = rs.getObject("paid_at", OffsetDateTime.class);
+        this.paidAt = rs.getObject("paid_at", LocalDateTime.class);
         this.paymentMethod = PaymentMethod.valueOf(rs.getString("payment_method"));
         this.referenceNo = rs.getString("reference_no");
         this.amount = rs.getDouble("amount");
         this.payerName = rs.getString("payer_name");
         this.notes = rs.getString("notes");
-        this.createdAt = rs.getObject("created_at", OffsetDateTime.class);
+        this.createdAt = rs.getObject("created_at", LocalDateTime.class);
         this.createdBy = rs.getLong("created_by");
-        this.updatedAt = rs.getObject("updated_at", OffsetDateTime.class);
+        this.updatedAt = rs.getObject("updated_at", LocalDateTime.class);
         this.updatedBy = rs.getLong("updated_by");
     }
 
@@ -71,11 +71,11 @@ public class Payment {
         return this;
     }
 
-    public OffsetDateTime getPaidAt() {
+    public LocalDateTime getPaidAt() {
         return paidAt;
     }
 
-    public Payment setPaidAt(OffsetDateTime paidAt) {
+    public Payment setPaidAt(LocalDateTime paidAt) {
         this.paidAt = paidAt;
         return this;
     }
@@ -125,11 +125,11 @@ public class Payment {
         return this;
     }
 
-    public OffsetDateTime getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
     
-    public Payment setCreatedAt(OffsetDateTime createdAt) {
+    public Payment setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
         return this;
     }
@@ -143,11 +143,11 @@ public class Payment {
         return this;
     }
 
-    public OffsetDateTime getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public Payment setUpdatedAt(OffsetDateTime updatedAt) {
+    public Payment setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
         return this;
     }

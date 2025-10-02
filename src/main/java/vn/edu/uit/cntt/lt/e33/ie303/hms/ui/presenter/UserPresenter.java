@@ -161,6 +161,7 @@ public class UserPresenter {
     }
 
     public UserView getView() {
+        view.authorize();
         return view;
     }
 
