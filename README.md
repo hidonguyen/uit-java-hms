@@ -65,7 +65,7 @@ Trước khi bắt đầu, bạn cần cài đặt các công cụ sau:
 ### Bước 1: Clone/Download project về máy
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/hidonguyen/uit-java-hms
 cd uit-java-hms
 ```
 
