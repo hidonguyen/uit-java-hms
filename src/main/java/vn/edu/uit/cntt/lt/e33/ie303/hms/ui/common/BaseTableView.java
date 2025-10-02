@@ -179,6 +179,7 @@ public abstract class BaseTableView extends JPanel {
         table.setSelectionForeground(TEXT_COLOR);
         table.setGridColor(BORDER_COLOR);
         table.setIntercellSpacing(new Dimension(0, 1));
+      
         JTableHeader header = table.getTableHeader();
         header.setBackground(SECONDARY_COLOR);
         header.setForeground(TEXT_COLOR);

@@ -41,9 +41,6 @@ public final class AppConfig {
     }
 
     public static DataSource dataSource(AppConfig cfg) {
-        System.setProperty("user.timezone", "UTC");
-        java.util.TimeZone.setDefault(java.util.TimeZone.getTimeZone("UTC"));
-
         HikariConfig hc = new HikariConfig();
         hc.setJdbcUrl(cfg.dbUrl);
         hc.setUsername(cfg.dbUser);

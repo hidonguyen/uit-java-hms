@@ -51,7 +51,6 @@ public final class DIContainer {
         this.guestService = new GuestService(guestRepository);
         this.reportService = new ReportService(reportRepository);
         this.bookingHistoryService = new BookingHistoryService(bookingHistoryRepository);
-
     }
 
     public static DIContainer getInstance() {

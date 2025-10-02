@@ -188,6 +188,8 @@ public class RoomType {
         return this;
     }
 
+    // ===== SQL builders =====
+
     public static String findAllQuery() {
         return """
                 SELECT id, code, name, base_occupancy, max_occupancy,
@@ -207,6 +209,7 @@ public class RoomType {
                 """;
     }
 
+    // ✅ KHÔNG include created_at/updated_at để DB tự NOW()
     public static String insertQuery() {
         return """
                 INSERT INTO room_types
@@ -238,6 +241,7 @@ public class RoomType {
             ps.setNull(11, java.sql.Types.BIGINT);
     }
 
+    // ✅ UPDATE: set updated_at = NOW(), không đụng created_*
     public static String updateQuery() {
         return """
                 UPDATE room_types
