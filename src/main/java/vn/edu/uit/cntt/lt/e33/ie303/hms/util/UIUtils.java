@@ -27,6 +27,8 @@ public class UIUtils {
 
     // Color constants
     public static final Color PRIMARY_COLOR = new Color(59, 130, 246);
+    public static final Color SECONDARY_COLOR = new Color(248, 250, 252);
+    public static final Color ACCENT_COLOR = new Color(16, 185, 129);
     public static final Color PRIMARY_HOVER = new Color(37, 99, 235);
     public static final Color SUCCESS_COLOR = new Color(34, 197, 94);
     public static final Color WARNING_COLOR = new Color(245, 158, 11);

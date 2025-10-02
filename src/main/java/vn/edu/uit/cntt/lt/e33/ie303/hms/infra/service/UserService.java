@@ -39,8 +39,10 @@ public class UserService implements IUserService {
                     Constants.ErrorMessage.USER_PASSWORD_IS_INCORRECT);
         }
 
-        // user.setLastLoginAt(OffsetDateTime.now());
-        // repo.update(user);
+        user.setLastLoginAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
+        user.setUpdatedBy(user.getId());
+        repo.update(user);
         
         return user;
     }
@@ -58,16 +60,16 @@ public class UserService implements IUserService {
     @Override
     public Integer create(User user) {
         user.setId(null);
-        user.setCreatedAt(OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC));
+        user.setCreatedAt(LocalDateTime.now());
         user.setCreatedBy(LoggedInUser.ID);
-        user.setUpdatedAt(OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC));
+        user.setUpdatedAt(LocalDateTime.now());
         user.setUpdatedBy(LoggedInUser.ID);
         return repo.insert(user);
     }
 
     @Override
     public Integer update(User user) {
-        user.setUpdatedAt(OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC));
+        user.setUpdatedAt(LocalDateTime.now());
         user.setUpdatedBy(LoggedInUser.ID);
         return repo.update(user);
     }

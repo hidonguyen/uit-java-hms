@@ -131,6 +131,7 @@ public class ServicePresenter {
     }
 
     public ServiceView getView() {
+        view.authorize();
         return view;
     }
 

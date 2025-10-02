@@ -12,7 +12,6 @@ import org.flywaydb.core.Flyway;
 public final class App {
     public static void main(String[] args) {
         // Set macOS application name (appears in dock and menu bar)
-        System.setProperty("user.timezone", "Asia/Ho_Chi_Minh");
         System.setProperty("apple.awt.application.name", "UIT Hotel Management Pro");
         
         SwingUtilities.invokeLater(() -> {

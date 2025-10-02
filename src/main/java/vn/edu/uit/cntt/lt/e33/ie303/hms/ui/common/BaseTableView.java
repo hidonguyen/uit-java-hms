@@ -27,6 +27,9 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
 
+import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.UserRole;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.util.LoggedInUser;
+
 public abstract class BaseTableView extends JPanel {
     protected static final Color PRIMARY_COLOR = new Color(59, 130, 246);
     protected static final Color SECONDARY_COLOR = new Color(248, 250, 252);
@@ -79,6 +82,17 @@ public abstract class BaseTableView extends JPanel {
                 applyFillOrScroll();
             }
         });
+    }
+
+    public void authorize() {
+        if (LoggedInUser.ROLE != UserRole.Manager) {
+            if (actionPanel != null) {
+                actionPanel.remove(editBtn);
+                actionPanel.remove(deleteBtn);
+                actionPanel.revalidate();
+                actionPanel.repaint();
+            }
+        }
     }
 
     private void initializeComponents() {

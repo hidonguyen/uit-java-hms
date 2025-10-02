@@ -1,8 +1,6 @@
 package vn.edu.uit.cntt.lt.e33.ie303.hms.infra.service;
 
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.Service;
@@ -30,16 +28,16 @@ public class ServiceService implements IServiceService {
     @Override
     public Integer create(Service service) {
         service.setId(null);
-        service.setCreatedAt(OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC));
+        service.setCreatedAt(LocalDateTime.now());
         service.setCreatedBy(LoggedInUser.ID);
-        service.setUpdatedAt(OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC));
+        service.setUpdatedAt(LocalDateTime.now());
         service.setUpdatedBy(LoggedInUser.ID);
         return repo.insert(service);
     }
 
     @Override
     public Integer update(Service service) {
-        service.setUpdatedAt(OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC));
+        service.setUpdatedAt(LocalDateTime.now());
         service.setUpdatedBy(LoggedInUser.ID);
         return repo.update(service);
     }

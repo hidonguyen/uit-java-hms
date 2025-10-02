@@ -34,6 +34,23 @@ public class BookingDetailRepository implements IBookingDetailRepository {
     }
 
     @Override
+    public List<BookingDetail> findAllByBookingId(Long bookingId) {
+        List<BookingDetail> bookingDetails = new ArrayList<>();
+        try (Connection connection = ds.getConnection();
+                PreparedStatement query = connection.prepareStatement(BookingDetail.findAllByBookingIdQuery())) {
+            query.setLong(1, bookingId);
+            try (ResultSet rs = query.executeQuery()) {
+                while (rs.next()) {
+                    bookingDetails.add(new BookingDetail(rs));
+                }
+                return bookingDetails;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public BookingDetail findById(Long id) {
         try (Connection connection = ds.getConnection();
                 PreparedStatement ps = connection.prepareStatement(BookingDetail.findByIdQuery())) {

@@ -139,6 +139,7 @@ public class RoomPresenter {
     }
 
     public RoomView getView() {
+        view.authorize();
         return view;
     }
 

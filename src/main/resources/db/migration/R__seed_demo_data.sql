@@ -76,7 +76,7 @@ picked AS (
     gg.guest_id,
     1 + (random()*2)::int AS num_adults,
     (random()*1)::int AS num_children,
-    (ARRAY['Day','Day','Hour'])[1 + (random()*2)::int] AS charge_type
+    (ARRAY['Night','Night','Hour'])[1 + (random()*2)::int] AS charge_type
   FROM gen g
   CROSS JOIN LATERAL (SELECT room_id, room_type_id FROM rnd_rooms ORDER BY random() LIMIT 1) r
   CROSS JOIN LATERAL (SELECT guest_id FROM rnd_guests ORDER BY random() LIMIT 1) gg
@@ -167,7 +167,7 @@ to_pay AS (
   SELECT s.booking_id,
          s.total_amount,
          CASE WHEN random() < 0.80 THEN s.total_amount ELSE round(s.total_amount * 0.5) END AS pay_amount,
-         (ARRAY['Cash','Card','Transfer','EWallet'])[1 + (random()*3)::int] AS method
+         (ARRAY['Cash','Card','Other'])[1 + (random()*2)::int] AS method
   FROM sums s
 )
 INSERT INTO payments
@@ -195,7 +195,7 @@ WITH totals AS (
 UPDATE bookings b
 SET payment_status = CASE
     WHEN t.paid_amount >= t.total_amount THEN 'Paid'
-    WHEN t.paid_amount > 0 THEN 'PartiallyPaid'
+    WHEN t.paid_amount > 0 THEN 'Partial'
     ELSE 'Unpaid'
   END
 FROM totals t

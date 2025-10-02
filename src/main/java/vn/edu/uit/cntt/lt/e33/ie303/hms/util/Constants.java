@@ -1,5 +1,8 @@
 package vn.edu.uit.cntt.lt.e33.ie303.hms.util;
 
+import com.github.lgooddatepicker.components.DatePickerSettings;
+import com.github.lgooddatepicker.components.TimePickerSettings;
+
 public class Constants {
 
     public static final String ALGORITHM = "AES";
@@ -85,6 +88,12 @@ public class Constants {
         public static final String GUEST_NAME_CANNOT_BE_EMPTY = "Guest name cannot be empty";
         public static final String GUEST_PHONE_INVALID = "Guest phone number is invalid";
         public static final String GUEST_EMAIL_INVALID = "Guest email is invalid";
+
+        // Booking
+        public static final String CHECKIN_TIME_CANNOT_BE_EMPTY = "Check-in time cannot be empty";
+        public static final String CHECKOUT_TIME_MUST_BE_AFTER_CHECKIN_TIME = "Check-out time must be after check-in time";
+        public static final String ROOM_MUST_BE_SELECTED = "Room must be selected";
+        public static final String GUEST_MUST_BE_SELECTED = "Guest must be selected";
     }
 
     // ===================== SUCCESS MESSAGE =====================
@@ -113,6 +122,11 @@ public class Constants {
         public static final String CREATE_GUEST_SUCCESS = "Guest created successfully.";
         public static final String UPDATE_GUEST_SUCCESS = "Guest updated successfully.";
         public static final String DELETE_GUEST_SUCCESS = "Guest deleted successfully.";
+
+        // Booking
+        public static final String CREATE_BOOKING_SUCCESS = "Booking created successfully.";
+        public static final String UPDATE_BOOKING_SUCCESS = "Booking updated successfully.";
+        public static final String DELETE_BOOKING_SUCCESS = "Booking deleted successfully.";
     }
 
     // ===================== ERROR TITLE =====================
@@ -123,11 +137,13 @@ public class Constants {
         public static final String ROOM = "ROOM";
         public static final String ROOM_TYPE = "ROOM_TYPE";
         public static final String GUEST = "GUEST";
+        public static final String BOOKING = "BOOKING";
     }
 
     // ===================== DATE FORMAT =====================
     public class DateTimeFormat {
         public static final String ddMMyyyyHHmm = "dd/MM/yyyy HH:mm";
         public static final String ddMMyyyy = "dd/MM/yyyy";
+        public static final String HHmm = "HH:mm";
     }
 }

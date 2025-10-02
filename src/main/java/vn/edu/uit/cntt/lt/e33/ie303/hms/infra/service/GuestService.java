@@ -1,8 +1,6 @@
 package vn.edu.uit.cntt.lt.e33.ie303.hms.infra.service;
 
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.Guest;
@@ -30,16 +28,16 @@ public class GuestService implements IGuestService {
     @Override
     public Integer create(Guest guest) {
         guest.setId(null);
-        guest.setCreatedAt(OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC));
+        guest.setCreatedAt(LocalDateTime.now());
         guest.setCreatedBy(LoggedInUser.ID);
-        guest.setUpdatedAt(OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC));
+        guest.setUpdatedAt(LocalDateTime.now());
         guest.setUpdatedBy(LoggedInUser.ID);
         return repo.insert(guest);
     }
 
     @Override
     public Integer update(Guest guest) {
-        guest.setUpdatedAt(OffsetDateTime.of(LocalDateTime.now(), ZoneOffset.UTC));
+        guest.setUpdatedAt(LocalDateTime.now());
         guest.setUpdatedBy(LoggedInUser.ID);
         return repo.update(guest);
     }

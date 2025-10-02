@@ -1,12 +1,9 @@
 package vn.edu.uit.cntt.lt.e33.ie303.hms.ui.view.service;
 
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.ServiceStatus;
@@ -106,14 +103,14 @@ public class CreateOrEditServiceModal extends BaseModalView {
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern(Constants.DateTimeFormat.ddMMyyyyHHmm);
         if (!createdAtField.getText().trim().isEmpty()) {
             s.setCreatedAt(
-                    OffsetDateTime.of(LocalDateTime.parse(createdAtField.getText().trim(), fmt), ZoneOffset.UTC));
+                    LocalDateTime.parse(createdAtField.getText().trim(), fmt));
         }
         if (!createdByField.getText().trim().isEmpty()) {
             s.setCreatedBy(Long.parseLong(createdByField.getText().trim()));
         }
         if (!updatedAtField.getText().trim().isEmpty()) {
             s.setUpdatedAt(
-                    OffsetDateTime.of(LocalDateTime.parse(updatedAtField.getText().trim(), fmt), ZoneOffset.UTC));
+                    LocalDateTime.parse(updatedAtField.getText().trim(), fmt));
         }
         if (!updatedByField.getText().trim().isEmpty()) {
             s.setUpdatedBy(Long.parseLong(updatedByField.getText().trim()));

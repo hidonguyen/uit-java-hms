@@ -26,6 +26,7 @@ public final class DIContainer {
     private final IRoomService roomService;
     private final IRoomTypeService roomTypeService;
     private final IGuestService guestService;
+    private final IBookingService bookingService;
     private final IReportService reportService;
     private final IBookingHistoryService bookingHistoryService;
 
@@ -49,6 +50,7 @@ public final class DIContainer {
         this.roomService = new RoomService(roomRepository);
         this.roomTypeService = new RoomTypeService(roomTypeRepository);
         this.guestService = new GuestService(guestRepository);
+        this.bookingService = new BookingService(bookingRepository, bookingDetailRepository);
         this.reportService = new ReportService(reportRepository);
         this.bookingHistoryService = new BookingHistoryService(bookingHistoryRepository);
     }
@@ -110,6 +112,10 @@ public final class DIContainer {
 
     public IGuestService getGuestService() {
         return guestService;
+    }
+
+    public IBookingService getBookingService() {
+        return bookingService;
     }
 
     public IReportService getReportService() {

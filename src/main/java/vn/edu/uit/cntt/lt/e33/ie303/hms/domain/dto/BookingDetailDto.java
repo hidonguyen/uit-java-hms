@@ -1,4 +1,4 @@
-package vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model;
+package vn.edu.uit.cntt.lt.e33.ie303.hms.domain.dto;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,11 +7,12 @@ import java.time.LocalDateTime;
 
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.BookingDetailType;
 
-public class BookingDetail {
+public class BookingDetailDto {
     private Long id;
     private Long bookingId;
     private BookingDetailType type;
     private Long serviceId;
+    private String serviceName;
     private LocalDateTime issuedAt;
     private String description;
     private int quantity;
@@ -23,9 +24,9 @@ public class BookingDetail {
     private LocalDateTime updatedAt;
     private Long updatedBy;
 
-    public BookingDetail() {}
+    public BookingDetailDto() {}
 
-    public BookingDetail(Long id, Long bookingId, BookingDetailType type, Long serviceId, LocalDateTime issuedAt, String description, int quantity, double unitPrice, double discountAmount, double amount, LocalDateTime createdAt, Long createdBy, LocalDateTime updatedAt, Long updatedBy) {
+    public BookingDetailDto(Long id, Long bookingId, BookingDetailType type, Long serviceId, LocalDateTime issuedAt, String description, int quantity, double unitPrice, double discountAmount, double amount, LocalDateTime createdAt, Long createdBy, LocalDateTime updatedAt, Long updatedBy) {
         this.id = id;
         this.bookingId = bookingId;
         this.type = type;
@@ -42,7 +43,7 @@ public class BookingDetail {
         this.updatedBy = updatedBy;
     }
 
-    public BookingDetail(ResultSet rs) throws SQLException {
+    public BookingDetailDto(ResultSet rs) throws SQLException {
         this.id = rs.getLong("id");
         this.bookingId = rs.getLong("booking_id");
         this.type = BookingDetailType.valueOf(rs.getString("type"));
@@ -63,7 +64,7 @@ public class BookingDetail {
         return id;
     }
 
-    public BookingDetail setId(Long id) {
+    public BookingDetailDto setId(Long id) {
         this.id = id;
         return this;
     }
@@ -72,7 +73,7 @@ public class BookingDetail {
         return bookingId;
     }
 
-    public BookingDetail setBookingId(Long bookingId) {
+    public BookingDetailDto setBookingId(Long bookingId) {
         this.bookingId = bookingId;
         return this;
     }
@@ -81,7 +82,7 @@ public class BookingDetail {
         return type;
     }
 
-    public BookingDetail setType(BookingDetailType type) {
+    public BookingDetailDto setType(BookingDetailType type) {
         this.type = type;
         return this;
     }
@@ -90,8 +91,17 @@ public class BookingDetail {
         return serviceId;
     }
 
-    public BookingDetail setServiceId(Long serviceId) {
+    public BookingDetailDto setServiceId(Long serviceId) {
         this.serviceId = serviceId;
+        return this;
+    }
+
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    public BookingDetailDto setServiceName(String serviceName) {
+        this.serviceName = serviceName;
         return this;
     }
 
@@ -99,7 +109,7 @@ public class BookingDetail {
         return issuedAt;
     }
 
-    public BookingDetail setIssuedAt(LocalDateTime issuedAt) {
+    public BookingDetailDto setIssuedAt(LocalDateTime issuedAt) {
         this.issuedAt = issuedAt;
         return this;
     }
@@ -108,7 +118,7 @@ public class BookingDetail {
         return description;
     }
 
-    public BookingDetail setDescription(String description) {
+    public BookingDetailDto setDescription(String description) {
         this.description = description;
         return this;
     }
@@ -117,7 +127,7 @@ public class BookingDetail {
         return quantity;
     }
 
-    public BookingDetail setQuantity(int quantity) {
+    public BookingDetailDto setQuantity(int quantity) {
         this.quantity = quantity;
         return this;
     }
@@ -126,7 +136,7 @@ public class BookingDetail {
         return unitPrice;
     }
 
-    public BookingDetail setUnitPrice(double unitPrice) {
+    public BookingDetailDto setUnitPrice(double unitPrice) {
         this.unitPrice = unitPrice;
         return this;
     }
@@ -135,7 +145,7 @@ public class BookingDetail {
         return discountAmount;
     }
 
-    public BookingDetail setDiscountAmount(double discountAmount) {
+    public BookingDetailDto setDiscountAmount(double discountAmount) {
         this.discountAmount = discountAmount;
         return this;
     }
@@ -144,7 +154,7 @@ public class BookingDetail {
         return amount;
     }
 
-    public BookingDetail setAmount(double amount) {
+    public BookingDetailDto setAmount(double amount) {
         this.amount = amount;
         return this;
     }
@@ -157,12 +167,12 @@ public class BookingDetail {
         return createdBy;
     }
 
-    public BookingDetail setCreatedAt(LocalDateTime createdAt) {
+    public BookingDetailDto setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
         return this;
     }
 
-    public BookingDetail setCreatedBy(Long createdBy) {
+    public BookingDetailDto setCreatedBy(Long createdBy) {
         this.createdBy = createdBy;
         return this;
     }
@@ -171,7 +181,7 @@ public class BookingDetail {
         return updatedAt;
     }
 
-    public BookingDetail setUpdatedAt(LocalDateTime updatedAt) {
+    public BookingDetailDto setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
         return this;
     }
@@ -180,17 +190,13 @@ public class BookingDetail {
         return updatedBy;
     }
 
-    public BookingDetail setUpdatedBy(Long updatedBy) {
+    public BookingDetailDto setUpdatedBy(Long updatedBy) {
         this.updatedBy = updatedBy;
         return this;
     }
 
     public static String findAllQuery() {
         return "SELECT id, booking_id, type, service_id, issued_at, description, quantity, unit_price, discount_amount, amount, created_at, created_by, updated_at, updated_by FROM booking_details";
-    }
-
-    public static String findAllByBookingIdQuery() {
-        return "SELECT id, booking_id, type, service_id, issued_at, description, quantity, unit_price, discount_amount, amount, created_at, created_by, updated_at, updated_by FROM booking_details WHERE booking_id = ?";
     }
 
     public static String findByIdQuery() {
