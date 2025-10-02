@@ -11,6 +11,9 @@ public abstract class BaseModalView extends JDialog {
     protected JPanel formPanel;
     protected GridBagConstraints gc;
 
+    protected void onInitExtraActions(JPanel actionPanel) {
+    }
+
     protected static final Color PRIMARY_COLOR = new Color(59, 130, 246);
     protected static final Color PRIMARY_HOVER = new Color(37, 99, 235);
     protected static final Color SUCCESS_COLOR = new Color(34, 197, 94);
@@ -49,6 +52,8 @@ public abstract class BaseModalView extends JDialog {
 
         JPanel footer = createFooter();
         add(footer, BorderLayout.SOUTH);
+
+        onInitExtraActions(footer);
     }
 
     private JPanel createHeader() {

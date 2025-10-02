@@ -6,6 +6,7 @@ import java.util.List;
 
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.dto.TodayBookingDto;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.Booking;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.BookingDetail;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.repository.IBookingDetailRepository;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.repository.IBookingRepository;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.service.IBookingService;
@@ -44,6 +45,40 @@ public class BookingService implements IBookingService {
 
     @Override
     public Integer update(Booking booking) {
+        List<BookingDetail> existingDetails = bookingDetailRepository.findAllByBookingId(booking.getId());
+        List<Long> deletingIds = new ArrayList<>();
+        for (BookingDetail existingDetail : existingDetails) {
+            boolean exists = false;
+            for (BookingDetail detail : booking.getBookingDetails()) {
+                if (existingDetail.getId().equals(detail.getId())) {
+                    exists = true;
+                    break;
+                }
+            }
+            if (!exists) {
+                deletingIds.add(existingDetail.getId());
+            }
+        }
+        deletingIds.forEach(id -> bookingDetailRepository.delete(id));
+
+        booking.getBookingDetails().forEach(detail -> {
+            if (detail.getServiceId() == null || detail.getServiceId() <= 0) {
+                detail.setServiceId(null);
+            }
+
+            if (detail.getId() == null) {
+                detail.setCreatedAt(LocalDateTime.now());
+                detail.setCreatedBy(LoggedInUser.ID);
+                bookingDetailRepository.insert(detail);
+            } else {
+                detail.setCreatedAt(LocalDateTime.now());
+                detail.setCreatedBy(LoggedInUser.ID);
+                detail.setUpdatedAt(LocalDateTime.now());
+                detail.setUpdatedBy(LoggedInUser.ID);
+                bookingDetailRepository.update(detail);
+            }
+        });
+
         booking.setUpdatedAt(LocalDateTime.now());
         booking.setUpdatedBy(LoggedInUser.ID);
         return bookingRepository.update(booking);

@@ -140,7 +140,7 @@ public class ReportsView extends JPanel {
                 new EmptyBorder(16, 20, 16, 20)));
 
         JComboBox<String> qr = new JComboBox<>(new String[] {
-                "Hôm nay", "7 ngày", "30 ngày", "Tháng này", "Năm nay"
+                "Today", "7 days", "30 days", "This month", "This year"
         });
         qr.setName("quickRange");
         styleComboBox(qr);
@@ -157,19 +157,19 @@ public class ReportsView extends JPanel {
         gr.setName("granularity");
         styleComboBox(gr);
 
-        JButton btn = new JButton("Áp dụng");
+        JButton btn = new JButton("Apply");
         btn.setName("applyBtn");
         styleButton(btn);
 
-        toolbar.add(createLabel("Nhanh:"));
+        toolbar.add(createLabel("Quick:"));
         toolbar.add(qr);
         toolbar.add(Box.createHorizontalStrut(8));
-        toolbar.add(createLabel("Từ:"));
+        toolbar.add(createLabel("From:"));
         toolbar.add(fromDatePicker);
-        toolbar.add(createLabel("Đến:"));
+        toolbar.add(createLabel("To:"));
         toolbar.add(toDatePicker);
         toolbar.add(Box.createHorizontalStrut(8));
-        toolbar.add(createLabel("Chi tiết:"));
+        toolbar.add(createLabel("Granularity:"));
         toolbar.add(gr);
         toolbar.add(Box.createHorizontalStrut(8));
         toolbar.add(btn);
@@ -181,8 +181,8 @@ public class ReportsView extends JPanel {
         DatePickerSettings settings = new DatePickerSettings();
 
         settings.setFormatForDatesCommonEra("dd/MM/yyyy");
-        settings.setTranslationToday("Hôm nay");
-        settings.setTranslationClear("Xóa");
+        settings.setTranslationToday("Today");
+        settings.setTranslationClear("Clear");
 
         Font regularFont = new Font("Segoe UI", Font.PLAIN, 13);
         Font boldFont = new Font("Segoe UI", Font.BOLD, 12);
@@ -252,12 +252,12 @@ public class ReportsView extends JPanel {
         LocalDate to = toPicker.getDate();
 
         if (from == null || to == null) {
-            showErrorMessage("Vui lòng chọn ngày bắt đầu và kết thúc");
+            showErrorMessage("Please select a start and end date");
             return;
         }
 
         if (from.isAfter(to)) {
-            showErrorMessage("Ngày bắt đầu phải trước ngày kết thúc");
+            showErrorMessage("Start date must be before end date");
             return;
         }
 
@@ -287,10 +287,10 @@ public class ReportsView extends JPanel {
         service.setName("kpiServiceRevenue");
         guests.setName("kpiGuests");
 
-        panel.add(createKpiCard("Tổng doanh thu", rev, PRIMARY));
-        panel.add(createKpiCard("Doanh thu phòng", room, SUCCESS));
-        panel.add(createKpiCard("Doanh thu dịch vụ", service, INFO));
-        panel.add(createKpiCard("Tổng khách", guests, SECONDARY));
+        panel.add(createKpiCard("Total Revenue", rev, PRIMARY));
+        panel.add(createKpiCard("Room Revenue", room, SUCCESS));
+        panel.add(createKpiCard("Service Revenue", service, INFO));
+        panel.add(createKpiCard("Total Guests", guests, SECONDARY));
 
         return panel;
     }
@@ -324,13 +324,13 @@ public class ReportsView extends JPanel {
         tabs.setBorder(BorderFactory.createEmptyBorder());
         tabs.setForeground(new Color(55, 65, 81));
 
-        JFreeChart revenueChart = createLineChart("Doanh thu theo thời gian", "Thời gian", "VND (triệu)",
+        JFreeChart revenueChart = createLineChart("Revenue Over Time", "Time", "VND (Million)",
                 revenueDataset);
-        JFreeChart bookingChart = createBarChart("Số booking theo ngày", "Thời gian", "Số booking",
+        JFreeChart bookingChart = createBarChart("Bookings Per Day", "Time", "Number of Bookings",
                 bookingCountDataset);
-        JFreeChart roomTypeChart = createPieChart("Doanh thu theo loại phòng", roomTypePie);
-        JFreeChart serviceChart = createPieChart("Doanh thu dịch vụ", servicePie);
-        JFreeChart guestMixChart = createPieChart("Phân bổ khách", guestMixPie);
+        JFreeChart roomTypeChart = createPieChart("Revenue By Room Type", roomTypePie);
+        JFreeChart serviceChart = createPieChart("Service Revenue", servicePie);
+        JFreeChart guestMixChart = createPieChart("Guest Statistics", guestMixPie);
 
         JPanel trendPanel = new JPanel(new GridLayout(1, 2, 20, 0));
         trendPanel.setBackground(BG_LIGHT);
@@ -345,8 +345,8 @@ public class ReportsView extends JPanel {
         mixPanel.add(createChartCard(serviceChart));
         mixPanel.add(createChartCard(guestMixChart));
 
-        tabs.addTab("Xu hướng", trendPanel);
-        tabs.addTab("Cơ cấu", mixPanel);
+        tabs.addTab("Trends", trendPanel);
+        tabs.addTab("Composition", mixPanel);
 
         JPanel wrapper = new JPanel(new BorderLayout());
         wrapper.setBackground(BG_LIGHT);
@@ -539,10 +539,10 @@ public class ReportsView extends JPanel {
     private void applyQuickRange() {
         String q = (String) quickRange.getSelectedItem();
         ReportDateRangeParams p = switch (q) {
-            case "Hôm nay" -> ReportDateRangeParams.today();
-            case "30 ngày" -> ReportDateRangeParams.last30Days();
-            case "Tháng này" -> ReportDateRangeParams.thisMonth();
-            case "Năm nay" -> ReportDateRangeParams.thisYear();
+            case "Today" -> ReportDateRangeParams.today();
+            case "30 days" -> ReportDateRangeParams.last30Days();
+            case "This month" -> ReportDateRangeParams.thisMonth();
+            case "This year" -> ReportDateRangeParams.thisYear();
             default -> ReportDateRangeParams.last7Days();
         };
         setFilterRange(p);
@@ -566,7 +566,7 @@ public class ReportsView extends JPanel {
             DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM");
             data.forEach(p -> revenueDataset.addValue(
                     p.getRevenue().doubleValue() / 1_000_000,
-                    "Doanh thu",
+                    "Revenue",
                     p.getDate().format(df)));
         }
     }
@@ -590,8 +590,8 @@ public class ReportsView extends JPanel {
         if (data != null) {
             long newGuests = data.stream().mapToLong(ReportGuestMix::getNewGuests).sum();
             long returningGuests = data.stream().mapToLong(ReportGuestMix::getReturningGuests).sum();
-            guestMixPie.setValue("Khách mới", newGuests);
-            guestMixPie.setValue("Khách quay lại", returningGuests);
+            guestMixPie.setValue("New Guests", newGuests);
+            guestMixPie.setValue("Returning Guests", returningGuests);
         }
     }
 
@@ -601,13 +601,13 @@ public class ReportsView extends JPanel {
             DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM");
             data.forEach(p -> bookingCountDataset.addValue(
                     p.getBookingCount().intValue(),
-                    "Số booking",
+                    "Booking Count",
                     p.getDate().format(df)));
         }
     }
 
     public void showErrorMessage(String msg) {
-        JOptionPane.showMessageDialog(this, msg, "Lỗi", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, msg, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
     private String formatCurrency(Number value) {
@@ -615,9 +615,9 @@ public class ReportsView extends JPanel {
             return "-";
         double val = value.doubleValue();
         if (val >= 1_000_000_000) {
-            return String.format("%.1f tỷ", val / 1_000_000_000);
+            return String.format("%.1f trillion", val / 1_000_000_000);
         } else if (val >= 1_000_000) {
-            return String.format("%.1f tr", val / 1_000_000);
+            return String.format("%.1f million", val / 1_000_000);
         }
         return String.format("%,d", value.longValue());
     }

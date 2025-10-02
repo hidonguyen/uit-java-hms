@@ -32,50 +32,50 @@ ON CONFLICT (booking_no) DO NOTHING;
 
 -- Booking Details - Itemized charges for bookings
 -- Details for active booking BK0001
-INSERT INTO booking_details (booking_id, type, service_id, issued_at, description, quantity, unit_price, discount_amount, amount, created_by)
+INSERT INTO booking_details (booking_id, type, service_id, issued_at, description, unit, quantity, unit_price, discount_amount, amount, created_by)
 VALUES
   -- Room charge for BK0001 (4 hours)
   ((SELECT id FROM bookings WHERE booking_no='BK0001'), 
-   'Room', NULL, NOW() - INTERVAL '1 hour', 'Room charge - 4 hours', 4.0, 
+   'Room', NULL, NOW() - INTERVAL '1 hour', 'Room charge - 4 hours', 'hours', 4.0, 
    (SELECT hour_rate FROM room_types rt JOIN bookings b ON b.room_type_id = rt.id WHERE b.booking_no='BK0001'),
    0, 
    4.0 * (SELECT hour_rate FROM room_types rt JOIN bookings b ON b.room_type_id = rt.id WHERE b.booking_no='BK0001'),
    1),
   -- Breakfast service for BK0001
   ((SELECT id FROM bookings WHERE booking_no='BK0001'),
-   'Service', (SELECT id FROM services WHERE name='Breakfast'), NOW() - INTERVAL '30 minutes', 'Breakfast for 2 guests', 2.0,
+   'Service', (SELECT id FROM services WHERE name='Breakfast'), NOW() - INTERVAL '30 minutes', 'Breakfast for 2 guests', 'servings', 2.0,
    (SELECT price FROM services WHERE name='Breakfast'),
    0,
    2.0 * (SELECT price FROM services WHERE name='Breakfast'),
    1),
   -- Laundry service for BK0001
   ((SELECT id FROM bookings WHERE booking_no='BK0001'),
-   'Service', (SELECT id FROM services WHERE name='Laundry'), NOW() - INTERVAL '15 minutes', 'Laundry service', 1.5,
+   'Service', (SELECT id FROM services WHERE name='Laundry'), NOW() - INTERVAL '15 minutes', 'Laundry service', 'kg', 1.5,
    (SELECT price FROM services WHERE name='Laundry'),
    10000,
    1.5 * (SELECT price FROM services WHERE name='Laundry') - 10000,
    1);
 
 -- Details for completed booking BK0002
-INSERT INTO booking_details (booking_id, type, service_id, issued_at, description, quantity, unit_price, discount_amount, amount, created_by)
+INSERT INTO booking_details (booking_id, type, service_id, issued_at, description, unit, quantity, unit_price, discount_amount, amount, created_by)
 VALUES
   -- Room charge for BK0002 (1 night)
   ((SELECT id FROM bookings WHERE booking_no='BK0002'),
-   'Room', NULL, NOW() - INTERVAL '2 days', 'Room charge - 1 night', 1.0,
+   'Room', NULL, NOW() - INTERVAL '2 days', 'Room charge - 1 night', 'nights', 1.0,
    (SELECT base_rate FROM room_types rt JOIN bookings b ON b.room_type_id = rt.id WHERE b.booking_no='BK0002'),
    0,
    1.0 * (SELECT base_rate FROM room_types rt JOIN bookings b ON b.room_type_id = rt.id WHERE b.booking_no='BK0002'),
    1),
   -- Extra child charge
   ((SELECT id FROM bookings WHERE booking_no='BK0002'),
-   'Fee', NULL, NOW() - INTERVAL '2 days', 'Extra child fee', 1.0,
+   'Fee', NULL, NOW() - INTERVAL '2 days', 'Extra child fee', 'nights', 1.0,
    (SELECT extra_child_fee FROM room_types rt JOIN bookings b ON b.room_type_id = rt.id WHERE b.booking_no='BK0002'),
    0,
    1.0 * (SELECT extra_child_fee FROM room_types rt JOIN bookings b ON b.room_type_id = rt.id WHERE b.booking_no='BK0002'),
    1),
   -- Airport transfer
   ((SELECT id FROM bookings WHERE booking_no='BK0002'),
-   'Service', (SELECT id FROM services WHERE name='Airport Transfer'), NOW() - INTERVAL '1 day', 'Airport pickup and drop-off', 1.0,
+   'Service', (SELECT id FROM services WHERE name='Airport Transfer'), NOW() - INTERVAL '1 day', 'Airport pickup and drop-off', 'transfers', 1.0,
    (SELECT price FROM services WHERE name='Airport Transfer'),
    0,
    1.0 * (SELECT price FROM services WHERE name='Airport Transfer'),

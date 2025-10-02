@@ -147,7 +147,7 @@ public class LoginView extends JFrame {
     private JPanel createInputPanel(JTextField field, JToggleButton toggleBtn) {
         JPanel outerPanel = new JPanel(new BorderLayout(0, 0));
         outerPanel.setBackground(Color.WHITE);
-        outerPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+        outerPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
         outerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JPanel wrapperPanel = new JPanel(new BorderLayout(0, 0));

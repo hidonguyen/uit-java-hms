@@ -2,8 +2,10 @@ package vn.edu.uit.cntt.lt.e33.ie303.hms.ui.view.booking;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -145,12 +147,13 @@ public class TodayBookingView extends JPanel {
 
         JPanel checkInTimePanel = createInfoRow("Check-in:", booking.getCheckin().format(DateTimeFormatter.ofPattern(Constants.DateTimeFormat.ddMMyyyyHHmm)));
 
-        JPanel roomChargePanel = createInfoRow("Room Charges:", String.format("%,.0f", booking.getTotalRoomCharges()));
+        NumberFormat money = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+        JPanel roomChargePanel = createInfoRow("Room Charges:", money.format(booking.getTotalRoomCharges()));
         JLabel roomChargeValue = (JLabel) roomChargePanel.getComponent(1);
         roomChargeValue.setForeground(new Color(0, 150, 0));
 
         JPanel serviceChargePanel = createInfoRow("Service Charges:",
-                String.format("%,.0f", booking.getTotalServiceCharges()));
+                money.format(booking.getTotalServiceCharges()));
         JLabel serviceChargeValue = (JLabel) serviceChargePanel.getComponent(1);
         serviceChargeValue.setForeground(new Color(0, 150, 0));
 
