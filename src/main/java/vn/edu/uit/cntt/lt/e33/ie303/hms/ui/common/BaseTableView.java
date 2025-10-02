@@ -70,11 +70,13 @@ public abstract class BaseTableView extends JPanel {
 
     public BaseTableView() {
         super(new BorderLayout());
+
         this.addBtn = createModernButton(getAddButtonText(), PRIMARY_COLOR, Color.WHITE);
         this.editBtn = createModernButton("Edit", ACCENT_COLOR, Color.WHITE);
         this.deleteBtn = createModernButton("Delete", DANGER_COLOR, Color.WHITE);
         this.searchField = createModernTextField(getSearchPlaceholder());
         this.searchBtn = createModernButton("Search", PRIMARY_COLOR, Color.WHITE);
+
         initializeComponents();
         addComponentListener(new java.awt.event.ComponentAdapter() {
             @Override
@@ -98,6 +100,7 @@ public abstract class BaseTableView extends JPanel {
     private void initializeComponents() {
         setBackground(Color.WHITE);
         setBorder(new EmptyBorder(12, 12, 12, 12));
+
         setupButtons();
         setupLayout();
         setupTable();
@@ -106,6 +109,7 @@ public abstract class BaseTableView extends JPanel {
     private void setupButtons() {
         editBtn.setEnabled(false);
         deleteBtn.setEnabled(false);
+
         addHoverEffect(addBtn, PRIMARY_COLOR);
         addHoverEffect(editBtn, ACCENT_COLOR);
         addHoverEffect(deleteBtn, DANGER_COLOR);
@@ -115,9 +119,12 @@ public abstract class BaseTableView extends JPanel {
     private void setupLayout() {
         JPanel headerPanel = createHeaderPanel();
         add(headerPanel, BorderLayout.NORTH);
+
         actionPanel = createActionPanel();
         add(actionPanel, BorderLayout.SOUTH);
+
         onInitExtraActions(actionPanel);
+
         JPanel tablePanel = createTablePanel();
         add(tablePanel, BorderLayout.CENTER);
     }
@@ -126,30 +133,37 @@ public abstract class BaseTableView extends JPanel {
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(Color.WHITE);
         headerPanel.setBorder(new EmptyBorder(0, 0, 12, 0));
+
         JLabel titleLabel = new JLabel(getModuleName() + " Management");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
         titleLabel.setForeground(TEXT_COLOR);
         headerPanel.add(titleLabel, BorderLayout.WEST);
+
         JPanel searchPanel = createSearchPanel();
         headerPanel.add(searchPanel, BorderLayout.EAST);
+
         return headerPanel;
     }
 
     private JPanel createSearchPanel() {
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         searchPanel.setBackground(Color.WHITE);
+
         JPanel searchContainer = new JPanel(new BorderLayout());
         searchContainer.setBackground(SECONDARY_COLOR);
         searchContainer.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(BORDER_COLOR, 1, true),
                 new EmptyBorder(4, 8, 4, 4)));
         searchContainer.setPreferredSize(new Dimension(260, 34));
+
         searchField.setBorder(null);
         searchField.setBackground(SECONDARY_COLOR);
         searchContainer.add(searchField, BorderLayout.CENTER);
+
         searchBtn.setPreferredSize(new Dimension(72, 28));
         searchBtn.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         searchContainer.add(searchBtn, BorderLayout.EAST);
+
         searchPanel.add(searchContainer);
         return searchPanel;
     }
@@ -157,14 +171,17 @@ public abstract class BaseTableView extends JPanel {
     private JPanel createActionPanel() {
         JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 12));
         actionPanel.setBackground(Color.WHITE);
+
         addBtn.setPreferredSize(new Dimension(128, 34));
         editBtn.setPreferredSize(new Dimension(92, 34));
         deleteBtn.setPreferredSize(new Dimension(92, 34));
+
         actionPanel.add(addBtn);
         actionPanel.add(Box.createHorizontalStrut(8));
         actionPanel.add(editBtn);
         actionPanel.add(Box.createHorizontalStrut(8));
         actionPanel.add(deleteBtn);
+
         return actionPanel;
     }
 
@@ -174,6 +191,7 @@ public abstract class BaseTableView extends JPanel {
         tablePanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(BORDER_COLOR, 1, true),
                 new EmptyBorder(0, 0, 0, 0)));
+
         scrollPane = new JScrollPane(table);
         scrollPane.setBorder(null);
         scrollPane.getViewport().setBackground(Color.WHITE);
@@ -200,26 +218,32 @@ public abstract class BaseTableView extends JPanel {
         header.setFont(new Font("Segoe UI", Font.BOLD, 14));
         header.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, BORDER_COLOR));
         header.setPreferredSize(new Dimension(header.getPreferredSize().width, 40));
+
         DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value,
                     boolean isSelected, boolean hasFocus, int row, int column) {
                 Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                if (!isSelected)
+
+                if (!isSelected) {
                     c.setBackground((row % 2 == 0) ? Color.WHITE : new Color(249, 250, 251));
+                }
                 setBorder(new EmptyBorder(6, 10, 6, 10));
                 return c;
             }
         };
         table.setDefaultRenderer(Object.class, cellRenderer);
+
         table.getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
             if (!e.getValueIsAdjusting()) {
                 selectedRow = table.getSelectedRow();
                 boolean rowSelected = selectedRow >= 0;
                 editBtn.setEnabled(rowSelected);
                 deleteBtn.setEnabled(rowSelected);
+
                 updateButtonState(editBtn, rowSelected);
                 updateButtonState(deleteBtn, rowSelected);
+
                 onRowSelectionChanged(rowSelected);
             }
         });
@@ -243,6 +267,7 @@ public abstract class BaseTableView extends JPanel {
         field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         field.setForeground(Color.GRAY);
         field.setText(placeholder);
+
         field.addFocusListener(new java.awt.event.FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
@@ -280,10 +305,11 @@ public abstract class BaseTableView extends JPanel {
     }
 
     private void updateButtonState(JButton button, boolean enabled) {
-        if (enabled)
+        if (enabled) {
             button.setOpaque(true);
-        else
+        } else {
             button.setOpaque(false);
+        }
         button.setEnabled(enabled);
         button.repaint();
     }

@@ -12,6 +12,8 @@ import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.BookingChargeType;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.BookingStatus;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.PaymentStatus;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.BookingDetail;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.Service;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.repository.IServiceRepository;
 
 public class BookingDto {
     private Long id;
@@ -266,17 +268,20 @@ public class BookingDto {
         return bookingDetails;
     }
 
-    public BookingDto setBookingDetails(List<BookingDetail> bookingDetails) {
+    public BookingDto setBookingDetails(List<BookingDetail> bookingDetails, IServiceRepository serviceRepository) {
         this.bookingDetails = new ArrayList<>();
         if (bookingDetails != null) {
             for (BookingDetail detail : bookingDetails) {
+                Service service = serviceRepository.findById(detail.getServiceId());
                 this.bookingDetails.add(new BookingDetailDto()
                         .setId(detail.getId())
                         .setBookingId(detail.getBookingId())
-                        .setType(detail.getType())
-                        .setServiceId(detail.getServiceId())
                         .setIssuedAt(detail.getIssuedAt())
+                        .setType(detail.getType())
                         .setDescription(detail.getDescription())
+                        .setServiceId(detail.getServiceId())
+                        .setServiceName(service != null ? service.getName() : null)
+                        .setUnit(detail.getUnit())
                         .setQuantity(detail.getQuantity())
                         .setUnitPrice(detail.getUnitPrice())
                         .setDiscountAmount(detail.getDiscountAmount())

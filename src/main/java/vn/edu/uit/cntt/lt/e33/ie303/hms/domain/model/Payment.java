@@ -170,7 +170,7 @@ public class Payment {
     }
 
     public static String insertQuery() {
-        return "INSERT INTO payments (booking_id, paid_at, payment_method, reference_no, amount, payer_name, notes, created_at, created_by, updated_at, updated_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        return "INSERT INTO payments (booking_id, paid_at, payment_method, reference_no, amount, payer_name, notes, created_at, created_by, updated_at, updated_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     }
 
     public void setInsertParameters(PreparedStatement ps) throws SQLException {

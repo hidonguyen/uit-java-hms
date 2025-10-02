@@ -14,6 +14,7 @@ public class BookingDetail {
     private Long serviceId;
     private LocalDateTime issuedAt;
     private String description;
+    private String unit;
     private int quantity;
     private double unitPrice;
     private double discountAmount;
@@ -25,13 +26,14 @@ public class BookingDetail {
 
     public BookingDetail() {}
 
-    public BookingDetail(Long id, Long bookingId, BookingDetailType type, Long serviceId, LocalDateTime issuedAt, String description, int quantity, double unitPrice, double discountAmount, double amount, LocalDateTime createdAt, Long createdBy, LocalDateTime updatedAt, Long updatedBy) {
+    public BookingDetail(Long id, Long bookingId, BookingDetailType type, Long serviceId, LocalDateTime issuedAt, String description, String unit, int quantity, double unitPrice, double discountAmount, double amount, LocalDateTime createdAt, Long createdBy, LocalDateTime updatedAt, Long updatedBy) {
         this.id = id;
         this.bookingId = bookingId;
         this.type = type;
         this.serviceId = serviceId;
         this.issuedAt = issuedAt;
         this.description = description;
+        this.unit = unit;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
         this.discountAmount = discountAmount;
@@ -49,6 +51,7 @@ public class BookingDetail {
         this.serviceId = rs.getLong("service_id");
         this.issuedAt = rs.getObject("issued_at", LocalDateTime.class);
         this.description = rs.getString("description");
+        this.unit = rs.getString("unit");
         this.quantity = rs.getInt("quantity");
         this.unitPrice = rs.getDouble("unit_price");
         this.discountAmount = rs.getDouble("discount_amount");
@@ -110,6 +113,15 @@ public class BookingDetail {
 
     public BookingDetail setDescription(String description) {
         this.description = description;
+        return this;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public BookingDetail setUnit(String unit) {
+        this.unit = unit;
         return this;
     }
 
@@ -186,19 +198,19 @@ public class BookingDetail {
     }
 
     public static String findAllQuery() {
-        return "SELECT id, booking_id, type, service_id, issued_at, description, quantity, unit_price, discount_amount, amount, created_at, created_by, updated_at, updated_by FROM booking_details";
+        return "SELECT id, booking_id, type, service_id, issued_at, description, unit, quantity, unit_price, discount_amount, amount, created_at, created_by, updated_at, updated_by FROM booking_details";
     }
 
     public static String findAllByBookingIdQuery() {
-        return "SELECT id, booking_id, type, service_id, issued_at, description, quantity, unit_price, discount_amount, amount, created_at, created_by, updated_at, updated_by FROM booking_details WHERE booking_id = ?";
+        return "SELECT id, booking_id, type, service_id, issued_at, description, unit, quantity, unit_price, discount_amount, amount, created_at, created_by, updated_at, updated_by FROM booking_details WHERE booking_id = ?";
     }
 
     public static String findByIdQuery() {
-        return "SELECT id, booking_id, type, service_id, issued_at, description, quantity, unit_price, discount_amount, amount, created_at, created_by, updated_at, updated_by FROM booking_details WHERE id = ?";
+        return "SELECT id, booking_id, type, service_id, issued_at, description, unit, quantity, unit_price, discount_amount, amount, created_at, created_by, updated_at, updated_by FROM booking_details WHERE id = ?";
     }
 
     public static String insertQuery() {
-        return "INSERT INTO booking_details (booking_id, type, service_id, issued_at, description, quantity, unit_price, discount_amount, amount, created_at, created_by, updated_at, updated_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        return "INSERT INTO booking_details (booking_id, type, service_id, issued_at, description, unit, quantity, unit_price, discount_amount, amount, created_at, created_by, updated_at, updated_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     }
 
     public void setInsertParameters(PreparedStatement ps) throws SQLException {
@@ -207,26 +219,27 @@ public class BookingDetail {
         ps.setObject(3, this.serviceId);
         ps.setObject(4, this.issuedAt);
         ps.setString(5, this.description);
-        ps.setInt(6, this.quantity);
-        ps.setDouble(7, this.unitPrice);
-        ps.setDouble(8, this.discountAmount);
-        ps.setDouble(9, this.amount);
-        ps.setObject(10, this.createdAt);
+        ps.setString(6, this.unit);
+        ps.setInt(7, this.quantity);
+        ps.setDouble(8, this.unitPrice);
+        ps.setDouble(9, this.discountAmount);
+        ps.setDouble(10, this.amount);
+        ps.setObject(11, this.createdAt);
         if (this.createdBy != null) {
-            ps.setLong(11, this.createdBy);
+            ps.setLong(12, this.createdBy);
         } else {
-            ps.setNull(11, java.sql.Types.BIGINT);
+            ps.setNull(12, java.sql.Types.BIGINT);
         }
-        ps.setObject(12, this.updatedAt);
+        ps.setObject(13, this.updatedAt);
         if (this.updatedBy != null) {
-            ps.setLong(13, this.updatedBy);
+            ps.setLong(14, this.updatedBy);
         } else {
-            ps.setNull(13, java.sql.Types.BIGINT);
+            ps.setNull(14, java.sql.Types.BIGINT);
         }
     }
 
     public static String updateQuery() {
-        return "UPDATE booking_details SET booking_id = ?, type = ?, service_id = ?, issued_at = ?, description = ?, quantity = ?, unit_price = ?, discount_amount = ?, amount = ?, created_at = ?, created_by = ?, updated_at = ?, updated_by = ? WHERE id = ?";
+        return "UPDATE booking_details SET booking_id = ?, type = ?, service_id = ?, issued_at = ?, description = ?, unit = ?, quantity = ?, unit_price = ?, discount_amount = ?, amount = ?, created_at = ?, created_by = ?, updated_at = ?, updated_by = ? WHERE id = ?";
     }
 
     public void setUpdateParameters(PreparedStatement ps) throws SQLException {
@@ -235,23 +248,24 @@ public class BookingDetail {
         ps.setObject(3, this.serviceId);
         ps.setObject(4, this.issuedAt);
         ps.setString(5, this.description);
-        ps.setInt(6, this.quantity);
-        ps.setDouble(7, this.unitPrice);
-        ps.setDouble(8, this.discountAmount);
-        ps.setDouble(9, this.amount);
-        ps.setObject(10, this.createdAt);
+        ps.setString(6, this.unit);
+        ps.setInt(7, this.quantity);
+        ps.setDouble(8, this.unitPrice);
+        ps.setDouble(9, this.discountAmount);
+        ps.setDouble(10, this.amount);
+        ps.setObject(11, this.createdAt);
         if (this.createdBy != null) {
-            ps.setLong(11, this.createdBy);
+            ps.setLong(12, this.createdBy);
         } else {
-            ps.setNull(11, java.sql.Types.BIGINT);
+            ps.setNull(12, java.sql.Types.BIGINT);
         }
-        ps.setObject(12, this.updatedAt);
+        ps.setObject(13, this.updatedAt);
         if (this.updatedBy != null) {
-            ps.setLong(13, this.updatedBy);
+            ps.setLong(14, this.updatedBy);
         } else {
-            ps.setNull(13, java.sql.Types.BIGINT);
+            ps.setNull(14, java.sql.Types.BIGINT);
         }
-        ps.setLong(14, this.id);
+        ps.setLong(15, this.id);
     }
 
     public static String deleteQuery() {

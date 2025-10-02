@@ -176,6 +176,7 @@ public class MainView extends JFrame {
                 case UserRole.Manager -> {
                     tabbedPane.addTab("Reports", reportPresenter.getView());
                     tabbedPane.addTab("Today Bookings", bookingPresenter.loadTodayBookingView());
+                    tabbedPane.addTab("Booking History", bookingHistoryPresenter.getView());
                     tabbedPane.addTab("Users", userPresenter.getView());
                     tabbedPane.addTab("Guests", guestPresenter.getView());
                     tabbedPane.addTab("Services", servicePresenter.getView());

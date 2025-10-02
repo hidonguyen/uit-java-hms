@@ -15,6 +15,7 @@ public class BookingDetailDto {
     private String serviceName;
     private LocalDateTime issuedAt;
     private String description;
+    private String unit;
     private int quantity;
     private double unitPrice;
     private double discountAmount;
@@ -26,13 +27,14 @@ public class BookingDetailDto {
 
     public BookingDetailDto() {}
 
-    public BookingDetailDto(Long id, Long bookingId, BookingDetailType type, Long serviceId, LocalDateTime issuedAt, String description, int quantity, double unitPrice, double discountAmount, double amount, LocalDateTime createdAt, Long createdBy, LocalDateTime updatedAt, Long updatedBy) {
+    public BookingDetailDto(Long id, Long bookingId, BookingDetailType type, Long serviceId, LocalDateTime issuedAt, String description, String unit, int quantity, double unitPrice, double discountAmount, double amount, LocalDateTime createdAt, Long createdBy, LocalDateTime updatedAt, Long updatedBy) {
         this.id = id;
         this.bookingId = bookingId;
         this.type = type;
         this.serviceId = serviceId;
         this.issuedAt = issuedAt;
         this.description = description;
+        this.unit = unit;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
         this.discountAmount = discountAmount;
@@ -50,6 +52,7 @@ public class BookingDetailDto {
         this.serviceId = rs.getLong("service_id");
         this.issuedAt = rs.getObject("issued_at", LocalDateTime.class);
         this.description = rs.getString("description");
+        this.unit = rs.getString("unit");
         this.quantity = rs.getInt("quantity");
         this.unitPrice = rs.getDouble("unit_price");
         this.discountAmount = rs.getDouble("discount_amount");
@@ -120,6 +123,15 @@ public class BookingDetailDto {
 
     public BookingDetailDto setDescription(String description) {
         this.description = description;
+        return this;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public BookingDetailDto setUnit(String unit) {
+        this.unit = unit;
         return this;
     }
 

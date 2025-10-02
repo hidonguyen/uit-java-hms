@@ -1,14 +1,14 @@
 package vn.edu.uit.cntt.lt.e33.ie303.hms.ui.presenter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.SwingWorker;
 
 import vn.edu.uit.cntt.lt.e33.ie303.hms.bootstrap.DIContainer;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.dto.BookingDetailDto;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.dto.BookingDto;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.dto.GuestItem;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.dto.RoomItem;
@@ -17,17 +17,22 @@ import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.dto.ServiceItem;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.dto.TodayBookingDto;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.BookingDetailType;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.BookingStatus;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.PaymentMethod;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.enums.PaymentStatus;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.Booking;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.BookingDetail;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.Guest;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.Payment;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.Room;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.RoomType;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.Service;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.repository.IGuestRepository;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.repository.IPaymentRepository;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.repository.IRoomRepository;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.repository.IRoomTypeRepository;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.repository.IServiceRepository;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.service.IBookingService;
+import vn.edu.uit.cntt.lt.e33.ie303.hms.ui.view.booking.AddServiceToBookingModal;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.ui.view.booking.CreateOrEditBookingModal;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.ui.view.booking.TodayBookingView;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.util.Constants;
@@ -36,12 +41,14 @@ public class BookingPresenter {
     private final TodayBookingView todayBookingView;
 
     private final CreateOrEditBookingModal createOrEditBookingModal;
+    private final AddServiceToBookingModal addServiceToBookingModal;
 
     private final IBookingService bookingService;
     private final IGuestRepository guestRepository;
     private final IRoomRepository roomRepository;
     private final IRoomTypeRepository roomTypeRepository;
     private final IServiceRepository serviceRepository;
+    private final IPaymentRepository paymentRepository;
 
     public BookingPresenter(JFrame parentFrame) {
         this.todayBookingView = new TodayBookingView();
@@ -51,10 +58,11 @@ public class BookingPresenter {
         this.roomRepository = DIContainer.getInstance().getRoomRepository();
         this.roomTypeRepository = DIContainer.getInstance().getRoomTypeRepository();
         this.serviceRepository = DIContainer.getInstance().getServiceRepository();
+        this.paymentRepository = DIContainer.getInstance().getPaymentRepository();
         this.todayBookingView.setPresenter(this);
 
-        this.createOrEditBookingModal = new CreateOrEditBookingModal(parentFrame, this);
-
+        this.createOrEditBookingModal = new CreateOrEditBookingModal(parentFrame, this);        
+        this.addServiceToBookingModal = new AddServiceToBookingModal(parentFrame, this);
 
         this.createOrEditBookingModal.onSave(_ -> {
             if (!createOrEditBookingModal.isValidInput())
@@ -64,41 +72,7 @@ public class BookingPresenter {
                 @Override
                 protected Integer doInBackground() {
                     try {
-                        Booking booking = new Booking();
-                        booking.setId(bookingDto.getId());
-                        if (booking.getId() == null) {
-                            // New booking, generate booking no
-                            booking.setBookingNo(bookingService.generateBookingNo());
-                        } else {
-                            booking.setBookingNo(bookingDto.getBookingNo());
-                        }
-                        booking.setChargeType(bookingDto.getChargeType());
-                        booking.setCheckin(bookingDto.getCheckin());
-                        booking.setCheckout(bookingDto.getCheckout());
-                        booking.setRoomId(bookingDto.getRoomId());
-                        booking.setRoomTypeId(bookingDto.getRoomTypeId());
-                        booking.setPrimaryGuestId(bookingDto.getPrimaryGuestId());
-                        booking.setNumAdults(bookingDto.getNumAdults());
-                        booking.setNumChildren(bookingDto.getNumChildren());
-                        booking.setStatus(bookingDto.getStatus());
-                        booking.setPaymentStatus(bookingDto.getPaymentStatus());
-
-                        bookingDto.getBookingDetails().forEach(detail -> {
-                            
-                            BookingDetail bookingDetail = new BookingDetail();
-                            bookingDetail.setId(detail.getId());
-                            bookingDetail.setBookingId(detail.getBookingId());
-                            bookingDetail.setIssuedAt(detail.getIssuedAt());
-                            bookingDetail.setType(detail.getType());
-                            bookingDetail.setServiceId(detail.getServiceId());
-                            bookingDetail.setDescription(detail.getDescription());
-                            bookingDetail.setQuantity(detail.getQuantity());
-                            bookingDetail.setUnitPrice(detail.getUnitPrice());
-                            bookingDetail.setDiscountAmount(detail.getDiscountAmount());
-                            bookingDetail.setAmount(detail.getAmount());
-
-                            booking.addBookingDetail(bookingDetail);
-                        });
+                        Booking booking = fromDto(bookingDto);
 
                         return booking.getId() == null ? bookingService.create(booking) : bookingService.update(booking);
                     } catch (Exception ex) {
@@ -122,6 +96,84 @@ public class BookingPresenter {
                     createOrEditBookingModal.setVisible(false);
                 }
             }.execute();
+        });
+
+        this.createOrEditBookingModal.onCheckout(_ -> {
+            if (!createOrEditBookingModal.isValidInput())
+                return;
+            BookingDto bookingDto = createOrEditBookingModal.getModel();
+            new SwingWorker<Integer, Void>() {
+                @Override
+                protected Integer doInBackground() {
+                    try {
+                        Booking booking = fromDto(bookingDto);
+                        booking.setStatus(BookingStatus.CheckedOut);
+                        booking.setPaymentStatus(PaymentStatus.Paid);
+
+                        int saveBookingResult = booking.getId() == null ? bookingService.create(booking) : bookingService.update(booking);
+
+                        if (saveBookingResult > 0) {
+                            // Create payment for this booking
+                            Payment payment = new Payment();
+                            payment.setBookingId(booking.getId());
+                            payment.setPaidAt(LocalDateTime.now());
+                            payment.setPaymentMethod(PaymentMethod.Cash);
+                            payment.setReferenceNo(booking.getBookingNo());
+                            payment.setAmount(booking.getBookingDetails().stream().mapToDouble(d -> d.getAmount()).sum());
+                            Guest guest = guestRepository.findById(booking.getPrimaryGuestId());
+                            payment.setPayerName(guest != null ? guest.getName() : "N/A");
+                            payment.setNotes("Auto payment on checkout");
+                            payment.setCreatedAt(LocalDateTime.now());
+                            payment.setCreatedBy(booking.getUpdatedBy());
+                            payment.setUpdatedAt(LocalDateTime.now());
+                            payment.setUpdatedBy(booking.getUpdatedBy());
+
+                            saveBookingResult = paymentRepository.insert(payment);
+                            if (saveBookingResult <= 0) {
+                                // Rollback booking update
+                                if (bookingDto.getId() != null) {
+                                    booking.setStatus(bookingDto.getStatus());
+                                    booking.setPaymentStatus(bookingDto.getPaymentStatus());
+                                    bookingService.update(booking);
+                                }
+                                throw new Exception("Checkout failed! Cannot add payment for this booking.");
+                            }
+                        }
+
+                        return saveBookingResult;
+
+                    } catch (Exception ex) {
+                        todayBookingView.showErrorMessage(ex.getMessage());
+                        return -1;
+                    }
+                }
+
+                @Override
+                protected void done() {
+                    try {
+                        if (get() > 0) {
+                            todayBookingView.showSuccessMessage(bookingDto.getId() == null
+                                    ? Constants.SuccessMessage.CREATE_BOOKING_SUCCESS
+                                    : Constants.SuccessMessage.UPDATE_BOOKING_SUCCESS);
+                            loadTodayBookingView();
+                        }
+                    } catch (Exception ex) {
+                        todayBookingView.showErrorMessage(ex.getMessage());
+                    }
+                    createOrEditBookingModal.setVisible(false);
+                }
+            }.execute();
+        });
+
+        this.addServiceToBookingModal.onSave(_ -> {
+            if (!addServiceToBookingModal.isValidInput())
+                return;
+
+            BookingDetailDto bookingDetailDto = addServiceToBookingModal.getModel();
+            createOrEditBookingModal.addBookingDetail(bookingDetailDto);
+
+            addServiceToBookingModal.setVisible(false);
+            todayBookingView.showSuccessMessage(Constants.SuccessMessage.ADD_SERVICE_TO_BOOKING_SUCCESS);
         });
     }
 
@@ -175,63 +227,16 @@ public class BookingPresenter {
             bookingDto.setUpdatedAt(booking.getUpdatedAt());
             bookingDto.setUpdatedBy(booking.getUpdatedBy());
 
-            bookingDto.setBookingDetails(booking.getBookingDetails());
+            bookingDto.setBookingDetails(booking.getBookingDetails(), serviceRepository);
 
             createOrEditBookingModal.setModel(bookingDto);
             createOrEditBookingModal.setVisible(true);
         }
     }
 
-    public int saveBooking() {
-        return 0;
-        // BookingDto bookingDto = todayBookingView.getCurrentBookingDto();
-
-        // Booking booking = new Booking();
-        // booking.setId(bookingDto.getId());
-        // booking.setBookingNo(bookingDto.getBookingNo());
-        // booking.setChargeType(bookingDto.getChargeType());
-        // booking.setCheckin(bookingDto.getCheckin());
-        // booking.setCheckout(bookingDto.getCheckout());
-        // booking.setRoomId(bookingDto.getRoomId());
-        // booking.setRoomTypeId(bookingDto.getRoomTypeId());
-        // booking.setPrimaryGuestId(bookingDto.getPrimaryGuestId());
-        // booking.setNumAdults(bookingDto.getNumAdults());
-        // booking.setNumChildren(bookingDto.getNumChildren());
-        // booking.setStatus(bookingDto.getStatus());
-
-        // if (bookingDto.getId() == null) {
-        // // New booking, set default status
-        // booking.setStatus(BookingStatus.CheckedIn);
-        // return bookingService.create(booking);
-        // }
-        // return bookingService.update(booking);
-    }
-
-    public int checkOutBooking() {
-        return 0;
-        // BookingDto bookingDto = todayBookingView.getCurrentBookingDto();
-
-        // Booking booking = new Booking();
-        // booking.setId(bookingDto.getId());
-        // booking.setBookingNo(bookingDto.getBookingNo());
-        // booking.setChargeType(bookingDto.getChargeType());
-        // booking.setCheckin(bookingDto.getCheckin());
-        // booking.setCheckout(bookingDto.getCheckout());
-        // booking.setRoomId(bookingDto.getRoomId());
-        // booking.setRoomTypeId(bookingDto.getRoomTypeId());
-        // booking.setPrimaryGuestId(bookingDto.getPrimaryGuestId());
-        // booking.setNumAdults(bookingDto.getNumAdults());
-        // booking.setNumChildren(bookingDto.getNumChildren());
-        // booking.setStatus(BookingStatus.CheckedOut);
-
-        // return bookingService.update(booking);
-    }
-
-    public int addServiceToBooking(Date value, String selectedItem, String trim, ServiceItem selectedItem2,
-            String trim2) {
-        // Long bookingId = todayBookingView.getCurrentBookingDto().getId();
-
-        return 0;
+    public void onAddServiceClicked() {
+        addServiceToBookingModal.setModel(null);
+        addServiceToBookingModal.setVisible(true);
     }
 
     public List<RoomTypeItem> getRoomTypeItems() {
@@ -271,42 +276,61 @@ public class BookingPresenter {
         return guestItems;
     }
 
-    public JComboBox<ServiceItem> getServiceSelectionComboBox() {
+    public List<ServiceItem> getServiceItems() {
         List<Service> services = serviceRepository.findAll();
-        JComboBox<ServiceItem> serviceComboBox = new JComboBox<>();
-        serviceComboBox.addItem(new ServiceItem(-1L, "Select Service", 0.0));
+        List<ServiceItem> serviceItems = new ArrayList<>();
+        serviceItems.add(new ServiceItem(-1L, "Select Service", "", 0.0));
         for (Service service : services) {
-            serviceComboBox.addItem(new ServiceItem(service.getId(), service.getName(), service.getPrice()));
+            serviceItems.add(new ServiceItem(service.getId(), service.getName(), service.getUnit(), service.getPrice()));
         }
-        return serviceComboBox;
+        return serviceItems;
     }
 
-    public RoomTypeItem getRoomTypeItemById(Long roomTypeId) {
-        RoomType roomType = roomTypeRepository.findById(roomTypeId);
-        if (roomType != null) {
-            return new RoomTypeItem(roomType.getId(), roomType.getName());
+    private Booking fromDto(BookingDto bookingDto) {
+        Booking booking = new Booking();
+        booking.setId(bookingDto.getId());
+        if (booking.getId() == null) {
+            // New booking, generate booking no
+            booking.setBookingNo(bookingService.generateBookingNo());
+        } else {
+            booking.setBookingNo(bookingDto.getBookingNo());
         }
-        return null;
-    }
+        booking.setChargeType(bookingDto.getChargeType());
+        booking.setCheckin(bookingDto.getCheckin());
+        booking.setCheckout(bookingDto.getCheckout());
+        booking.setRoomId(bookingDto.getRoomId());
+        booking.setRoomTypeId(bookingDto.getRoomTypeId());
+        booking.setPrimaryGuestId(bookingDto.getPrimaryGuestId());
+        booking.setNumAdults(bookingDto.getNumAdults());
+        booking.setNumChildren(bookingDto.getNumChildren());
+        booking.setStatus(bookingDto.getStatus());
+        booking.setPaymentStatus(bookingDto.getPaymentStatus());
+        booking.setNotes(bookingDto.getNotes());
+        booking.setCreatedAt(bookingDto.getCreatedAt());
+        booking.setCreatedBy(bookingDto.getCreatedBy());
+        booking.setUpdatedAt(bookingDto.getUpdatedAt());
+        booking.setUpdatedBy(bookingDto.getUpdatedBy());
 
-    public RoomItem getRoomItemById(Long roomId) {
-        Room room = roomRepository.findById(roomId);
-        if (room != null) {
-            return new RoomItem(room.getId(), room.getName());
-        }
-        return null;
-    }
+        bookingDto.getBookingDetails().forEach(detail -> {
+            
+            BookingDetail bookingDetail = new BookingDetail();
+            bookingDetail.setId(detail.getId());
+            bookingDetail.setBookingId(booking.getId());
+            bookingDetail.setIssuedAt(detail.getIssuedAt());
+            bookingDetail.setType(detail.getType());
+            bookingDetail.setServiceId(detail.getServiceId());
+            Service service = serviceRepository.findById(detail.getServiceId());
+            detail.setServiceName(service != null ? service.getName() : null);
+            bookingDetail.setDescription(detail.getDescription().replace("(" + detail.getServiceName() + ")", "").trim());
+            bookingDetail.setUnit(detail.getUnit());
+            bookingDetail.setQuantity(detail.getQuantity());
+            bookingDetail.setUnitPrice(detail.getUnitPrice());
+            bookingDetail.setDiscountAmount(detail.getDiscountAmount());
+            bookingDetail.setAmount(detail.getAmount());
 
-    public GuestItem getGuestItemById(Long primaryGuestId) {
-        Guest guest = guestRepository.findById(primaryGuestId);
-        if (guest != null) {
-            return new GuestItem(guest.getId(), guest.getName(), guest.getPhone());
-        }
-        return null;
-    }
+            booking.addBookingDetail(bookingDetail);
+        });
 
-    public Object onAddServiceClicked() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'onAddServiceClicked'");
+        return booking;
     }
 }

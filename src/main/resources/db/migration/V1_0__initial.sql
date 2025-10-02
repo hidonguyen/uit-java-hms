@@ -174,6 +174,7 @@ CREATE TABLE booking_details (
     service_id       BIGINT,
     issued_at        TIMESTAMP    NOT NULL DEFAULT NOW(),
     description      TEXT,
+    unit             VARCHAR(50),
     quantity         NUMERIC(12,2) NOT NULL DEFAULT 1 CHECK (quantity >= 0),
     unit_price       NUMERIC(12,2) NOT NULL DEFAULT 0 CHECK (unit_price >= 0),
     discount_amount  NUMERIC(12,2) NOT NULL DEFAULT 0 CHECK (discount_amount >= 0),

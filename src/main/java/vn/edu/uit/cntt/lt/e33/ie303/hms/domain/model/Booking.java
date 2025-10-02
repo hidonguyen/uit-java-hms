@@ -268,12 +268,13 @@ private Long id;
                 b.notes,
                 b.created_at, b.created_by, b.updated_at, b.updated_by
             FROM bookings b
-				JOIN (SELECT booking_id, SUM(amount) AS total_amount FROM booking_details rbd WHERE rbd.Type = 'Room' GROUP BY booking_id) rbd ON b.id = rbd.booking_id
-				JOIN (SELECT booking_id, SUM(amount) AS total_amount FROM booking_details sbd WHERE sbd.Type != 'Room' GROUP BY booking_id) sbd ON b.id = sbd.booking_id
+				LEFT JOIN (SELECT booking_id, SUM(amount) AS total_amount FROM booking_details rbd WHERE rbd.Type = 'Room' GROUP BY booking_id) rbd ON b.id = rbd.booking_id
+				LEFT JOIN (SELECT booking_id, SUM(amount) AS total_amount FROM booking_details sbd WHERE sbd.Type != 'Room' GROUP BY booking_id) sbd ON b.id = sbd.booking_id
                 JOIN guests g ON b.primary_guest_id = g.id
                 JOIN rooms r ON b.room_id = r.id
                 JOIN room_types rt ON b.room_type_id = rt.id
             WHERE DATE(b.checkin) <= CURRENT_DATE AND (b.checkout IS NULL OR DATE(b.checkout) >= CURRENT_DATE)
+                AND b.status NOT IN ('CheckedOut')
             ORDER BY b.checkin ASC
         """;
     }

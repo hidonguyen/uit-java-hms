@@ -127,6 +127,7 @@ public class Constants {
         public static final String CREATE_BOOKING_SUCCESS = "Booking created successfully.";
         public static final String UPDATE_BOOKING_SUCCESS = "Booking updated successfully.";
         public static final String DELETE_BOOKING_SUCCESS = "Booking deleted successfully.";
+        public static final String ADD_SERVICE_TO_BOOKING_SUCCESS = "Service added to booking successfully.";
     }
 
     // ===================== ERROR TITLE =====================
