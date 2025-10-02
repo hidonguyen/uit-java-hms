@@ -10,13 +10,10 @@ public class LoginView extends JFrame {
     private final JPasswordField passwordField = new JPasswordField(20);
     private final JButton loginBtn = new JButton("Login");
     private final JButton cancelBtn = new JButton("Cancel");
-    private final JCheckBox rememberMeCheckBox = new JCheckBox("Remember me");
     private final JToggleButton showPasswordBtn = new JToggleButton();
     private boolean isPasswordVisible = false;
 
-    // Color scheme - Modern flat design
     private static final Color PRIMARY_COLOR = new Color(52, 152, 219);
-    private static final Color PRIMARY_DARK = new Color(41, 128, 185);
     private static final Color SUCCESS_COLOR = new Color(46, 204, 113);
     private static final Color DANGER_COLOR = new Color(231, 76, 60);
     private static final Color BACKGROUND_COLOR = new Color(245, 247, 250);
@@ -25,16 +22,16 @@ public class LoginView extends JFrame {
 
     private static Font pickEmojiFont(int size) {
         String[] candidates = {
-                "Segoe UI Emoji", // Windows
-                "Apple Color Emoji", // macOS
-                "Noto Color Emoji" // Linux
+                "Segoe UI Emoji",
+                "Apple Color Emoji",
+                "Noto Color Emoji"
         };
         for (String name : candidates) {
             Font f = new Font(name, Font.PLAIN, size);
             if (f.getFamily().equals(name))
                 return f;
         }
-        return new Font("Segoe UI Symbol", Font.PLAIN, size); // fallback mono
+        return new Font("Segoe UI Symbol", Font.PLAIN, size);
     }
 
     private static String cp(int codepoint) {
@@ -51,7 +48,6 @@ public class LoginView extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setResizable(false);
 
-        // Set modern look and feel
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
@@ -90,18 +86,15 @@ public class LoginView extends JFrame {
         headerPanel.setBackground(PRIMARY_COLOR);
         headerPanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
 
-        // Icon
         JLabel iconLabel = new JLabel("🏨");
         iconLabel.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 64));
         iconLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Title
         JLabel titleLabel = new JLabel("Welcome Back");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 32));
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Subtitle
         JLabel subtitleLabel = new JLabel("Sign in to continue");
         subtitleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         subtitleLabel.setForeground(new Color(255, 255, 255, 200));
@@ -130,12 +123,6 @@ public class LoginView extends JFrame {
 
         configureShowPasswordButton();
 
-        rememberMeCheckBox.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        rememberMeCheckBox.setForeground(TEXT_COLOR);
-        rememberMeCheckBox.setBackground(Color.WHITE);
-        rememberMeCheckBox.setAlignmentX(Component.LEFT_ALIGNMENT);
-        rememberMeCheckBox.setFocusPainted(false);
-
         formPanel.add(usernameLabel);
         formPanel.add(Box.createRigidArea(new Dimension(0, 8)));
         formPanel.add(usernamePanel);
@@ -145,8 +132,6 @@ public class LoginView extends JFrame {
         formPanel.add(Box.createRigidArea(new Dimension(0, 8)));
         formPanel.add(passwordPanel);
         formPanel.add(Box.createRigidArea(new Dimension(0, 18)));
-
-        formPanel.add(rememberMeCheckBox);
 
         return formPanel;
     }
@@ -208,8 +193,8 @@ public class LoginView extends JFrame {
 
     private void configureShowPasswordButton() {
         showPasswordBtn.setPreferredSize(new Dimension(48, 48));
-        showPasswordBtn.setFont(pickEmojiFont(18)); // << đổi font có emoji
-        showPasswordBtn.setText(EYE); // << dùng codepoint
+        showPasswordBtn.setFont(pickEmojiFont(18));
+        showPasswordBtn.setText(EYE);
         showPasswordBtn.setFocusPainted(false);
         showPasswordBtn.setBorderPainted(false);
         showPasswordBtn.setContentAreaFilled(false);
@@ -248,10 +233,8 @@ public class LoginView extends JFrame {
         buttonPanel.setBackground(Color.WHITE);
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 50, 50, 50));
 
-        // Login button
         styleModernButton(loginBtn, SUCCESS_COLOR, Color.WHITE);
 
-        // Cancel button
         styleModernButton(cancelBtn, DANGER_COLOR, Color.WHITE);
         cancelBtn.addActionListener(_ -> {
             dispose();
@@ -320,10 +303,6 @@ public class LoginView extends JFrame {
         return new String(passwordField.getPassword());
     }
 
-    public boolean isRememberMe() {
-        return rememberMeCheckBox.isSelected();
-    }
-
     public void onSubmit(ActionListener l) {
         loginBtn.addActionListener(l);
 
@@ -342,7 +321,6 @@ public class LoginView extends JFrame {
     public void clearFields() {
         usernameField.setText("");
         passwordField.setText("");
-        rememberMeCheckBox.setSelected(false);
         isPasswordVisible = false;
         passwordField.setEchoChar('●');
         showPasswordBtn.setText("👁");

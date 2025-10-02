@@ -55,6 +55,7 @@ public class BookingHistoryPresenter {
     private int page = 0;
     private String sortBy = "checkin";
     private String sortDir = "DESC";
+    private long totalRecords = 0;
 
     public BookingHistoryPresenter() {
         this.service = Objects.requireNonNull(DIContainer.getInstance().getBookingHistoryService());
@@ -132,7 +133,10 @@ public class BookingHistoryPresenter {
             protected void done() {
                 try {
                     rows = get();
+                    totalRecords = total;
                     view.setTableModel(new BookingHistoryTableModel(rows));
+                    view.setCurrentPage(page);
+                    view.setTotalRecords((int) totalRecords);
                 } catch (Exception e) {
                     view.showErrorMessage(e.getMessage());
                 } finally {

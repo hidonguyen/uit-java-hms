@@ -24,8 +24,8 @@ public class MainPresenter {
 
         this.loginView.onSubmit(_ -> login());
 
-        this.loginView.setVisible(true);
-        // login();
+        // this.loginView.setVisible(true);
+        login();
     }
 
     private void login() {
