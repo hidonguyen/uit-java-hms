@@ -4,7 +4,6 @@ import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.dto.TodayBookingDto;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.model.Booking;
 import vn.edu.uit.cntt.lt.e33.ie303.hms.domain.repository.IBookingRepository;
 
-import java.lang.reflect.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

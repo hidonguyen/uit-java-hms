@@ -532,6 +532,7 @@ public class CreateOrEditBookingModal extends BaseModalView {
         serviceChargesLabel.setText(money.format(serviceCharges));
         totalAmountLabel.setText(money.format(totalAmount));
 
+        checkoutBtn.setVisible(true);
         bookingDetailTablePanel.setVisible(true);
         summaryPanel.setVisible(true);
     }
