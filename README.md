@@ -53,7 +53,7 @@ Trước khi bắt đầu, bạn cần cài đặt các công cụ sau:
     └── main
         ├── java                    # Source code Java
         └── resources
-            ├── application.properties   # Cấu hình kết nối DB & bảo mật
+            ├── app.properties   # Cấu hình kết nối DB & bảo mật
             └── db
                 └── migration       # Flyway migration scripts
 ```
@@ -66,7 +66,7 @@ Trước khi bắt đầu, bạn cần cài đặt các công cụ sau:
 
 ```bash
 git clone <repository-url>
-cd hotel-management-system
+cd uit-java-hms
 ```
 
 Hoặc download ZIP và giải nén.
