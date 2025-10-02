@@ -3,7 +3,7 @@ package vn.edu.uit.cntt.lt.e33.ie303.hms.ui.presenter;
 import java.text.NumberFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.Locale;
+
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 
@@ -128,6 +128,7 @@ public class RoomTypePresenter {
     }
 
     public RoomTypeView getView() {
+        view.authorize();
         return view;
     }
 

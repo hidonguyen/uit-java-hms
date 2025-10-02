@@ -243,6 +243,7 @@ public abstract class BaseModalView extends JDialog {
 
         errorDialog.add(content);
         errorDialog.pack();
+        errorDialog.setResizable(false);
         errorDialog.setMinimumSize(new Dimension(320, errorDialog.getHeight()));
         errorDialog.setLocationRelativeTo(this);
         errorDialog.setVisible(true);
