@@ -41,16 +41,6 @@ public final class AppConfig {
     }
 
     public static DataSource dataSource(AppConfig cfg) {
-        // Check if using macOS
-        // String osName = System.getProperty("os.name").toLowerCase();
-        // if (osName.contains("mac")) {
-        //     System.setProperty("user.timezone", "Asia/Saigon");
-        //     java.util.TimeZone.setDefault(java.util.TimeZone.getTimeZone("Asia/Saigon"));
-        // } else if (osName.contains("win")) {
-        //     System.setProperty("user.timezone", "Asia/Ho_Chi_Minh");
-        //     java.util.TimeZone.setDefault(java.util.TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
-        // }
-
         HikariConfig hc = new HikariConfig();
         hc.setJdbcUrl(cfg.dbUrl);
         hc.setUsername(cfg.dbUser);
@@ -58,8 +48,6 @@ public final class AppConfig {
         hc.setMaximumPoolSize(5);
         hc.setMinimumIdle(1);
         hc.setPoolName("hms-app-pool");
-
-        // hc.addDataSourceProperty("serverTimezone", "UTC");
 
         return new HikariDataSource(hc);
     }

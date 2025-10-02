@@ -9,7 +9,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -21,9 +20,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
@@ -47,6 +46,7 @@ public abstract class BaseTableView extends JPanel {
     protected final JButton searchBtn;
 
     protected JPanel actionPanel;
+    protected JScrollPane scrollPane;
 
     private int selectedRow = -1;
 
@@ -64,6 +64,10 @@ public abstract class BaseTableView extends JPanel {
     protected void onRowSelectionChanged(boolean rowSelected) {
     }
 
+    protected int[] preferredColumnWidths() {
+        return null;
+    }
+
     public BaseTableView() {
         super(new BorderLayout());
 
@@ -74,6 +78,12 @@ public abstract class BaseTableView extends JPanel {
         this.searchBtn = createModernButton("Search", PRIMARY_COLOR, Color.WHITE);
 
         initializeComponents();
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            @Override
+            public void componentResized(java.awt.event.ComponentEvent e) {
+                applyFillOrScroll();
+            }
+        });
     }
 
     public void authorize() {
@@ -182,10 +192,10 @@ public abstract class BaseTableView extends JPanel {
                 BorderFactory.createLineBorder(BORDER_COLOR, 1, true),
                 new EmptyBorder(0, 0, 0, 0)));
 
-        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane = new JScrollPane(table);
         scrollPane.setBorder(null);
         scrollPane.getViewport().setBackground(Color.WHITE);
-
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         tablePanel.add(scrollPane, BorderLayout.CENTER);
         return tablePanel;
     }
@@ -194,14 +204,14 @@ public abstract class BaseTableView extends JPanel {
         table.setShowGrid(false);
         table.setAutoCreateRowSorter(true);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        table.setRowHeight(36); // giảm từ 45
+        table.setRowHeight(36);
         table.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         table.setForeground(TEXT_COLOR);
         table.setSelectionBackground(new Color(219, 234, 254));
         table.setSelectionForeground(TEXT_COLOR);
         table.setGridColor(BORDER_COLOR);
         table.setIntercellSpacing(new Dimension(0, 1));
-
+      
         JTableHeader header = table.getTableHeader();
         header.setBackground(SECONDARY_COLOR);
         header.setForeground(TEXT_COLOR);
@@ -224,20 +234,17 @@ public abstract class BaseTableView extends JPanel {
         };
         table.setDefaultRenderer(Object.class, cellRenderer);
 
-        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting()) {
-                    selectedRow = table.getSelectedRow();
-                    boolean rowSelected = selectedRow >= 0;
-                    editBtn.setEnabled(rowSelected);
-                    deleteBtn.setEnabled(rowSelected);
+        table.getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
+            if (!e.getValueIsAdjusting()) {
+                selectedRow = table.getSelectedRow();
+                boolean rowSelected = selectedRow >= 0;
+                editBtn.setEnabled(rowSelected);
+                deleteBtn.setEnabled(rowSelected);
 
-                    updateButtonState(editBtn, rowSelected);
-                    updateButtonState(deleteBtn, rowSelected);
+                updateButtonState(editBtn, rowSelected);
+                updateButtonState(deleteBtn, rowSelected);
 
-                    onRowSelectionChanged(rowSelected);
-                }
+                onRowSelectionChanged(rowSelected);
             }
         });
     }
@@ -261,7 +268,7 @@ public abstract class BaseTableView extends JPanel {
         field.setForeground(Color.GRAY);
         field.setText(placeholder);
 
-        field.addFocusListener(new FocusListener() {
+        field.addFocusListener(new java.awt.event.FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
                 if (field.getText().equals(placeholder)) {
@@ -316,6 +323,72 @@ public abstract class BaseTableView extends JPanel {
         updateButtonState(editBtn, false);
         updateButtonState(deleteBtn, false);
         onRowSelectionChanged(false);
+        autoResizeColumnsDynamically(200, 60, 300, 24);
+        applyFillOrScroll();
+    }
+
+    private void autoResizeColumnsDynamically(int sampleRows, int minWidth, int maxWidth, int padding) {
+        if (table.getColumnCount() == 0)
+            return;
+        int[] fixed = preferredColumnWidths();
+        if (fixed != null && fixed.length > 0) {
+            for (int i = 0; i < Math.min(fixed.length, table.getColumnCount()); i++) {
+                table.getColumnModel().getColumn(i).setPreferredWidth(fixed[i]);
+            }
+            return;
+        }
+        JTableHeader header = table.getTableHeader();
+        var cm = table.getColumnModel();
+        int rows = table.getRowCount();
+        int step = rows <= sampleRows ? 1 : Math.max(1, rows / sampleRows);
+        for (int c = 0; c < cm.getColumnCount(); c++) {
+            String h = String.valueOf(cm.getColumn(c).getHeaderValue());
+            int max = header.getFontMetrics(header.getFont()).stringWidth(h);
+            for (int r = 0; r < rows; r += step) {
+                Object v = table.getValueAt(r, c);
+                int w = table.getFontMetrics(table.getFont()).stringWidth(v == null ? "" : v.toString());
+                if (w > max)
+                    max = w;
+            }
+            int pw = Math.max(minWidth, Math.min(max + padding, maxWidth));
+            cm.getColumn(c).setPreferredWidth(pw);
+        }
+    }
+
+    private int totalPreferredWidth() {
+        int total = 0;
+        var cm = table.getColumnModel();
+        for (int i = 0; i < cm.getColumnCount(); i++)
+            total += cm.getColumn(i).getPreferredWidth();
+        return total;
+    }
+
+    private void applyFillOrScroll() {
+        if (scrollPane == null || table.getColumnCount() == 0)
+            return;
+        int viewportW = scrollPane.getViewport().getExtentSize().width;
+        if (viewportW <= 0) {
+            SwingUtilities.invokeLater(this::applyFillOrScroll);
+            return;
+        }
+        int totalPref = totalPreferredWidth();
+        if (totalPref >= viewportW) {
+            table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        } else {
+            table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+            int extra = viewportW - totalPref;
+            int cols = table.getColumnCount();
+            if (cols > 0) {
+                int per = extra / cols;
+                int rem = extra % cols;
+                var cm = table.getColumnModel();
+                for (int i = 0; i < cols; i++) {
+                    var col = cm.getColumn(i);
+                    int w = col.getPreferredWidth() + per + (i == cols - 1 ? rem : 0);
+                    col.setPreferredWidth(Math.max(40, w));
+                }
+            }
+        }
     }
 
     public void onAdd(ActionListener l) {
@@ -350,17 +423,13 @@ public abstract class BaseTableView extends JPanel {
 
     public void showErrorMessage(String message) {
         JOptionPane.showMessageDialog(this,
-                "<html><div style='padding: 8px; font-family: Segoe UI; font-size: 14px;'>" + message
-                        + "</div></html>",
-                "Error - " + getErrorTitle(),
-                JOptionPane.ERROR_MESSAGE);
+                "<html><div style='padding: 8px; font-family: Segoe UI; font-size: 14px;'>" + message + "</div></html>",
+                "Error - " + getErrorTitle(), JOptionPane.ERROR_MESSAGE);
     }
 
     public void showSuccessMessage(String message) {
         JOptionPane.showMessageDialog(this,
-                "<html><div style='padding: 8px; font-family: Segoe UI; font-size: 14px;'>" + message
-                        + "</div></html>",
-                "Success - " + getErrorTitle(),
-                JOptionPane.INFORMATION_MESSAGE);
+                "<html><div style='padding: 8px; font-family: Segoe UI; font-size: 14px;'>" + message + "</div></html>",
+                "Success - " + getErrorTitle(), JOptionPane.INFORMATION_MESSAGE);
     }
 }
