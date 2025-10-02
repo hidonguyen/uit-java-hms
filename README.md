@@ -100,7 +100,9 @@ Bạn sẽ thấy container `hms-postgres` trong danh sách với status `Up`.
 
 ### Bước 3: Chạy Migration để tạo cấu trúc database
 
-Migration sẽ tự động tạo các bảng cần thiết trong database.
+Kết nối đến server postgres, tiến hành tạo 1 database trống tên là hms
+
+Tiếp theo, migration sẽ tự động tạo các bảng cần thiết trong database.
 
 ```bash
 mvn flyway:migrate
