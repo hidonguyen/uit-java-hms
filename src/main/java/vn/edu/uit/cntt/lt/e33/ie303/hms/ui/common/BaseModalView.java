@@ -241,7 +241,7 @@ public abstract class BaseModalView extends JDialog {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setBackground(Color.WHITE);
         JButton okButton = new JButton("OK");
-        styleButton(okButton, PRIMARY_COLOR, PRIMARY_HOVER, Color.WHITE, true);
+        // styleButton(okButton, PRIMARY_COLOR, PRIMARY_HOVER, Color.WHITE, true);
         okButton.addActionListener(e -> errorDialog.dispose());
         buttonPanel.add(okButton);
         content.add(buttonPanel, BorderLayout.SOUTH);

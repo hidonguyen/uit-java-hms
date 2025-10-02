@@ -63,6 +63,9 @@ public class MainView extends JFrame {
     public MainView() {
         super("UIT Hotel Management Pro");
 
+        // set maximized
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+
         JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
 
         bookingPresenter = new BookingPresenter(parentFrame);

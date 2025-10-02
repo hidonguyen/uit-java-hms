@@ -416,6 +416,7 @@ public class CreateOrEditBookingModal extends BaseModalView {
 
             clearForm();
 
+            checkoutBtn.setVisible(false);
             bookingDetailTablePanel.setVisible(false);
             summaryPanel.setVisible(false);
 
